@@ -1,0 +1,224 @@
+Repository Structure: bigweaver-agent-canary-zeta-hydro-deps
+═══════════════════════════════════════════════════════════
+
+Root Directory
+├── Cargo.toml                           # Project configuration & dependencies
+├── run_benchmarks.sh                    # Helper script for running benchmarks
+│
+├── Documentation Files
+│   ├── README.md                        # Overview & quick start (192 lines)
+│   ├── SETUP.md                         # Installation guide (427 lines)
+│   ├── BENCHMARKING_GUIDE.md            # Comprehensive guide (528 lines)
+│   ├── FRAMEWORK_COMPARISON.md          # Framework details (490 lines)
+│   ├── PROJECT_SUMMARY.md               # High-level overview (550 lines)
+│   ├── COMPLETION_CHECKLIST.md          # Verification (372 lines)
+│   ├── IMPLEMENTATION_SUMMARY.md        # Task completion report
+│   └── REPOSITORY_STRUCTURE.txt         # This file
+│
+├── src/                                 # Library code
+│   └── lib.rs                           # Utilities & metrics (96 lines)
+│       ├── utils module
+│       │   ├── Constants (NUM_OPS, NUM_INTS, etc.)
+│       │   └── Helper functions
+│       ├── metrics module
+│       │   └── BenchmarkResult struct
+│       └── Unit tests
+│
+└── benches/                             # Benchmark implementations
+    ├── data/                            # Benchmark data files
+    │   ├── reachability_edges.txt       # Graph edges (521 KB)
+    │   └── reachability_reachable.txt   # Expected results (38 KB)
+    │
+    ├── identity_comparison.rs           # Identity benchmark (226 lines)
+    │   ├── Timely Dataflow implementation
+    │   ├── Hydroflow compiled implementation
+    │   ├── Hydroflow scheduled implementation
+    │   ├── Hydroflow surface implementation
+    │   └── Baseline iterator implementation
+    │
+    ├── join_comparison.rs               # Join benchmark (145 lines)
+    │   ├── Timely Dataflow implementation
+    │   ├── Hydroflow implementation
+    │   └── Baseline hash join
+    │
+    ├── reachability_comparison.rs       # Reachability benchmark (203 lines)
+    │   ├── Differential Dataflow implementation
+    │   ├── Timely Dataflow implementation
+    │   ├── Hydroflow implementation
+    │   └── Baseline BFS
+    │
+    ├── fan_in_comparison.rs             # Fan-in benchmark (73 lines)
+    │   ├── Timely implementation
+    │   ├── Hydroflow implementation
+    │   └── Baseline implementation
+    │
+    ├── fan_out_comparison.rs            # Fan-out benchmark (73 lines)
+    │   ├── Timely implementation
+    │   ├── Hydroflow implementation
+    │   └── Baseline implementation
+    │
+    ├── fork_join_comparison.rs          # Fork-join benchmark (73 lines)
+    │   ├── Timely implementation
+    │   ├── Hydroflow implementation
+    │   └── Baseline implementation
+    │
+    └── arithmetic_comparison.rs         # Arithmetic benchmark (95 lines)
+        ├── Timely implementation
+        ├── Hydroflow implementation
+        └── Baseline implementation
+
+
+Dependencies Structure
+═══════════════════════
+
+External Frameworks
+├── timely-master (0.13.0-dev.1)
+└── differential-dataflow-master (0.13.0-dev.1)
+
+Hydroflow Components (from main repository)
+├── dfir_rs (via path: ../bigweaver-agent-canary-hydro-zeta/dfir_rs)
+└── sinktools (via path: ../bigweaver-agent-canary-hydro-zeta/sinktools)
+
+Benchmark Infrastructure
+├── criterion (0.5.0) - with async_tokio, html_reports
+├── tokio (1.29.0) - with rt-multi-thread
+├── futures (0.3)
+├── rand (0.8.0)
+├── rand_distr (0.4.3)
+├── seq-macro (0.2.0)
+├── static_assertions (1.0.0)
+└── nameof (1.0.0)
+
+
+Benchmark Coverage Matrix
+═══════════════════════════
+
+Benchmark      │ Timely │ Differential │ Hydroflow │ Baseline │ Total Impls
+───────────────┼────────┼──────────────┼───────────┼──────────┼────────────
+Identity       │   ✓    │      -       │  ✓ (3x)   │    ✓     │     5
+Join           │   ✓    │      -       │     ✓     │    ✓     │     3
+Reachability   │   ✓    │      ✓       │     ✓     │    ✓     │     4
+Fan-In         │   ✓    │      -       │     ✓     │    ✓     │     3
+Fan-Out        │   ✓    │      -       │     ✓     │    ✓     │     3
+Fork-Join      │   ✓    │      -       │     ✓     │    ✓     │     3
+Arithmetic     │   ✓    │      -       │     ✓     │    ✓     │     3
+───────────────┼────────┼──────────────┼───────────┼──────────┼────────────
+TOTAL          │   7    │      1       │     7     │    7     │    24
+
+
+Usage Examples
+═══════════════
+
+Run All Benchmarks:
+  $ ./run_benchmarks.sh
+  $ cargo bench
+
+Run Specific Benchmark:
+  $ ./run_benchmarks.sh --bench identity
+  $ cargo bench --bench identity_comparison
+
+Quick Mode:
+  $ ./run_benchmarks.sh --quick
+  $ cargo bench -- --quick
+
+Save Baseline:
+  $ ./run_benchmarks.sh --baseline my_baseline
+  $ cargo bench -- --save-baseline my_baseline
+
+Compare with Baseline:
+  $ ./run_benchmarks.sh --compare my_baseline
+  $ cargo bench -- --baseline my_baseline
+
+View Results:
+  $ open target/criterion/report/index.html
+
+
+Statistics
+═══════════
+
+Files:
+  - Code files: 9 (1 library + 7 benchmarks + 1 script)
+  - Documentation: 8 files
+  - Data files: 2 files
+  - Total: 19 files
+
+Lines of Code:
+  - Library: ~96 lines
+  - Benchmarks: ~888 lines
+  - Total code: ~984 lines
+
+Documentation:
+  - Total: ~2,800+ lines
+  - Covering setup, usage, comparison, troubleshooting
+
+Implementations:
+  - Timely Dataflow: 7 benchmarks
+  - Differential Dataflow: 1 benchmark
+  - Hydroflow: 7 benchmarks (some with multiple variants)
+  - Baseline: 7 benchmarks
+  - Total: 24 implementations
+
+Data:
+  - Graph edges: 521 KB
+  - Expected results: 38 KB
+  - Total: ~559 KB
+
+
+Key Features
+═════════════
+
+✓ Complete benchmark suite for external framework comparison
+✓ Multiple implementations per benchmark for fair comparison
+✓ Comprehensive documentation for all user levels
+✓ Helper scripts for easy execution
+✓ Statistical rigor with Criterion.rs
+✓ Real data for reproducibility
+✓ Integration with main repository
+✓ Extensible design for future benchmarks
+✓ Production-quality code with tests
+
+
+Integration Points
+═══════════════════
+
+Main Repository Path:
+  ../bigweaver-agent-canary-hydro-zeta/
+
+Referenced Components:
+  - dfir_rs (Hydroflow core)
+  - sinktools (Hydroflow utilities)
+
+Cross-References:
+  - BENCHMARK_COMPARISON_ARCHIVE.md (in main repo)
+  - Benchmark patterns from main repo
+  - Consistent methodology
+
+
+Documentation Guide
+════════════════════
+
+For Quick Start:          → README.md
+For Installation:         → SETUP.md
+For Running Benchmarks:   → BENCHMARKING_GUIDE.md
+For Framework Details:    → FRAMEWORK_COMPARISON.md
+For Project Overview:     → PROJECT_SUMMARY.md
+For Verification:         → COMPLETION_CHECKLIST.md
+For Task Details:         → IMPLEMENTATION_SUMMARY.md
+
+
+Status
+═══════
+
+Repository Status: ✅ COMPLETE
+
+All components implemented:
+✓ 7 comprehensive benchmarks
+✓ Multiple framework implementations (24 total)
+✓ Complete dependency specification
+✓ Comprehensive documentation suite
+✓ Helper scripts and utilities
+✓ Data files for reproducibility
+✓ Integration with main repository
+✓ Ready for performance comparisons
+
+═══════════════════════════════════════════════════════════

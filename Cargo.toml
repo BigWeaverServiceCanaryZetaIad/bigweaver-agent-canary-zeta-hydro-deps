@@ -1,0 +1,73 @@
+[package]
+name = "hydroflow-external-benchmarks"
+version = "0.1.0"
+edition = "2021"
+publish = false
+license = "Apache-2.0"
+
+[lib]
+name = "hydroflow_external_benchmarks"
+path = "src/lib.rs"
+
+[dependencies]
+
+[dev-dependencies]
+# Benchmark framework
+criterion = { version = "0.5.0", features = ["async_tokio", "html_reports"] }
+
+# External dataflow frameworks for comparison
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+
+# Hydroflow dependencies (from main repository via path)
+# Note: In production, these would reference published versions or git repos
+# For now, we reference the local main repository
+dfir_rs = { path = "../bigweaver-agent-canary-hydro-zeta/dfir_rs", features = ["debugging"] }
+sinktools = { path = "../bigweaver-agent-canary-hydro-zeta/sinktools", version = "^0.0.1" }
+
+# Utilities
+futures = "0.3"
+tokio = { version = "1.29.0", features = ["rt-multi-thread"] }
+rand = "0.8.0"
+rand_distr = "0.4.3"
+nameof = "1.0.0"
+seq-macro = "0.2.0"
+static_assertions = "1.0.0"
+
+# Benchmark declaration sections
+[[bench]]
+name = "identity_comparison"
+harness = false
+
+[[bench]]
+name = "join_comparison"
+harness = false
+
+[[bench]]
+name = "reachability_comparison"
+harness = false
+
+[[bench]]
+name = "fan_in_comparison"
+harness = false
+
+[[bench]]
+name = "fan_out_comparison"
+harness = false
+
+[[bench]]
+name = "fork_join_comparison"
+harness = false
+
+[[bench]]
+name = "arithmetic_comparison"
+harness = false
+
+[profile.release]
+strip = true
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.bench]
+inherits = "release"
