@@ -1,0 +1,18 @@
+[workspace]
+members = [
+    "benches",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+
+[workspace.dependencies]
+timely = "0.12"
+differential-dataflow = "0.12"
+criterion = { version = "0.5", features = ["html_reports"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
