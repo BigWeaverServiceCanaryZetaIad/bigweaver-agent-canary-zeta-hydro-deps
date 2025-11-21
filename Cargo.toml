@@ -1,0 +1,155 @@
+[workspace]
+resolver = "2"
+members = [
+    "benches",
+]
+
+[workspace.package]
+edition = "2024"
+repository = "https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+license = "Apache-2.0"
+
+[workspace.lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tokio_unstable)'] }
+
+[workspace.lints.clippy]
+# https://rust-lang.github.io/rust-clippy/master/index.html
+# List sorted alphabetically.
+# alloc_instead_of_core
+as_underscore = "warn"
+# Covered by `rustc` `explicit_outlives_requirements`.
+# clone_on_ref_ptr
+cloned_instead_of_copied = "warn"
+# dbg_macro
+# default_trait_access
+# disallowed_script_idents
+# else_if_without_else
+# empty_enum
+# empty_structs_with_brackets
+# error_impl_error
+expl_impl_clone_on_copy = "warn"
+# float_cmp_const
+# format_push_string
+# if_then_some_else_none
+impl_trait_in_params = "warn"
+# iter_on_empty_collections
+# iter_on_single_items
+# iter_with_drain
+let_underscore_must_use = "warn"
+let_underscore_untyped = "warn"
+# lossy_float_literal
+# map_err_ignore
+match_bool = "warn"
+# match_on_vec_items
+# match_same_arms
+# mem_forget
+# min_ident_chars
+# missing_assert_message
+# missing_docs_in_private_items
+# missing_errors_doc
+# missing_inline_in_public_items
+# missing_panics_doc
+# mod_module_files
+# multiple_inherent_impl
+# multiple_unsafe_ops_per_block
+# mutex_atomic
+# needless_raw_strings
+# non_ascii_literal
+# option_if_let_else
+# panic
+# panic_in_result_fn
+# partial_pub_fields
+# print_stderr
+# print_stdout
+# pub_without_shorthand
+pub_use = "warn"
+# question_mark_used
+rc_buffer = "warn"
+rc_mutex = "warn"
+# rest_pat_in_fully_bound_structs
+# same_name_method
+# Self_named_module_files
+# semicolon_inside_block
+# separated_literal_suffix
+# shadow_reuse
+# shadow_same
+# shadow_unrelated
+# single_call_fn
+# single_char_lifetime_names
+# std_instead_of_alloc
+# std_instead_of_core
+str_to_string = "warn"
+string_add = "warn"
+string_slice = "warn"
+string_to_string = "warn"
+# todo
+# try_err
+undocumented_unsafe_blocks = "warn"
+# unimplemented
+unnecessary_safety_comment = "warn"
+unnecessary_safety_doc = "warn"
+# unnecessary_self_imports
+# unneeded_field_pattern
+# unseparated_literal_suffix
+# unwrap_in_result
+# unwrap_used
+# use_debug
+# verbose_file_reads
+# wildcard_enum_match_arm
+# Get back to this:
+# UNSOUND! Never allow this!
+# arc_with_non_send_sync = "warn"
+
+# Nursery:
+branches_sharing_code = "warn"
+clear_with_drain = "warn"
+# derive_partial_eq_without_eq
+# empty_line_after_doc_comments
+# empty_line_after_outer_attr
+# equatable_if_let
+# fallible_impl_from
+# imprecise_flops
+# iter_with_drain
+large_stack_frames = "warn"
+manual_clamp = "warn"
+# missing_const_for_fn
+mutex_integer = "warn"
+# needless_collect
+# needless_pass_by_ref_mut
+nonstandard_macro_braces = "warn"
+# or_fun_call
+# option_if_let_else
+# path_buf_push_overwrite
+# redundant_clone
+# significant_drop_in_scrutinee
+# significant_drop_tightening
+# string_lit_as_bytes
+# suboptimal_flops
+# suspicious_operation_groupings
+trailing_empty_array = "warn"
+# trait_duplication_in_bounds
+# transmute_undefined_repr
+trivial_regex = "warn"
+# tuple_array_conversions
+# type_repetition_in_bounds
+# uninhabited_references
+# unused_peekable
+# unused_rounding
+# use_Self
+useless_let_if_seq = "warn"
+
+# Restriction:
+# absolute_paths
+dbg_macro = "warn"
+exit = "warn"
+infinite_loop = "warn"
+# missing_docs_in_private_items
+redundant_type_annotations = "warn"
+# semicolon_inside_block
+# separated_literal_suffix
+# shadow_reuse
+# shadow_same
+# shadow_unrelated
+# single_char_lifetime_names
+tests_outside_test_module = "warn"
+# unreachable
