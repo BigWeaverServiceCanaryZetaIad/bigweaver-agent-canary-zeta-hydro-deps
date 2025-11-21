@@ -1,0 +1,56 @@
+# Criterion Configuration
+# This file configures default settings for Criterion.rs benchmarking
+
+# Measurement time in seconds for each benchmark
+# Increase for more accurate results, decrease for faster iteration
+# measurement_time = 5
+
+# Warm-up time in seconds before measurements begin
+# warm_up_time = 3
+
+# Number of samples to collect
+# sample_size = 100
+
+# Confidence level for statistical analysis (0.0 to 1.0)
+# confidence_level = 0.95
+
+# Significance level for detecting changes (0.0 to 1.0)
+# significance_level = 0.05
+
+# Noise threshold - changes smaller than this are considered noise
+# noise_threshold = 0.01
+
+# Output directory for benchmark results
+# output_directory = "target/criterion"
+
+# Enable HTML reports
+# html_reports = true
+
+# Enable CSV output
+# csv_output = false
+
+# Enable colored output
+# colors = true
+
+# Plotting configuration
+# [plotting]
+# enable = true
+# backend = "gnuplot"  # or "plotters"
+
+# Sampling configuration
+# [sampling]
+# flat_sampling = false
+# num_resamples = 100000
+
+# For CI environments, you can use environment variables:
+# CRITERION_MEASUREMENT_TIME - Override measurement time
+# CRITERION_SAMPLE_SIZE - Override sample size  
+# CRITERION_WARM_UP_TIME - Override warm-up time
+
+# Example: Fast benchmarks for CI
+# export CRITERION_SAMPLE_SIZE=10
+# export CRITERION_MEASUREMENT_TIME=1
+
+# Example: Accurate benchmarks for performance analysis
+# export CRITERION_SAMPLE_SIZE=200
+# export CRITERION_MEASUREMENT_TIME=10
