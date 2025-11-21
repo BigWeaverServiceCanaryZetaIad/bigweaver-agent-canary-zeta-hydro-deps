@@ -1,0 +1,23 @@
+[workspace]
+members = [
+    "timely-benchmarks",
+    "differential-benchmarks",
+    "comparison-tools",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+
+[workspace.dependencies]
+criterion = { version = "0.5.0", features = ["async_tokio", "html_reports"] }
+timely = "0.12"
+differential-dataflow = "0.12"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.29.0", features = ["rt-multi-thread", "macros"] }
+rand = "0.8.0"
+rand_distr = "0.4.3"
+abomonation = "0.7"
