@@ -1,0 +1,148 @@
+CHANGES
+=======
+
+2025-11-21
+----------
+
+### Added: Complete Benchmark Suite with Timely and Differential-Dataflow Dependencies
+
+**Overview**
+Restored comprehensive benchmark code comparing DFIR (Hydro) performance against timely-dataflow and differential-dataflow frameworks. This code was previously removed from the main Hydro repository to reduce dependency bloat.
+
+**Components Added**
+
+1. **Benchmark Suite** (`benches/`)
+   - 12 comprehensive benchmarks covering various dataflow patterns
+   - Implementations for DFIR, Timely, and Differential-Dataflow variants
+   - Test data files (3.7MB word list, graph datasets)
+   - Build script for code generation
+
+   Benchmarks included:
+   - arithmetic.rs: Arithmetic operations performance
+   - fan_in.rs: Fan-in pattern benchmark
+   - fan_out.rs: Fan-out pattern benchmark
+   - fork_join.rs: Fork-join pattern benchmark (generated)
+   - futures.rs: Async operations benchmark
+   - identity.rs: Identity/overhead benchmark
+   - join.rs: Join operations benchmark
+   - micro_ops.rs: Micro-operations benchmark
+   - reachability.rs: Graph reachability benchmark
+   - symmetric_hash_join.rs: Hash join benchmark
+   - upcase.rs: String manipulation benchmark
+   - words_diamond.rs: Complex dataflow pattern benchmark
+
+2. **Core Dependencies**
+   - dfir_rs: Core DFIR runtime
+   - dfir_lang: DFIR language support
+   - dfir_macro: DFIR procedural macros
+   - lattices: Lattice types library
+   - lattices_macro: Lattice macro support
+   - sinktools: Sink utilities
+   - variadics: Variadic type support
+   - variadics_macro: Variadic macro support
+
+3. **Supporting Infrastructure**
+   - hydro_deploy/core: Deployment core
+   - hydro_deploy/hydro_deploy_integration: Deployment integration
+   - hydro_build_utils: Build utilities
+   - include_mdtests: Markdown test utilities
+   - example_test: Example test utilities
+   - multiplatform_test: Cross-platform testing
+
+4. **External Dependencies**
+   - timely-master (v0.13.0-dev.1): Timely dataflow framework
+   - differential-dataflow-master (v0.13.0-dev.1): Differential dataflow framework
+   - criterion (v0.5.0): Benchmarking framework
+   - Supporting libraries: futures, tokio, rand, etc.
+
+5. **CI/CD Integration**
+   - GitHub Actions workflow for automated benchmarking
+   - GitHub Pages integration for result visualization
+   - Scheduled daily benchmark runs
+   - Manual trigger support
+   - Commit/PR-based triggering with [ci-bench] tag
+
+6. **Documentation**
+   - README.md: Repository overview and quick start
+   - BENCHMARKS.md: Detailed benchmark documentation
+   - CONTRIBUTING.md: Contribution guidelines
+   - benches/README.md: Benchmark-specific instructions
+
+7. **Configuration Files**
+   - Cargo.toml: Workspace configuration
+   - rust-toolchain.toml: Rust version specification
+   - rustfmt.toml: Code formatting rules
+   - clippy.toml: Linting configuration
+   - .gitignore: Git ignore patterns
+
+**Features**
+
+- **Complete Functionality**: All original benchmark functionality preserved
+- **Performance Comparison**: Direct comparison between DFIR, Timely, and Differential
+- **Automated Testing**: CI/CD pipeline for continuous performance monitoring
+- **Result Tracking**: Historical performance data via GitHub Pages
+- **Self-Contained**: All dependencies included for standalone operation
+- **Well-Documented**: Comprehensive documentation for usage and contribution
+
+**Technical Details**
+
+- Workspace with 16 member crates
+- Rust 2024 edition
+- Apache-2.0 license
+- Criterion-based benchmarking
+- Build-time code generation for complex benchmarks
+- Large dataset support (3.7MB+ test files)
+
+**Usage**
+
+Run all benchmarks:
+```bash
+cargo bench -p benches
+```
+
+Run specific benchmark:
+```bash
+cargo bench -p benches --bench reachability
+```
+
+Run specific framework variant:
+```bash
+cargo bench -p benches -- dfir
+cargo bench -p benches -- timely
+cargo bench -p benches -- differential
+```
+
+**CI/CD Triggers**
+
+- Daily scheduled runs at 8:35 PM PDT
+- Manual workflow dispatch
+- Commits containing [ci-bench]
+- Pull requests containing [ci-bench]
+
+**Migration from Main Repository**
+
+This code was extracted from commit 871a388d^ of the bigweaver-agent-canary-hydro-zeta repository, prior to the benchmark removal. All files were restored from git history and restructured as a standalone workspace.
+
+**Rationale**
+
+Separating benchmark dependencies allows:
+1. Cleaner main repository without timely/differential dependencies
+2. Preserved ability to run performance comparisons
+3. Independent evolution of benchmark code
+4. Reduced CI/CD time for main repository
+5. Focused maintenance of performance testing infrastructure
+
+**Impact**
+
+- Zero impact on main repository (separate codebase)
+- Enables continuous performance monitoring
+- Preserves historical benchmark data
+- Maintains comparison capabilities with competing frameworks
+- Provides reproducible performance baselines
+
+**References**
+
+- Source repository: bigweaver-agent-canary-hydro-zeta
+- Removal commit: 871a388d
+- Restoration commit: (this commit)
+- Related document: BENCHMARK_REMOVAL_SUMMARY.md (in main repo)
