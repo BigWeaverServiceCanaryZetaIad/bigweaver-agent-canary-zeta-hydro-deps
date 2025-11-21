@@ -1,0 +1,338 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run benchmarks weekly on Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+    inputs:
+      save_baseline:
+        description: 'Save results as baseline'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  check:
+    name: Check Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        components: rustfmt, clippy
+        override: true
+    
+    - name: Cache cargo registry
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Cache cargo index
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Cache cargo build
+      uses: actions/cache@v3
+      with:
+        path: target
+        key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Check formatting
+      run: cargo fmt --all -- --check
+    
+    - name: Run clippy
+      run: cargo clippy --all -- -D warnings
+    
+    - name: Check compilation
+      run: cargo check --all
+  
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: check
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Run tests
+      run: cargo test --all
+  
+  benchmark-quick:
+    name: Quick Benchmark Check
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-bench-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Build benchmarks
+      run: cargo build --benches --release
+    
+    - name: Run quick benchmark pass
+      run: CRITERION_SAMPLE_SIZE=10 cargo bench --no-fail-fast
+      continue-on-error: true
+    
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: quick-bench-results
+        path: target/criterion/
+  
+  benchmark-full:
+    name: Full Benchmark Suite
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-bench-full-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Restore benchmark baseline
+      uses: actions/cache@v3
+      with:
+        path: target/criterion/**/base
+        key: benchmark-baseline-${{ github.ref }}
+        restore-keys: |
+          benchmark-baseline-main
+          benchmark-baseline-
+    
+    - name: Run full benchmark suite
+      run: cargo bench --all --no-fail-fast
+      continue-on-error: true
+    
+    - name: Save baseline (if requested)
+      if: github.event.inputs.save_baseline == 'true'
+      run: |
+        echo "Saving benchmark baseline for ${{ github.ref }}"
+        cargo bench -- --save-baseline ${{ github.ref_name }}
+    
+    - name: Generate benchmark report
+      run: |
+        echo "# Benchmark Results" > benchmark-summary.md
+        echo "" >> benchmark-summary.md
+        echo "**Branch:** ${{ github.ref_name }}" >> benchmark-summary.md
+        echo "**Commit:** ${{ github.sha }}" >> benchmark-summary.md
+        echo "**Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> benchmark-summary.md
+        echo "" >> benchmark-summary.md
+        echo "Full results available in artifacts." >> benchmark-summary.md
+    
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results-${{ github.sha }}
+        path: |
+          target/criterion/
+          benchmark-summary.md
+        retention-days: 30
+    
+    - name: Upload benchmark report
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-html-report
+        path: target/criterion/report/
+        retention-days: 30
+  
+  benchmark-compare:
+    name: Compare Benchmarks
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Install critcmp
+      run: cargo install critcmp
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-compare-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Checkout base branch
+      run: |
+        git fetch origin ${{ github.base_ref }}
+        git checkout origin/${{ github.base_ref }}
+    
+    - name: Run base benchmarks
+      run: cargo bench --all -- --save-baseline base
+      continue-on-error: true
+    
+    - name: Checkout PR branch
+      run: |
+        git checkout ${{ github.sha }}
+    
+    - name: Run PR benchmarks
+      run: cargo bench --all -- --save-baseline pr
+      continue-on-error: true
+    
+    - name: Compare benchmarks
+      run: |
+        critcmp base pr > comparison.txt || true
+        cat comparison.txt
+    
+    - name: Create comparison report
+      run: |
+        echo "# Benchmark Comparison" > comparison-report.md
+        echo "" >> comparison-report.md
+        echo "**Base:** ${{ github.base_ref }}" >> comparison-report.md
+        echo "**PR:** ${{ github.head_ref }}" >> comparison-report.md
+        echo "" >> comparison-report.md
+        echo '```' >> comparison-report.md
+        cat comparison.txt >> comparison-report.md
+        echo '```' >> comparison-report.md
+    
+    - name: Upload comparison report
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-comparison
+        path: comparison-report.md
+    
+    - name: Comment PR
+      uses: actions/github-script@v6
+      if: always()
+      with:
+        script: |
+          const fs = require('fs');
+          const report = fs.readFileSync('comparison-report.md', 'utf8');
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: report
+          });
+
+  performance-tracking:
+    name: Track Performance
+    runs-on: ubuntu-latest
+    needs: benchmark-full
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Download benchmark results
+      uses: actions/download-artifact@v3
+      with:
+        name: benchmark-results-${{ github.sha }}
+        path: ./results
+    
+    - name: Extract performance metrics
+      run: |
+        echo "Extracting performance metrics..."
+        find ./results -name "estimates.json" -type f | while read file; do
+          echo "Processing: $file"
+          benchmark_name=$(echo "$file" | sed 's|./results/||' | sed 's|/base/estimates.json||')
+          mean=$(jq -r '.mean.point_estimate' "$file")
+          echo "${{ github.sha }},$benchmark_name,$mean" >> performance-history.csv
+        done
+    
+    - name: Upload performance history
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-history
+        path: performance-history.csv
+        retention-days: 365
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Install cargo-audit
+      run: cargo install cargo-audit
+    
+    - name: Run security audit
+      run: cargo audit
+      continue-on-error: true
