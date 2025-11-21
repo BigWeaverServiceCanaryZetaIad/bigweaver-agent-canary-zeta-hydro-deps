@@ -1,0 +1,455 @@
+REPOSITORY STRUCTURE
+====================
+
+bigweaver-agent-canary-zeta-hydro-deps/
+│
+├── .github/                                # GitHub configuration
+│   └── workflows/                          # CI/CD workflows (if configured)
+│
+├── benches/                                # Benchmark workspace member
+│   ├── Cargo.toml                          # Benchmark crate configuration
+│   │   ├── Package metadata
+│   │   ├── Dependencies (dev-dependencies for benchmarking)
+│   │   │   ├── criterion - Benchmarking framework
+│   │   │   ├── timely-master - Timely Dataflow
+│   │   │   ├── differential-dataflow-master - Differential Dataflow
+│   │   │   ├── dfir_rs (git) - Hydroflow core
+│   │   │   ├── sinktools (git) - Hydroflow utilities
+│   │   │   ├── tokio - Async runtime
+│   │   │   ├── futures - Async utilities
+│   │   │   └── Other utilities
+│   │   └── Benchmark definitions ([[bench]] sections)
+│   │
+│   ├── README.md                           # Benchmark overview and usage
+│   │   ├── Prerequisites
+│   │   ├── Running instructions
+│   │   ├── Benchmark descriptions
+│   │   └── Data file information
+│   │
+│   ├── build.rs                            # Build script
+│   │   └── Pre-build configuration and validation
+│   │
+│   └── benches/                            # Benchmark implementations
+│       │
+│       ├── .gitignore                      # Ignore patterns for benchmark data
+│       │
+│       ├── arithmetic.rs                   # BENCHMARK: Arithmetic Pipeline
+│       │   ├── Tests: 20 sequential map operations
+│       │   ├── Variants:
+│       │   │   ├── pipeline (multi-threaded channels)
+│       │   │   ├── raw (vector operations)
+│       │   │   ├── iter (iterator chains)
+│       │   │   ├── iter-collect (iterator with collections)
+│       │   │   ├── dfir_rs/compiled (Hydroflow compiled API)
+│       │   │   ├── dfir_rs/compiled_no_cheating (with black_box)
+│       │   │   ├── dfir_rs/surface (Hydroflow surface syntax)
+│       │   │   └── timely (Timely Dataflow)
+│       │   └── Configuration:
+│       │       ├── NUM_OPS = 20 operations
+│       │       └── NUM_INTS = 1,000,000 elements
+│       │
+│       ├── fan_in.rs                       # BENCHMARK: Fan-in Pattern
+│       │   ├── Tests: Multiple streams merging to one
+│       │   ├── Variants:
+│       │   │   ├── raw (iterator chain)
+│       │   │   ├── dfir_rs (Hydroflow union)
+│       │   │   └── timely (Timely concat)
+│       │   └── Measures: Stream merging efficiency
+│       │
+│       ├── fan_out.rs                      # BENCHMARK: Fan-out Pattern
+│       │   ├── Tests: One stream splitting to multiple
+│       │   ├── Variants:
+│       │   │   ├── raw (iterator cloning)
+│       │   │   ├── dfir_rs (Hydroflow tee)
+│       │   │   └── timely (Timely broadcast)
+│       │   └── Measures: Data distribution efficiency
+│       │
+│       ├── fork_join.rs                    # BENCHMARK: Fork-Join Pattern
+│       │   ├── Tests: Parallel processing with sync
+│       │   ├── Variants:
+│       │   │   ├── raw (thread-based)
+│       │   │   ├── dfir_rs (Hydroflow branches)
+│       │   │   └── timely (Timely parallel ops)
+│       │   └── Measures: Parallelism and synchronization
+│       │
+│       ├── identity.rs                     # BENCHMARK: Identity/Pass-through
+│       │   ├── Tests: Pure data movement
+│       │   ├── Variants:
+│       │   │   ├── raw (vector copy)
+│       │   │   ├── channel (thread channels)
+│       │   │   ├── dfir_rs/compiled
+│       │   │   ├── dfir_rs/surface
+│       │   │   └── timely
+│       │   └── Measures: Framework overhead
+│       │
+│       ├── join.rs                         # BENCHMARK: Join Operations
+│       │   ├── Tests: Relational join performance
+│       │   ├── Variants:
+│       │   │   ├── raw (HashMap join)
+│       │   │   ├── dfir_rs (Hydroflow join)
+│       │   │   ├── timely (Timely join)
+│       │   │   └── differential (Differential join)
+│       │   └── Measures: Join throughput and memory
+│       │
+│       ├── upcase.rs                       # BENCHMARK: String Transformation
+│       │   ├── Tests: String processing (uppercase)
+│       │   ├── Variants:
+│       │   │   ├── raw (direct string ops)
+│       │   │   ├── dfir_rs
+│       │   │   └── timely
+│       │   ├── Data: words_alpha.txt
+│       │   └── Measures: String processing throughput
+│       │
+│       ├── reachability.rs                 # BENCHMARK: Graph Reachability
+│       │   ├── Tests: Graph transitive closure
+│       │   ├── Variants:
+│       │   │   ├── dfir_rs (graph traversal)
+│       │   │   ├── timely (iterative algorithm)
+│       │   │   └── differential (incremental computation)
+│       │   ├── Data:
+│       │   │   ├── reachability_edges.txt (graph edges)
+│       │   │   └── reachability_reachable.txt (expected results)
+│       │   └── Measures:
+│       │       ├── Initial computation time
+│       │       ├── Convergence speed
+│       │       └── Incremental update performance
+│       │
+│       ├── reachability_edges.txt          # DATA: Graph edge list
+│       │   └── Format: source target (one edge per line)
+│       │
+│       ├── reachability_reachable.txt      # DATA: Expected reachability
+│       │   └── Format: List of reachable nodes
+│       │
+│       └── words_alpha.txt                 # DATA: English word dictionary
+│           ├── Source: github.com/dwyl/english-words
+│           └── ~370,000 words for string benchmarks
+│
+├── Cargo.toml                              # Workspace configuration
+│   ├── [workspace]
+│   │   ├── members = ["benches"]
+│   │   └── resolver = "2"
+│   ├── [workspace.package]
+│   │   ├── edition = "2024"
+│   │   └── license = "Apache-2.0"
+│   ├── [workspace.lints.rust]
+│   │   ├── impl_trait_overcaptures
+│   │   ├── missing_unsafe_on_extern
+│   │   ├── unsafe_attr_outside_unsafe
+│   │   └── unused_qualifications
+│   ├── [workspace.lints.clippy]
+│   │   ├── allow_attributes
+│   │   ├── allow_attributes_without_reason
+│   │   ├── explicit_into_iter_loop
+│   │   ├── let_and_return
+│   │   ├── uninlined_format_args
+│   │   └── upper_case_acronyms
+│   └── [workspace.dependencies]
+│       ├── stageleft
+│       └── stageleft_tool
+│
+├── README.md                               # Repository overview
+│   ├── Purpose
+│   ├── Structure overview
+│   ├── Usage instructions
+│   ├── Dependencies
+│   └── Related repositories
+│
+├── BENCHMARKING_GUIDE.md                   # Comprehensive benchmarking guide
+│   ├── Overview of frameworks
+│   ├── Prerequisites and setup
+│   ├── Running benchmarks (all variants)
+│   ├── Understanding results
+│   ├── Benchmark categories
+│   ├── Performance comparison methodology
+│   ├── Troubleshooting
+│   ├── Contributing new benchmarks
+│   └── Advanced topics
+│
+├── FRAMEWORK_COMPARISON.md                 # Framework comparison analysis
+│   ├── Framework overview
+│   │   ├── Hydroflow (dfir_rs)
+│   │   ├── Timely Dataflow
+│   │   └── Differential Dataflow
+│   ├── Architecture comparison
+│   │   ├── Execution models
+│   │   ├── Data models
+│   │   └── Memory management
+│   ├── Performance characteristics
+│   │   ├── Throughput
+│   │   ├── Latency
+│   │   ├── Memory efficiency
+│   │   └── Scalability
+│   ├── Use case suitability
+│   │   ├── When to use Hydroflow
+│   │   ├── When to use Timely
+│   │   └── When to use Differential
+│   ├── API comparison with examples
+│   ├── Benchmark results summary
+│   ├── Decision guide
+│   └── Performance optimization tips
+│
+├── IMPLEMENTATION_SUMMARY.md               # Technical implementation details
+│   ├── Repository structure
+│   ├── Technical architecture
+│   │   ├── Workspace configuration
+│   │   ├── Linting and code quality
+│   │   └── Dependencies
+│   ├── Benchmark implementations
+│   │   └── Detailed description of each benchmark
+│   ├── Criterion configuration
+│   ├── Build configuration
+│   ├── Performance considerations
+│   ├── Validation and correctness
+│   ├── Extending the benchmarks
+│   ├── Testing and validation
+│   ├── Maintenance
+│   ├── Known limitations
+│   └── Future enhancements
+│
+├── REPOSITORY_STRUCTURE.txt                # This file - detailed structure
+│   └── Complete repository layout with descriptions
+│
+├── CONTRIBUTING.md                         # Contribution guidelines
+│   └── How to contribute to the repository
+│
+├── LICENSE                                 # Apache 2.0 License
+│   └── Open source license terms
+│
+├── clippy.toml                            # Clippy configuration
+│   └── Linter settings and rules
+│
+├── rustfmt.toml                           # Rustfmt configuration
+│   └── Code formatting rules
+│
+└── rust-toolchain.toml                    # Rust toolchain specification
+    └── Specifies Rust version and components
+
+BUILD ARTIFACTS (not in version control)
+=========================================
+
+target/                                     # Build output directory
+├── debug/                                  # Debug builds
+├── release/                                # Release builds (benchmarks use this)
+└── criterion/                              # Criterion benchmark results
+    ├── [benchmark-name]/                   # Per-benchmark results
+    │   ├── [test-case]/                    # Per-test-case results
+    │   │   ├── report/                     # HTML reports
+    │   │   │   ├── index.html              # Main report page
+    │   │   │   ├── violin.svg              # Distribution plot
+    │   │   │   ├── pdf.svg                 # Probability density
+    │   │   │   └── [other visualizations]
+    │   │   ├── base/                       # Baseline measurements
+    │   │   └── [comparison data]
+    │   └── report/                         # Aggregate reports
+    └── report/                             # Overall summary report
+
+WORKFLOW
+========
+
+1. Development Flow:
+   └── Edit benchmark in benches/benches/*.rs
+   └── Update Cargo.toml if adding new benchmark
+   └── Run cargo bench to test
+   └── Review HTML reports in target/criterion/
+   └── Update documentation if needed
+
+2. Adding New Benchmark:
+   └── Create new .rs file in benches/benches/
+   └── Implement benchmark variants
+   └── Add [[bench]] section to benches/Cargo.toml
+   └── Add data files if needed
+   └── Update benches/README.md
+   └── Update BENCHMARKING_GUIDE.md
+   └── Update FRAMEWORK_COMPARISON.md if significant
+
+3. Running Benchmarks:
+   └── cargo bench -p benches               # All benchmarks
+   └── cargo bench -p benches --bench NAME  # Specific benchmark
+   └── Review target/criterion/*/report/index.html
+
+4. Comparing Performance:
+   └── cargo bench -- --save-baseline NAME  # Save baseline
+   └── [make changes]
+   └── cargo bench -- --baseline NAME       # Compare
+
+DOCUMENTATION HIERARCHY
+=======================
+
+README.md (Start here)
+├── Quick overview
+├── Purpose and motivation
+└── Points to detailed docs
+
+benches/README.md (Benchmark usage)
+├── How to run benchmarks
+└── What each benchmark does
+
+BENCHMARKING_GUIDE.md (Comprehensive guide)
+├── Detailed instructions
+├── Interpreting results
+├── Troubleshooting
+└── Contributing benchmarks
+
+FRAMEWORK_COMPARISON.md (Framework analysis)
+├── Detailed framework comparison
+├── Use case recommendations
+└── Performance trade-offs
+
+IMPLEMENTATION_SUMMARY.md (Technical details)
+├── Architecture details
+├── Implementation specifics
+└── Maintenance information
+
+REPOSITORY_STRUCTURE.txt (This file)
+└── Complete repository layout
+
+DEPENDENCIES GRAPH
+==================
+
+benches (crate)
+├── criterion (benchmark framework)
+├── timely-master (Timely Dataflow)
+├── differential-dataflow-master (Differential Dataflow)
+│   └── depends on: timely-master
+├── dfir_rs (Hydroflow core) [git dependency]
+│   └── from: github.com/hydro-project/hydro
+├── sinktools (Hydroflow utilities) [git dependency]
+│   └── from: github.com/hydro-project/hydro
+├── tokio (async runtime)
+├── futures (async utilities)
+├── rand (random generation)
+├── rand_distr (distributions)
+├── nameof (reflection)
+├── seq-macro (code generation)
+└── static_assertions (compile-time checks)
+
+KEY FEATURES
+============
+
+1. Framework Comparison:
+   ✓ Hydroflow (dfir_rs)
+   ✓ Timely Dataflow
+   ✓ Differential Dataflow
+   ✓ Baseline implementations
+
+2. Benchmark Categories:
+   ✓ Data transformation (arithmetic, identity, upcase)
+   ✓ Flow patterns (fan_in, fan_out, fork_join)
+   ✓ Data operations (join)
+   ✓ Graph algorithms (reachability)
+
+3. Performance Metrics:
+   ✓ Throughput
+   ✓ Latency
+   ✓ Framework overhead
+   ✓ Memory efficiency (indirect)
+
+4. Documentation:
+   ✓ Usage guides
+   ✓ Framework comparison
+   ✓ Implementation details
+   ✓ Contribution guidelines
+
+5. Code Quality:
+   ✓ Rust lints configured
+   ✓ Clippy rules enforced
+   ✓ Consistent formatting
+   ✓ Statistical rigor (Criterion)
+
+DESIGN PRINCIPLES
+=================
+
+1. Separation of Concerns:
+   - Benchmarks isolated from main Hydro repository
+   - Avoids dependency bloat in main repo
+   - Maintains comparison capability
+
+2. Fair Comparison:
+   - Same input data across frameworks
+   - Equivalent operations
+   - Validated results
+   - Statistical rigor
+
+3. Comprehensive Documentation:
+   - Multiple documentation files
+   - Different audiences (users, contributors, maintainers)
+   - Clear examples and guides
+
+4. Extensibility:
+   - Easy to add new benchmarks
+   - Easy to add new frameworks
+   - Template-based approach
+
+5. Reproducibility:
+   - Fixed data sets
+   - Controlled configurations
+   - Statistical analysis
+   - Version pinning
+
+USAGE PATTERNS
+==============
+
+Quick Start:
+  $ cd /projects/sandbox/bigweaver-agent-canary-zeta-hydro-deps
+  $ cargo bench -p benches
+
+Run Specific Benchmark:
+  $ cargo bench -p benches --bench arithmetic
+
+Run Specific Test:
+  $ cargo bench -p benches --bench arithmetic -- "timely"
+
+Save Baseline:
+  $ cargo bench -p benches -- --save-baseline my-baseline
+
+Compare to Baseline:
+  $ cargo bench -p benches -- --baseline my-baseline
+
+View Results:
+  $ open target/criterion/report/index.html
+
+MAINTENANCE NOTES
+=================
+
+Regular Updates:
+- Update timely/differential versions together
+- Sync with Hydroflow main repository
+- Update documentation for API changes
+- Re-run baselines after major changes
+
+Version Compatibility:
+- Rust edition: 2024
+- Timely/Differential: 0.13.0-dev.1
+- Hydroflow: Latest from git main
+
+Testing:
+- Compile checks: cargo build -p benches
+- Quick validation: cargo test -p benches  
+- Full benchmarks: cargo bench -p benches
+
+RELATED REPOSITORIES
+====================
+
+Main Repository:
+  bigweaver-agent-canary-hydro-zeta
+  └── Contains Hydroflow core implementation
+  └── Source for dfir_rs and sinktools dependencies
+
+Upstream Projects:
+  github.com/hydro-project/hydro
+  └── Official Hydroflow repository
+
+  github.com/TimelyDataflow/timely-dataflow
+  └── Timely Dataflow implementation
+
+  github.com/TimelyDataflow/differential-dataflow
+  └── Differential Dataflow implementation
+
+NOTES
+=====
+
+- This repository is specifically for performance benchmarking
+- Main functionality should remain in the primary Hydro repository
+- Benchmarks depend on main repo via git dependencies
+- Results are framework-agnostic and reproducible
+- Documentation is comprehensive for various audiences

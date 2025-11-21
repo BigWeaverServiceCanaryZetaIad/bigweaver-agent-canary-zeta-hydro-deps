@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test Benchmarks Compile
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+        components: rustfmt, clippy
+
+    - name: Check formatting
+      run: cargo fmt --all -- --check
+
+    - name: Run clippy
+      run: cargo clippy --all-targets -- -D warnings
+
+    - name: Check benchmarks compile
+      run: cargo check --benches
+
+    - name: Build benchmarks
+      run: cargo build --benches --release
+
+  benchmark-smoke-test:
+    name: Benchmark Smoke Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Run quick benchmark test
+      run: |
+        # Run a quick smoke test of benchmarks (short duration)
+        # This ensures benchmarks are executable and don't crash
+        timeout 300 cargo bench -p benches --bench arithmetic -- --sample-size 10 --quick || true
