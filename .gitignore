@@ -1,0 +1,43 @@
+# Rust
+/target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# Criterion benchmark results
+/target/criterion/
+
+# Comparison tool outputs
+benchmark_comparison.json
+benchmark_analysis.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Profiling outputs
+perf.data
+perf.data.old
+*.profdata
+flamegraph.svg
+heaptrack.*.gz
+
+# Build artifacts
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Documentation builds
+/target/doc/
+
+# Test outputs
+*.test
