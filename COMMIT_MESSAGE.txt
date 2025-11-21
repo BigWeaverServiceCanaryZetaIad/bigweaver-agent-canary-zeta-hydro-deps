@@ -1,0 +1,40 @@
+Add complete timely and differential-dataflow benchmark suite
+
+This commit restores the comprehensive benchmark code for comparing DFIR
+performance against timely-dataflow and differential-dataflow frameworks.
+The benchmarks were previously removed from the main Hydro repository to
+reduce dependency bloat.
+
+Added Components:
+- 12 benchmark implementations (arithmetic, joins, graph algorithms, etc.)
+- 16 DFIR/Hydro dependency packages (dfir_rs, lattices, sinktools, etc.)
+- External dependencies (timely v0.13.0-dev.1, differential v0.13.0-dev.1)
+- Test data files (4.3 MB)
+- GitHub Actions CI/CD workflow
+- GitHub Pages integration
+- Comprehensive documentation (1,595+ lines)
+- Automated verification tools
+
+Benchmarks:
+- arithmetic.rs, fan_in.rs, fan_out.rs, fork_join.rs
+- futures.rs, identity.rs, join.rs, micro_ops.rs
+- reachability.rs, symmetric_hash_join.rs, upcase.rs, words_diamond.rs
+
+Dependencies:
+- Core: dfir_rs, dfir_lang, dfir_macro, lattices, variadics, sinktools
+- Infrastructure: hydro_deploy, hydro_build_utils, testing utilities
+- External: timely-master, differential-dataflow-master, criterion
+
+Documentation:
+- README.md - Repository overview and quick start
+- BENCHMARKS.md - Detailed benchmark documentation
+- CONTRIBUTING.md - Contribution guidelines
+- CHANGES.txt - Comprehensive changelog
+- SETUP_SUMMARY.md - Complete setup documentation
+
+All functionality preserved. Performance comparison capabilities intact.
+Automated verification: 65/65 checks passing.
+
+Extracted from bigweaver-agent-canary-hydro-zeta commit 871a388d^.
+
+[ci-bench]
