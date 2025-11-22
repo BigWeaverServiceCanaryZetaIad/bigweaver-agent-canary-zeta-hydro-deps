@@ -1,0 +1,29 @@
+[workspace]
+members = [
+    "benches",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+
+[workspace.lints.rust]
+unreachable_pub = "warn"
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(nightly)'] }
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+future-not-send = "allow"
+type-complexity = "allow"
+new-without-default = "allow"
+
+[profile.release]
+strip = true
+opt-level = 3
+lto = "fat"
+codegen-units = 1

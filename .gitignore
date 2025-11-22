@@ -1,0 +1,64 @@
+# Rust build artifacts
+/target/
+**/target/
+*.pdb
+
+# Cargo.lock for library projects (keep it for binary projects)
+# Since this is a benchmark repository, we keep Cargo.lock
+# Cargo.lock
+
+# Generated files
+benches/benches/fork_join_*.hf
+
+# Criterion benchmark results
+# Uncomment if you don't want to track historical results
+# target/criterion/
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Debug files
+*.log
+*.out
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# Test results
+*.profraw
+*.profdata
+
+# Coverage reports
+coverage/
+*.gcda
+*.gcno
+*.gcov
+
+# Documentation build artifacts
+docs/_build/
+site/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Cache directories
+.cache/
+.cargo-cache/
+
+# Build scripts output
+benches/benches/.gitignore
