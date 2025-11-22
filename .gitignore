@@ -1,0 +1,27 @@
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# Criterion benchmark outputs
+criterion/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Benchmark results (can be committed if desired)
+# Uncomment to exclude:
+# target/criterion/
+
+# Temporary files
+*.tmp
+*.log
