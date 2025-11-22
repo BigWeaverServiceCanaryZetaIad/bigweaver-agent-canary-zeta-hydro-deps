@@ -1,0 +1,30 @@
+[workspace]
+
+# This repository contains benchmarks for timely-dataflow and differential-dataflow
+# to enable performance comparisons with the main bigweaver-agent-canary-hydro-zeta repository
+members = [
+    "benches/timely",
+    "benches/differential",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+
+[profile.release]
+strip = true      # Strip symbols from the binary
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.profile]
+inherits = "release"
+debug = 2
+lto = "off"
+strip = "none"
+
+[workspace.dependencies]
+timely = "0.12"
+differential-dataflow = "0.12"
