@@ -1,0 +1,44 @@
+[workspace]
+
+members = [
+    "benches",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+
+[workspace.lints.rust]
+unreachable_pub = "warn"
+unused_must_use = "warn"
+unused_imports = "warn"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+# restriction
+dbg_macro = "warn"
+todo = "warn"
+unimplemented = "warn"
+# pedantic
+redundant_closure_for_method_calls = "warn"
+
+[profile.release]
+strip = true
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.profile]
+inherits = "release"
+debug = 2
+lto = "off"
+strip = "none"
+
+[profile.dev]
+opt-level = 0
+
+[profile.test]
+opt-level = 1
