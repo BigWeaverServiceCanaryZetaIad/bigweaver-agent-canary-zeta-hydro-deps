@@ -1,0 +1,176 @@
+name: Benchmarks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Run benchmarks daily at 8:35 PM PDT / 7:35 PM PST
+    - cron: '35 3 * * *'  # 3:35 AM UTC
+  workflow_dispatch:
+    inputs:
+      should_bench:
+        description: 'Run full benchmark suite'
+        required: false
+        default: 'true'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+        
+    - name: Cache cargo registry
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-registry-
+          
+    - name: Cache cargo index
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-index-
+          
+    - name: Cache cargo build
+      uses: actions/cache@v4
+      with:
+        path: target
+        key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-build-target-
+    
+    - name: Build benchmarks
+      run: cargo build --release --workspace
+      
+    - name: Compile benchmark suite
+      run: cargo bench --no-run
+      
+    - name: Run quick benchmark test
+      if: github.event_name == 'pull_request'
+      run: cargo bench -p benches -- --test
+      
+    - name: Run full benchmark suite
+      if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      run: cargo bench -p benches
+      
+    - name: Generate benchmark report
+      if: github.event_name == 'push' || github.event_name == 'schedule'
+      run: |
+        echo "Benchmark results generated in target/criterion/"
+        ls -lah target/criterion/
+        
+    - name: Upload benchmark results
+      if: github.event_name == 'push' || github.event_name == 'schedule'
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmark-results-${{ github.sha }}
+        path: target/criterion/
+        retention-days: 30
+        
+    - name: Comment benchmark results on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          let comment = '## Benchmark Results\n\n';
+          comment += 'Quick benchmark test completed successfully. ✅\n\n';
+          comment += 'For full benchmark results, merge to main branch or trigger manual workflow.\n';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  verify:
+    name: Verify Setup
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Verify repository structure
+      run: |
+        echo "Verifying directory structure..."
+        test -d benches/benches || (echo "benches/benches directory missing" && exit 1)
+        test -f benches/Cargo.toml || (echo "benches/Cargo.toml missing" && exit 1)
+        test -f benches/build.rs || (echo "benches/build.rs missing" && exit 1)
+        echo "✓ Directory structure verified"
+        
+    - name: Verify benchmark files
+      run: |
+        echo "Verifying benchmark files..."
+        for bench in arithmetic fan_in fan_out fork_join futures identity join micro_ops reachability symmetric_hash_join upcase words_diamond; do
+          test -f "benches/benches/$bench.rs" || (echo "benches/benches/$bench.rs missing" && exit 1)
+          echo "✓ $bench.rs found"
+        done
+        
+    - name: Verify test data files
+      run: |
+        echo "Verifying test data files..."
+        test -f benches/benches/reachability_edges.txt || (echo "reachability_edges.txt missing" && exit 1)
+        test -f benches/benches/reachability_reachable.txt || (echo "reachability_reachable.txt missing" && exit 1)
+        test -f benches/benches/words_alpha.txt || (echo "words_alpha.txt missing" && exit 1)
+        echo "✓ Test data files verified"
+        
+    - name: Verify documentation
+      run: |
+        echo "Verifying documentation..."
+        test -f README.md || (echo "README.md missing" && exit 1)
+        test -f QUICKSTART.md || (echo "QUICKSTART.md missing" && exit 1)
+        test -f TESTING_GUIDE.md || (echo "TESTING_GUIDE.md missing" && exit 1)
+        test -f benches/README.md || (echo "benches/README.md missing" && exit 1)
+        test -f CHANGELOG.md || (echo "CHANGELOG.md missing" && exit 1)
+        echo "✓ Documentation verified"
+        
+    - name: Run verification script
+      run: |
+        chmod +x verify_setup.sh
+        ./verify_setup.sh
+
+  check:
+    name: Check Compilation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+        
+    - name: Check workspace
+      run: cargo check --workspace
+      
+    - name: Check benchmarks
+      run: cargo check -p benches
+      
+    - name: Run clippy
+      run: cargo clippy --workspace -- -D warnings
+      
+    - name: Check formatting
+      run: cargo fmt --all -- --check
