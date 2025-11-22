@@ -1,0 +1,27 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo.lock for library projects (uncomment if needed)
+# Cargo.lock
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Benchmark outputs
+*.html
+/benches/benches/fork_join_*.hf
+
+# Profiling outputs
+flamegraph.svg
+perf.data
+perf.data.old
+
+# OS files
+Thumbs.db
