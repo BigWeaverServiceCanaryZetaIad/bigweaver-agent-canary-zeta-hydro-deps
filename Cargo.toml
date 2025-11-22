@@ -1,0 +1,27 @@
+[workspace]
+members = [
+    "benches",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+
+[workspace.lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(nightly)'] }
+
+[workspace.lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
+unused_async = "deny"
+
+[profile.release]
+strip = true
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.dev]
+opt-level = 0
