@@ -1,0 +1,27 @@
+# Rust build artifacts
+/target
+**/*.rs.bk
+*.pdb
+
+# Cargo.lock for libraries (uncomment if this is an application)
+# Cargo.lock
+
+# Criterion benchmark results
+/target/criterion
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Profiling data
+flamegraph.svg
+perf.data
+perf.data.old
+*.profdata
