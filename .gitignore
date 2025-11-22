@@ -1,0 +1,22 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo.lock for libraries (keep for binaries)
+# We keep it here since benchmarks should have deterministic builds
+# Cargo.lock
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Criterion benchmark results and reports
+target/criterion/
+
+# Generated files from build.rs
+benches/benches/fork_join_*.hf

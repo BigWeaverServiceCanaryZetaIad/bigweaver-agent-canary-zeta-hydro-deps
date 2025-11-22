@@ -1,0 +1,24 @@
+[workspace]
+resolver = "2"
+members = [
+    "benches",
+]
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+
+[workspace.lints.clippy]
+# Deny
+implicit_return = "deny"
+missing_docs_in_private_items = "deny"
+uninlined_format_args = "deny"
+unused_async = "deny"
+
+# Warn
+needless_pass_by_value = "warn"
+too_many_arguments = "warn"
+
+[workspace.lints.rust]
+missing_docs = "warn"
