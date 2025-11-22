@@ -1,0 +1,27 @@
+[workspace]
+
+members = [
+    "benches",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+homepage = "https://github.com/hydro-project/hydro"
+documentation = "https://docs.rs/dfir_rs/"
+description = "Performance comparison benchmarks for Hydro dataflow system with timely and differential-dataflow"
+
+[profile.release]
+strip = true
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.profile]
+inherits = "release"
+debug = 2
+lto = "off"
+strip = "none"
