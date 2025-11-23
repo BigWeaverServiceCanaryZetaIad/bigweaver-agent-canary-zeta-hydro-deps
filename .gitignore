@@ -1,0 +1,40 @@
+# Rust build artifacts
+target/
+Cargo.lock
+
+# Criterion benchmark results
+target/criterion/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Rust toolchain
+rust-toolchain
+rust-toolchain.toml.bak
+
+# Generated documentation
+target/doc/
+
+# Test outputs
+*.profraw
+*.profdata
+
+# Flamegraph outputs
+flamegraph.svg
+perf.data
+perf.data.old
+
+# Backup files
+*.bak
+*.orig
+*.tmp
+
+# OS files
+Thumbs.db
+.Spotlight-V100
+.Trashes
