@@ -1,0 +1,27 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# Criterion benchmark results
+target/criterion/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flamegraphs and profiling
+flamegraph.svg
+perf.data
+perf.data.old
+
+# Temporary files
+*.tmp
+*.temp

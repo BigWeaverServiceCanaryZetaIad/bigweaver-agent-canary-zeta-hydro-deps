@@ -1,0 +1,23 @@
+[workspace]
+members = [
+    "benches",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+license = "Apache-2.0"
+
+[workspace.lints.rust]
+# async_fn_in_trait = "allow" # Async fn in traits is stable as of 1.75
+missing_docs = "warn"
+unexpected_cfgs = { level = "warn", check-cfg = [
+    'cfg(nightly)',
+    'cfg(target_os, values("wasi"))',
+] }
+
+[workspace.lints.clippy]
+doc_markdown = "warn"
+missing_panics_doc = "warn"
+unnecessary_wraps = "warn"
