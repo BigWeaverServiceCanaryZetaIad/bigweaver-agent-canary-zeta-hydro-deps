@@ -1,0 +1,28 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Cargo.lock should be committed for binaries, but not for libraries
+# Since this is primarily a benchmark repository, we'll ignore it
+Cargo.lock
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Benchmark results
+benches/target/
+criterion/
+
+# Generated files
+benches/benches/fork_join_*.hf
+
+# Debug files
+*.pdb
