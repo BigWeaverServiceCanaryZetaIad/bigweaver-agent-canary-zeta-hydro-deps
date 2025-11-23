@@ -1,0 +1,45 @@
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# Criterion benchmark results
+benches/benches/target/
+criterion/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+*.profdata
+*.profraw
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+
+# Documentation build
+docs/_build/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Task-related temporary files
+TASK_COMPLETION.txt
+FILE_MANIFEST.txt
+CHANGES.md
+MIGRATION_SUMMARY.md
+verify_benchmarks.sh

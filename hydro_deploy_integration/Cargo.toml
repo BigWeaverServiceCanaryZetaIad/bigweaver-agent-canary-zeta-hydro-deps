@@ -1,0 +1,27 @@
+[package]
+name = "hydro_deploy_integration"
+publish = true
+version = "0.14.0"
+documentation = "https://docs.rs/hydro_deploy_integration/"
+description = "`hydro_deploy` integration for deploying Rust crates."
+edition = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+
+[lints]
+workspace = true
+
+[dependencies]
+async-recursion = "1.0.0"
+async-trait = "0.1.54"
+bytes = "1.1.0"
+futures = "0.3.0"
+pin-project-lite = "0.2"
+serde = { version = "1.0.197", features = [ "derive" ] }
+sinktools = { path = "../../sinktools", version = "^0.0.1" }
+tempfile = "3.0.0"
+
+# [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1.29.0", features = [ "rt", "net", "time" ] }
+tokio-util = { version = "0.7.5", features = [ "net", "codec" ] }
+tokio-stream = { version = "0.1.3", default-features = false, features = [ "net" ] }
