@@ -1,0 +1,17 @@
+[workspace]
+members = ["benches"]
+resolver = "2"
+
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+license = "Apache-2.0"
+
+[workspace.lints.rust]
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(nightly)'] }
+
+[workspace.lints.clippy]
+todo = "warn"
