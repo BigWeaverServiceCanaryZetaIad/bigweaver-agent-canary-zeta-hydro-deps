@@ -1,0 +1,19 @@
+# Rust
+/target/
+Cargo.lock
+**/*.rs.bk
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Benchmark outputs
+*.out
+fork_join_output_*.txt
+
+# OS
+.DS_Store
+Thumbs.db
