@@ -1,0 +1,227 @@
+name: Benchmark
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run benchmarks weekly on Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+    # Allow manual triggering
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for benchmark comparison
+      
+      - name: Install Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      
+      - name: Cache Cargo Registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+      
+      - name: Cache Cargo Index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-git-
+      
+      - name: Cache Build Directory
+        uses: actions/cache@v3
+        with:
+          path: target
+          key: ${{ runner.os }}-target-benchmark-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-target-benchmark-
+      
+      - name: Check Code Formatting
+        run: cargo fmt -p benches -- --check
+      
+      - name: Run Clippy
+        run: cargo clippy -p benches -- -D warnings
+      
+      - name: Build Benchmarks
+        run: cargo build -p benches --release
+      
+      - name: Run Quick Benchmarks
+        run: |
+          # Run benchmarks with reduced sample size for CI
+          cargo bench -p benches -- --quick --output-format bencher | tee benchmark_results.txt
+      
+      - name: Upload Benchmark Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results
+          path: benchmark_results.txt
+      
+      - name: Store Benchmark Results
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'cargo'
+          output-file-path: benchmark_results.txt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          # Alert if performance regression detected
+          alert-threshold: '150%'
+          comment-on-alert: true
+          fail-on-alert: false
+          alert-comment-cc-users: '@maintainers'
+      
+      - name: Generate HTML Reports
+        if: always()
+        run: |
+          # HTML reports are in target/criterion/
+          echo "Criterion HTML reports generated in target/criterion/"
+      
+      - name: Upload HTML Reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: criterion-html-reports
+          path: target/criterion/*/report/
+
+  benchmark-full:
+    name: Run Full Benchmarks (Weekly)
+    runs-on: ubuntu-latest
+    # Only run full benchmarks on schedule or manual trigger
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Install Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-full-${{ hashFiles('**/Cargo.lock') }}
+      
+      - name: Run Full Benchmark Suite
+        run: |
+          # Run with default sample sizes (more accurate but slower)
+          cargo bench -p benches --output-format bencher | tee benchmark_full_results.txt
+      
+      - name: Upload Full Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-full-results
+          path: benchmark_full_results.txt
+      
+      - name: Store Full Results
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'cargo'
+          output-file-path: benchmark_full_results.txt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+
+  verify:
+    name: Verify Benchmark Code
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Install Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-verify-${{ hashFiles('**/Cargo.lock') }}
+      
+      - name: Check All Benchmarks Compile
+        run: cargo bench -p benches --no-run
+      
+      - name: Verify Benchmark Structure
+        run: |
+          echo "Verifying benchmark files..."
+          
+          # Check all benchmark files exist
+          BENCHMARKS=("arithmetic" "fan_in" "fan_out" "fork_join" "identity" "join" "reachability" "upcase")
+          
+          for bench in "${BENCHMARKS[@]}"; do
+            if [ -f "benches/benches/${bench}.rs" ]; then
+              echo "✓ ${bench}.rs exists"
+            else
+              echo "✗ ${bench}.rs missing"
+              exit 1
+            fi
+          done
+          
+          # Check data files for reachability
+          if [ -f "benches/benches/reachability_edges.txt" ]; then
+            echo "✓ reachability_edges.txt exists"
+          else
+            echo "✗ reachability_edges.txt missing"
+            exit 1
+          fi
+          
+          if [ -f "benches/benches/reachability_reachable.txt" ]; then
+            echo "✓ reachability_reachable.txt exists"
+          else
+            echo "✗ reachability_reachable.txt missing"
+            exit 1
+          fi
+          
+          echo "All benchmark files verified!"
+      
+      - name: Check Documentation
+        run: |
+          echo "Checking documentation..."
+          
+          # Check required documentation files
+          DOCS=("README.md" "benches/README.md" "TESTING_GUIDE.md" "CHANGELOG.md" "CONTRIBUTING.md" "LICENSE")
+          
+          for doc in "${DOCS[@]}"; do
+            if [ -f "$doc" ]; then
+              echo "✓ $doc exists"
+            else
+              echo "✗ $doc missing"
+              exit 1
+            fi
+          done
+          
+          echo "All documentation files verified!"
