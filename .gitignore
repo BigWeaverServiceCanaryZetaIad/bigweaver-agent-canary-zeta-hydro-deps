@@ -1,0 +1,20 @@
+# Rust
+/target
+Cargo.lock
+
+# Criterion benchmark output
+benches/target/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated benchmark reports
+benches/benches/fork_join_*.hf
