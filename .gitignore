@@ -1,0 +1,52 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Criterion benchmark results
+/target/criterion/
+
+# Cargo lock file (usually not committed for libraries, but may be for benchmarks)
+# Cargo.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Backup files
+*.bak
+*.backup
+
+# Test output
+*.out
+*.log
+
+# Flamegraph files
+flamegraph.svg
+perf.data
+perf.data.old
+
+# Profiling output
+*.profdata
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Generated documentation (if any)
+/docs/
+
+# Local benchmark results
+benchmark_results.txt
+comparison_results.txt
+*.bench
+
+# OS-specific
+Thumbs.db
+.Spotlight-V100
+.Trashes
