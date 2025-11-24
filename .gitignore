@@ -1,0 +1,27 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# Criterion benchmark results
+target/criterion/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Task and verification files
+*TASK*.md
+*TASK*.txt
+*SUMMARY*.md
+*SUMMARY*.txt
+*VERIFICATION*.md
+verify_*.sh
