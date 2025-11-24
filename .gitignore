@@ -1,0 +1,29 @@
+# Build artifacts
+/target
+Cargo.lock
+
+# Temporary documentation files
+BENCHMARK_MIGRATION.md
+CHANGES_SUMMARY.md
+COMMIT_MESSAGE.md
+CONTRIBUTING.md
+FILES_MIGRATED.md
+QUICKSTART.md
+TASK_COMPLETION_SUMMARY.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+__pycache__/
+
+# Benchmark outputs
+*.data
+*.svg
+*.profile
+/criterion/
