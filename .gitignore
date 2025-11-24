@@ -1,0 +1,11 @@
+# Build artifacts
+target/
+
+# Temporary task completion files
+IMPLEMENTATION_SUMMARY.txt
+CHANGES.md
+MIGRATION_SUMMARY.md
+PERFORMANCE_COMPARISON.md
+QUICK_START.md
+TASK_COMPLETION_SUMMARY.md
+verify_benchmarks.sh
