@@ -1,0 +1,23 @@
+# Rust / Cargo
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# Benchmark results
+/comparison_results/
+/benches/fork_join_*.hf
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Criterion benchmark outputs
+/target/criterion/
