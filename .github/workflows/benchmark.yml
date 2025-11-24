@@ -1,0 +1,99 @@
+name: Benchmarks
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: 1.91.1
+        components: rustfmt, clippy
+        
+    - name: Cache cargo registry
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-registry-
+          
+    - name: Cache cargo index
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-index-
+          
+    - name: Cache cargo build
+      uses: actions/cache@v4
+      with:
+        path: target
+        key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-build-target-
+    
+    - name: Check formatting
+      run: cargo fmt --all -- --check
+      
+    - name: Run clippy
+      run: cargo clippy --all -- -D warnings
+      
+    - name: Build benchmarks
+      run: cargo build --workspace --release
+      
+    - name: Run quick benchmarks
+      run: |
+        # Run a quick benchmark to verify everything works
+        # Full benchmarks take too long for CI
+        cargo bench -p benches --bench identity -- --quick || cargo bench -p benches --bench identity --sample-size 10
+      
+    - name: Upload benchmark results
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmark-results
+        path: target/criterion/
+        retention-days: 30
+
+  verify-setup:
+    name: Verify Repository Setup
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Run verification script
+      run: bash verify_setup.sh
+      
+    - name: Check file structure
+      run: |
+        echo "Checking repository structure..."
+        [ -f "Cargo.toml" ] && echo "✓ Cargo.toml"
+        [ -f "benches/Cargo.toml" ] && echo "✓ benches/Cargo.toml"
+        [ -d "benches/benches" ] && echo "✓ benches/benches directory"
+        [ -f "BENCHMARK_MIGRATION.md" ] && echo "✓ BENCHMARK_MIGRATION.md"
+        [ -f "README.md" ] && echo "✓ README.md"
+        
+        echo "Benchmark files:"
+        ls -1 benches/benches/*.rs | wc -l
+        
+        echo "Data files:"
+        ls -1 benches/benches/*.txt | wc -l
