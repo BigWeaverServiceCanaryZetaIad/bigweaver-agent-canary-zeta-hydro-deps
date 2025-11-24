@@ -1,0 +1,23 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Cargo lock file (workspace)
+Cargo.lock
+
+# Benchmark results
+target/criterion/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated files
+**/*.hf
