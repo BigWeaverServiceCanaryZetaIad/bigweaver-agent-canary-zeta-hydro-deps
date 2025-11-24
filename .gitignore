@@ -1,0 +1,24 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo.lock for libraries (keep for applications)
+# Cargo.lock
+
+# Criterion benchmark results
+target/criterion/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Generated files
+benches/benches/fork_join_*.hf
+
+# OS files
+Thumbs.db
