@@ -1,0 +1,30 @@
+# Rust build artifacts
+/target
+Cargo.lock
+
+# Profiling outputs
+perf.data
+perf.data.old
+flamegraph.svg
+*.profile
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Benchmark outputs
+/benches/benches/*.hf
+*.data.folded
+*.perf.data
+*.svg
+
+# Temporary files
+*.tmp
+*.bak
