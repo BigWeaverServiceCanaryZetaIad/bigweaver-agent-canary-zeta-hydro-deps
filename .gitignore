@@ -1,0 +1,28 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo lock file (workspace)
+# Uncomment if you want to commit Cargo.lock
+# /Cargo.lock
+
+# Benchmark results
+/target/criterion/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Rust profiling
+perf.data
+perf.data.old
+flamegraph.svg
+
+# Temporary files
+*.tmp
+*.log
