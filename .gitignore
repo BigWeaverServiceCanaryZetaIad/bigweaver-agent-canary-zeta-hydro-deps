@@ -1,0 +1,44 @@
+# Rust build artifacts
+/target/
+/benches/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo lock file (keep for applications, ignore for libraries)
+# Cargo.lock
+
+# Criterion benchmark results
+/target/criterion/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS files
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Temporary files
+*.tmp
+*.log
+/tmp/
+
+# Flamegraph outputs
+flamegraph.svg
+perf.data
+perf.data.old
+
+# Profiling outputs
+*.profdata
+*.profraw
+massif.out.*
+heaptrack.*.gz
+callgrind.out.*
+
+# Documentation build artifacts
+/docs/_build/
