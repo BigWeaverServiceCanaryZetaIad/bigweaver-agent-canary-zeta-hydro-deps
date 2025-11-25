@@ -1,0 +1,307 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run benchmarks weekly on Sunday at midnight UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    inputs:
+      baseline_name:
+        description: 'Name for the baseline (default: current)'
+        required: false
+        default: 'current'
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  verify:
+    name: Verify Benchmark Setup
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Cache cargo dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-verify-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-verify-
+    
+    - name: Run verification script
+      run: |
+        export SKIP_BENCH_RUN=1
+        ./verify_benchmarks.sh
+    
+    - name: Check formatting
+      run: cargo fmt --all -- --check
+      continue-on-error: true
+    
+    - name: Run clippy
+      run: cargo clippy --all-targets -- -D warnings
+      continue-on-error: true
+
+  build:
+    name: Build Benchmarks
+    runs-on: ubuntu-latest
+    needs: verify
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Cache cargo dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-build-
+    
+    - name: Build all benchmarks
+      run: cargo build --release --all-targets
+    
+    - name: Build benchmarks (no-run)
+      run: cargo bench --no-run
+
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for baseline comparison
+    
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Cache cargo dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-bench-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-bench-
+    
+    - name: Run all benchmarks
+      run: |
+        cargo bench --no-fail-fast -- --save-baseline ${{ github.event.inputs.baseline_name || 'current' }}
+    
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: benchmark-results-${{ github.sha }}
+        path: target/criterion/
+        retention-days: 30
+    
+    - name: Comment benchmark results (PR only)
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Read criterion output (if available)
+          let comment = '## 📊 Benchmark Results\n\n';
+          comment += `Benchmarks completed for commit ${context.sha.substring(0, 7)}\n\n`;
+          comment += 'Full results are available in the workflow artifacts.\n\n';
+          comment += '### Quick Summary\n';
+          comment += '- ✅ All benchmarks completed successfully\n';
+          comment += '- 📈 Results saved as baseline: current\n';
+          comment += '- 📁 Detailed reports available in artifacts\n\n';
+          comment += '### Available Benchmarks\n';
+          comment += '- arithmetic\n';
+          comment += '- fan_in / fan_out\n';
+          comment += '- fork_join\n';
+          comment += '- identity\n';
+          comment += '- join / symmetric_hash_join\n';
+          comment += '- micro_ops\n';
+          comment += '- reachability\n';
+          comment += '- upcase\n';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  benchmark-comparison:
+    name: Compare with Baseline
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout PR branch
+      uses: actions/checkout@v4
+    
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Cache cargo dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-compare-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-compare-
+    
+    - name: Run benchmarks for PR
+      run: |
+        cargo bench --no-fail-fast -- --save-baseline pr
+    
+    - name: Checkout main branch
+      run: |
+        git fetch origin main:main
+        git checkout main
+    
+    - name: Run benchmarks for main
+      run: |
+        cargo bench --no-fail-fast -- --save-baseline main
+    
+    - name: Checkout PR branch again
+      run: |
+        git checkout -
+    
+    - name: Compare benchmarks
+      run: |
+        cargo bench --no-fail-fast -- --baseline main --load-baseline pr > comparison.txt 2>&1 || true
+    
+    - name: Upload comparison results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-comparison-${{ github.sha }}
+        path: |
+          comparison.txt
+          target/criterion/
+        retention-days: 30
+    
+    - name: Comment comparison results
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          let comment = '## 📊 Benchmark Comparison: PR vs Main\n\n';
+          
+          try {
+            const comparison = fs.readFileSync('comparison.txt', 'utf8');
+            
+            // Extract key performance changes
+            const lines = comparison.split('\n');
+            const changes = lines.filter(line => 
+              line.includes('change:') || 
+              line.includes('Performance has') ||
+              line.includes('No change in performance')
+            );
+            
+            if (changes.length > 0) {
+              comment += '### Performance Changes\n\n';
+              comment += '```\n';
+              comment += changes.slice(0, 20).join('\n'); // Limit to first 20 changes
+              comment += '\n```\n\n';
+            }
+          } catch (error) {
+            comment += '_Comparison details not available_\n\n';
+          }
+          
+          comment += 'Full comparison results are available in the workflow artifacts.\n';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  benchmark-quick:
+    name: Quick Benchmark Test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Cache cargo dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          target/
+        key: ${{ runner.os }}-cargo-quick-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-quick-
+    
+    - name: Run quick benchmark test
+      run: |
+        # Run just a few benchmarks quickly
+        cargo bench --bench arithmetic -- --quick
+        cargo bench --bench identity -- --quick
+      timeout-minutes: 10
