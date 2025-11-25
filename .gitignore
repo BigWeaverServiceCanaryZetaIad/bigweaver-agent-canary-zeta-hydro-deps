@@ -1,0 +1,29 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo lock file (for libraries, usually ignored; for binaries, committed)
+# We'll keep Cargo.lock for reproducible builds
+# Cargo.lock
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Criterion benchmark results
+/target/criterion/
+
+# Generated files
+**/*.hf
+
+# Test outputs
+*.profdata
+*.profraw
+
+# OS files
+Thumbs.db
