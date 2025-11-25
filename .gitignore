@@ -1,0 +1,52 @@
+# Build artifacts
+/target
+**/target
+*.lock
+Cargo.lock
+
+# Generated files
+**/*.hf
+timely-benchmarks/benches/fork_join_*.hf
+
+# Profiling and benchmarking outputs
+perf.data
+perf.data.old
+flamegraph.svg
+*.data.folded
+*.perf.data
+*.svg
+*.profile
+
+# Criterion benchmark results
+**/target/criterion/
+
+# IDE and editor files
+**/.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Rust-specific
+/rust.git
+/rustc-ice-*.txt
+/.hydro/
+.fuzz-corpus/
+
+# Logs
+*.log
