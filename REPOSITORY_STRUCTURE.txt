@@ -1,0 +1,172 @@
+Repository Structure: bigweaver-agent-canary-zeta-hydro-deps
+================================================================
+
+Root Level Files
+----------------
+├── .gitignore                      # Git ignore rules (build artifacts, IDE files)
+├── Cargo.toml                      # Workspace configuration
+├── rust-toolchain.toml            # Rust 1.91.1 toolchain specification
+├── rustfmt.toml                   # Code formatting rules (10 rules)
+├── clippy.toml                    # Linting configuration (2 rules)
+│
+├── README.md                       # 📚 Main repository documentation (5,864 bytes)
+├── QUICK_START.md                  # 🚀 Quick setup guide (4,457 bytes)
+├── RUNNING_BENCHMARKS.md           # 📊 Comprehensive benchmark instructions (9,215 bytes)
+├── MIGRATION.md                    # 📝 Migration documentation (9,368 bytes)
+├── SETUP_COMPLETE.md              # ✅ Verification checklist
+└── TASK_COMPLETION_SUMMARY.md     # 📋 Task completion summary
+
+Benches Directory
+-----------------
+benches/
+├── Cargo.toml                     # Benchmark package configuration
+│                                   # - Package: timely-differential-benches
+│                                   # - Dependencies: timely, differential-dataflow, dfir_rs
+│                                   # - 8 benchmark targets configured
+│
+├── build.rs                       # Build script for fork_join code generation
+│                                   # - Generates fork_join_20.hf with 20 operations
+│
+├── README.md                       # 📚 Benchmark-specific documentation (3,483 bytes)
+│
+└── benches/                       # Benchmark implementations
+    │
+    ├── arithmetic.rs              # ⚡ Arithmetic operations (7,687 bytes)
+    │                               # Compares: timely vs hydro
+    │
+    ├── fan_in.rs                  # 🔀 Fan-in pattern (3,530 bytes)
+    │                               # Compares: timely vs hydro
+    │
+    ├── fan_out.rs                 # 🔀 Fan-out pattern (3,625 bytes)
+    │                               # Compares: timely vs hydro
+    │
+    ├── fork_join.rs               # 🔀 Fork-join pattern (4,333 bytes)
+    │                               # Compares: timely vs hydro
+    │                               # Uses: build.rs generated code
+    │
+    ├── identity.rs                # ⚡ Identity operations (6,891 bytes)
+    │                               # Compares: timely vs hydro
+    │
+    ├── join.rs                    # 🔗 Join operations (4,484 bytes)
+    │                               # Compares: timely vs hydro
+    │
+    ├── reachability.rs            # 📊 Graph reachability (13,681 bytes)
+    │                               # Compares: timely vs differential vs hydro
+    │                               # Uses: reachability_edges.txt, reachability_reachable.txt
+    │
+    ├── upcase.rs                  # 🔤 String transformations (3,170 bytes)
+    │                               # Compares: timely vs hydro
+    │
+    ├── reachability_edges.txt     # 📄 Graph edge data (532,876 bytes)
+    │                               # Used by: reachability.rs
+    │
+    └── reachability_reachable.txt # 📄 Expected reachable nodes (38,704 bytes)
+                                    # Used by: reachability.rs
+
+
+Statistics
+----------
+Benchmark Source Files:     8 files   (~48 KB)
+Data Files:                 2 files   (~558 KB)
+Build Configuration:        2 files   (~2.4 KB)
+Repository Configuration:   5 files   (~1.5 KB)
+Documentation:              7 files   (~37 KB)
+Total Files:               24 files
+
+Benchmark Summary
+-----------------
+┌────────────────┬─────────────────────────────┬─────────┬───────────────┐
+│ Benchmark      │ Description                 │ Timely  │ Differential  │
+├────────────────┼─────────────────────────────┼─────────┼───────────────┤
+│ arithmetic     │ Arithmetic operations       │    ✅    │      ❌        │
+│ fan_in         │ Fan-in dataflow pattern     │    ✅    │      ❌        │
+│ fan_out        │ Fan-out dataflow pattern    │    ✅    │      ❌        │
+│ fork_join      │ Fork-join pattern           │    ✅    │      ❌        │
+│ identity       │ Identity operations         │    ✅    │      ❌        │
+│ join           │ Join operations             │    ✅    │      ❌        │
+│ reachability   │ Graph reachability          │    ✅    │      ✅        │
+│ upcase         │ String transformations      │    ✅    │      ❌        │
+└────────────────┴─────────────────────────────┴─────────┴───────────────┘
+
+All benchmarks also include Hydro/dfir_rs implementations for comparison.
+
+Dependencies
+------------
+External (from crates.io):
+  • timely-master v0.13.0-dev.1
+  • differential-dataflow-master v0.13.0-dev.1
+  • criterion v0.5.0 (features: async_tokio, html_reports)
+  • futures v0.3
+  • tokio v1.29.0 (features: rt-multi-thread)
+  • rand v0.8.0
+  • rand_distr v0.4.3
+  • nameof v1.0.0
+  • seq-macro v0.2.0
+  • static_assertions v1.0.0
+
+Path Dependencies (from main repository):
+  • dfir_rs (path: ../../bigweaver-agent-canary-hydro-zeta/dfir_rs)
+  • sinktools (path: ../../bigweaver-agent-canary-hydro-zeta/sinktools)
+
+Quick Commands
+--------------
+Build:
+  cargo build --release -p timely-differential-benches
+
+Run All Benchmarks:
+  cargo bench -p timely-differential-benches
+
+Run Specific Benchmark:
+  cargo bench -p timely-differential-benches --bench arithmetic
+  cargo bench -p timely-differential-benches --bench reachability
+
+Filter by Pattern:
+  cargo bench -p timely-differential-benches -- timely
+  cargo bench -p timely-differential-benches -- hydro
+  cargo bench -p timely-differential-benches -- differential
+
+Code Quality:
+  cargo fmt
+  cargo clippy -p timely-differential-benches
+
+Clean:
+  cargo clean
+
+Documentation References
+------------------------
+For detailed information, see:
+  • README.md                 - Repository overview and structure
+  • QUICK_START.md            - Setup and getting started guide
+  • RUNNING_BENCHMARKS.md     - Comprehensive benchmark instructions
+  • MIGRATION.md              - Migration context and details
+  • SETUP_COMPLETE.md         - Verification checklist
+  • benches/README.md         - Benchmark-specific documentation
+
+Setup Requirements
+------------------
+1. Rust toolchain 1.91.1 (automatically managed by rust-toolchain.toml)
+2. Both repositories cloned as siblings:
+   workspace/
+   ├── bigweaver-agent-canary-zeta-hydro-deps/    (this repository)
+   └── bigweaver-agent-canary-hydro-zeta/          (main repository)
+
+3. Internet connection (for downloading timely and differential-dataflow)
+4. Sufficient disk space (~2-3 GB for dependencies and build artifacts)
+
+Success Indicators
+------------------
+✅ All 8 benchmark files present
+✅ All 2 data files present
+✅ Dependencies configured correctly
+✅ Build scripts functional
+✅ Documentation comprehensive
+✅ Code quality tools configured
+✅ Ready to build and run
+
+Status
+------
+🎉 MIGRATION COMPLETE AND VERIFIED 🎉
+
+All timely and differential-dataflow benchmarks have been successfully
+migrated from bigweaver-agent-canary-hydro-zeta to this dedicated
+repository with complete functionality and documentation.
