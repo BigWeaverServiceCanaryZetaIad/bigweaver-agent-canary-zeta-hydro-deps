@@ -1,0 +1,33 @@
+[workspace]
+
+members = [
+    "benches",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+
+[workspace.lints.rust]
+unsafe_code = "warn"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+missing_const_for_fn = "warn"
+missing_panics_doc = "warn"
+missing_errors_doc = "warn"
+
+[profile.release]
+strip = true      # Strip symbols from the binary
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.profile]
+inherits = "release"
+debug = 2
+lto = "off"
+strip = "none"
