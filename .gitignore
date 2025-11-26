@@ -1,0 +1,21 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Benchmark results
+criterion/
+**/criterion/
+
+# Generated files
+benches/benches/fork_join_*.hf
+
+# Lock file (not needed for benchmarks-only repo)
+Cargo.lock
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
