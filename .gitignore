@@ -1,0 +1,40 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Cargo.lock for libraries (keep for binary crates)
+# Cargo.lock
+
+# Backup files
+**/*.rs.bk
+**/*~
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Criterion benchmark outputs
+**/criterion/
+
+# Generated files from build.rs
+benches/benches/*.hf
+
+# Test outputs
+*.profraw
+*.profdata
+
+# Documentation build
+/target/doc/
+
+# Flamegraphs
+flamegraph.svg
+perf.data
+perf.data.old
+
+# OS specific
+.DS_Store
+Thumbs.db
