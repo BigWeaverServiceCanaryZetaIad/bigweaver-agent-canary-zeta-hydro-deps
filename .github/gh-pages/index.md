@@ -1,0 +1,5 @@
+---
+---
+- [Main website (hydro.run) 🔗](https://hydro.run)
+- [Github Repository 🔗](https://github.com/hydro-project/hydro)
+- [Design Docs]({{ "/design_docs/" | prepend: site.github.url | replace: 'https://', '//' }})
