@@ -1,0 +1,21 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Cargo lock file (for libraries)
+Cargo.lock
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Benchmark results
+*.svg
+*.html
+
+# OS files
+.DS_Store
+Thumbs.db
