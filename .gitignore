@@ -1,0 +1,19 @@
+# Rust
+/target
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# Benchmark outputs
+/benches/target
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Criterion benchmark results
+/benches/target/criterion/
