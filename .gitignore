@@ -1,0 +1,31 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo.lock for libraries (keep for binaries)
+# Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Criterion benchmark outputs
+target/criterion/
+
+# Build artifacts
+*.o
+*.so
+*.dylib
+*.dll
+
+# Test outputs
+*.profraw
+*.profdata
