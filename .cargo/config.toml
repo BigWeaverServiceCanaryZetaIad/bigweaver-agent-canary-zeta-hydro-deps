@@ -1,0 +1,8 @@
+# Cargo configuration for hydro benchmarks
+
+[build]
+# Use the same target directory as the parent workspace to share build artifacts
+target-dir = "../bigweaver-agent-canary-hydro-zeta/target"
+
+[term]
+verbose = false
