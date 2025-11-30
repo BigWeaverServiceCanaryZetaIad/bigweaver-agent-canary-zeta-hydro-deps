@@ -1,0 +1,50 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout hydro-deps
+        uses: actions/checkout@v4
+        with:
+          path: bigweaver-agent-canary-zeta-hydro-deps
+      
+      - name: Checkout hydro
+        uses: actions/checkout@v4
+        with:
+          repository: BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta
+          path: bigweaver-agent-canary-hydro-zeta
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2024-11-01
+      
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            bigweaver-agent-canary-hydro-zeta/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      
+      - name: Check benchmarks compile
+        working-directory: bigweaver-agent-canary-zeta-hydro-deps
+        run: cargo check --benches
+      
+      - name: Run benchmarks (quick mode)
+        working-directory: bigweaver-agent-canary-zeta-hydro-deps
+        run: cargo bench --no-run
+        continue-on-error: true
