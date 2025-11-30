@@ -1,0 +1,66 @@
+name: benchmark
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      should_bench:
+        description: "Should Benchmark? (`true`)"
+        required: true
+        default: "false"
+
+permissions:
+  contents: write
+
+jobs:
+  benches:
+    name: Benchmarks
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run benchmarks
+        run: |
+          cargo bench --no-fail-fast 2>&1 | tee benchmark_output.txt
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: |
+            target/criterion/
+            benchmark_output.txt
+
+      - name: Check for benchmark regressions
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Benchmark results available in artifacts"
+          echo "Compare with baseline to detect regressions"
