@@ -1,0 +1,16 @@
+[package]
+name = "timely_benchmarks"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bench]]
+name = "timely_bench"
+harness = false
+
+[dependencies]
+timely.workspace = true
+
+[dev-dependencies]
+criterion = "0.5"
