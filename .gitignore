@@ -1,0 +1,30 @@
+/target
+*.lock
+__pycache__/
+**/.DS_Store
+**/target-bisector-*
+
+# Profiling related outputs
+perf.data
+perf.data.old
+flamegraph.svg
+
+# Criterion benchmark outputs
+target/criterion/
+
+# Rust build artifacts
+*.pdb
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test outputs
+*.log
