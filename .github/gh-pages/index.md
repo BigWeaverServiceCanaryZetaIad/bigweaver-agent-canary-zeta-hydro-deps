@@ -1,0 +1,6 @@
+---
+---
+- [Main Hydro Repository 🔗](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta)
+- [Main website (hydro.run) 🔗](https://hydro.run)
+- [Benchmark History]({{ "/bench/" | prepend: site.github.url | replace: 'https://', '//' }})
+- [Latest Benchmarks]({{ "/criterion/report/" | prepend: site.github.url | replace: 'https://', '//' }})

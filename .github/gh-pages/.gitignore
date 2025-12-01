@@ -1,0 +1,7 @@
+/debug
+/release
+/tmp
+/CACHEDIR.TAG
+/.lock
+/.rustc_info.json
+/.rustdoc_fingerprint.json
