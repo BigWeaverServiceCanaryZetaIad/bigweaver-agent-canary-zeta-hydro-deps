@@ -1,0 +1,6 @@
+---
+---
+- [Main website (hydro.run) 🔗](https://hydro.run)
+- [Main Hydro Repository 🔗](https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta)
+- [Benchmarks Repository 🔗](https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps)
+- [Benchmarks]({{ "/bench/" | prepend: site.github.url | replace: 'https://', '//' }})
