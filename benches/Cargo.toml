@@ -14,18 +14,38 @@ workspace = true
 [dependencies]
 
 [dev-dependencies]
+# Benchmarking framework with statistical analysis and HTML report generation
 criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+
+# Main Hydro/DFIR implementation from the primary repository
 dfir_rs = { git = "https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta.git", features = [ "debugging" ] }
+
+# Differential-dataflow for performance comparison benchmarks
+# Using development version for latest features and compatibility
 differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" } # git = "https://github.com/TimelyDataflow/differential-dataflow.git", rev = "7bc5338a977fe1d95b96a9ba84ba8cd460e0cdd7" } # "0.12"
+
+# Supporting libraries for benchmarks
 futures = "0.3"
 nameof = "1.0.0"
 rand = "0.8.0"
 rand_distr = "0.4.3"
 seq-macro = "0.2.0"
+
+# Sinktools utilities from the primary repository
 sinktools = { git = "https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta.git" }
+
+# Compile-time assertions for benchmark validation
 static_assertions = "1.0.0"
+
+# Timely-dataflow for performance comparison benchmarks
+# Using development version for latest features and compatibility
 timely = { package = "timely-master", version = "0.13.0-dev.1" }
+
+# Async runtime for futures benchmarks
 tokio = { version = "1.29.0", features = [ "rt-multi-thread" ] }
+
+# Benchmark definitions
+# Each benchmark compares Hydro/DFIR, Timely, and/or Differential implementations
 
 [[bench]]
 name = "arithmetic"
