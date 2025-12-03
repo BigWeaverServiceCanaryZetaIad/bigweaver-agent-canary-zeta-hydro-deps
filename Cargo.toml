@@ -2,7 +2,7 @@
 name = "hydro-benchmarks"
 publish = false
 version = "0.0.0"
-edition = "2024"
+edition = "2021"
 repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
 license = "Apache-2.0"
 

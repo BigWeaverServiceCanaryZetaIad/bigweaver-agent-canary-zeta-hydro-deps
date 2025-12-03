@@ -17,7 +17,7 @@ The benchmarks comparing Hydro with Timely Dataflow and Differential Dataflow we
 
 ### What Was Moved?
 
-The following benchmarks were moved from `bigweaver-agent-canary-hydro-zeta/benches/`:
+The following benchmarks were moved from `bigweaver-agent-canary-hydro-zeta/benches/` to this repository:
 
 - **arithmetic.rs**: Benchmarks for arithmetic operations in dataflow systems
 - **fan_in.rs**: Benchmarks for fan-in patterns (multiple inputs, single output)
@@ -27,10 +27,15 @@ The following benchmarks were moved from `bigweaver-agent-canary-hydro-zeta/benc
 - **identity.rs**: Benchmarks for identity/passthrough operations (baseline)
 - **join.rs**: Benchmarks for join operations between streams
 - **micro_ops.rs**: Micro-benchmarks for individual operations
-- **reachability.rs**: Graph reachability benchmarks
+- **reachability.rs**: Graph reachability benchmarks including test data files
 - **symmetric_hash_join.rs**: Benchmarks for symmetric hash join algorithms
 - **upcase.rs**: String transformation benchmarks
 - **words_diamond.rs**: Word processing with diamond-shaped dataflow
+
+Additionally, the following support files were included:
+- **words_alpha.txt**: Word list for word processing benchmarks
+- **reachability_edges.txt**: Graph edges for reachability tests
+- **reachability_reachable.txt**: Expected reachability results
 
 ## 🚀 Running Benchmarks
 
@@ -186,10 +191,10 @@ Criterion will show the performance delta and flag regressions.
 
 ### Creating a New Benchmark
 
-1. Create a new file in `benches/benches/`:
+1. Create a new file in `benches/`:
 
 ```rust
-// benches/benches/my_benchmark.rs
+// benches/my_benchmark.rs
 use criterion::{criterion_group, criterion_main, Criterion, BenchmarkId};
 use dfir_rs::*;
 
@@ -226,6 +231,7 @@ cargo bench --bench my_benchmark
 - **Measure What Matters**: Focus on end-to-end performance, not just micro-operations
 - **Document Expectations**: Add comments explaining what performance is expected
 - **Control Variability**: Close other applications, disable CPU frequency scaling if needed
+- **Include Test Data**: Add any necessary input files to `benches/`
 
 ## 🔗 Integration with CI/CD
 
@@ -266,8 +272,9 @@ When contributing new benchmarks:
 1. **Follow Naming Conventions**: Use descriptive names that indicate what is being measured
 2. **Add Documentation**: Include comments explaining the benchmark purpose
 3. **Test All Implementations**: Ensure dfir, timely, and differential versions work
-4. **Include Test Data**: Add any necessary input files to `benches/benches/`
-5. **Update This Guide**: Document new benchmarks and their usage
+4. **Include Test Data**: Add any necessary input files to `benches/`
+5. **Update Documentation**: Add new benchmarks to this guide and the main README
+6. **Follow Rust Conventions**: Place benchmark files directly in the `benches/` directory
 
 ## 📚 Additional Resources
 

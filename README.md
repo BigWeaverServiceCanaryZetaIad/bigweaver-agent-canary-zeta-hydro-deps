@@ -19,22 +19,26 @@ The benchmarks in this repository are designed to:
 ```
 .
 ├── Cargo.toml              # Package configuration with timely/differential dependencies
+├── build.rs                # Build script for generating benchmark code
 ├── README.md               # This file
-└── benches/
+├── BENCHMARKS_GUIDE.md     # Detailed guide for running and contributing benchmarks
+└── benches/                # Individual benchmark implementations
     ├── README.md           # Benchmark-specific documentation
-    └── benches/            # Individual benchmark implementations
-        ├── arithmetic.rs   # Arithmetic operation benchmarks
-        ├── fan_in.rs       # Fan-in pattern benchmarks
-        ├── fan_out.rs      # Fan-out pattern benchmarks
-        ├── fork_join.rs    # Fork-join pattern benchmarks
-        ├── futures.rs      # Async futures benchmarks
-        ├── identity.rs     # Identity/passthrough benchmarks
-        ├── join.rs         # Join operation benchmarks
-        ├── micro_ops.rs    # Micro-operation benchmarks
-        ├── reachability.rs # Graph reachability benchmarks
-        ├── symmetric_hash_join.rs  # Hash join benchmarks
-        ├── upcase.rs       # String transformation benchmarks
-        └── words_diamond.rs # Word processing benchmarks
+    ├── arithmetic.rs       # Arithmetic operation benchmarks
+    ├── fan_in.rs           # Fan-in pattern benchmarks
+    ├── fan_out.rs          # Fan-out pattern benchmarks
+    ├── fork_join.rs        # Fork-join pattern benchmarks
+    ├── futures.rs          # Async futures benchmarks
+    ├── identity.rs         # Identity/passthrough benchmarks
+    ├── join.rs             # Join operation benchmarks
+    ├── micro_ops.rs        # Micro-operation benchmarks
+    ├── reachability.rs     # Graph reachability benchmarks
+    ├── reachability_edges.txt      # Test data for reachability benchmarks
+    ├── reachability_reachable.txt  # Expected results for reachability
+    ├── symmetric_hash_join.rs      # Hash join benchmarks
+    ├── upcase.rs           # String transformation benchmarks
+    ├── words_alpha.txt     # Word list for word processing benchmarks
+    └── words_diamond.rs    # Word processing benchmarks
 ```
 
 ## 🚀 Running Benchmarks
@@ -127,12 +131,13 @@ These benchmarks can be integrated into CI/CD pipelines to:
 ## 🤝 Contributing
 
 When adding new benchmarks:
-1. Create a new file in `benches/benches/`
-2. Add the benchmark entry to `Cargo.toml`
-3. Follow existing naming conventions
+1. Create a new file in `benches/` following the naming convention `<benchmark_name>.rs`
+2. Add the benchmark entry to `Cargo.toml` under `[[bench]]` sections
+3. Follow existing naming conventions (e.g., `benchmark_name/dfir`, `benchmark_name/timely`)
 4. Include multiple implementations (Hydro, Timely, Differential) where applicable
-5. Document the benchmark purpose and expected behavior
-6. Add appropriate test data files if needed
+5. Document the benchmark purpose and expected behavior in code comments
+6. Add appropriate test data files to `benches/` if needed
+7. Update this README and BENCHMARKS_GUIDE.md to document the new benchmark
 
 ## 📚 Related Repositories
 
