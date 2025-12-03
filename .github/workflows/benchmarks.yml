@@ -1,0 +1,156 @@
+name: Benchmark Suite
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      save_baseline:
+        description: 'Save results as baseline'
+        required: false
+        type: string
+      compare_baseline:
+        description: 'Compare against baseline'
+        required: false
+        type: string
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+    
+    - name: Cache cargo registry
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-registry-
+    
+    - name: Cache cargo index
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-git-
+    
+    - name: Cache target directory
+      uses: actions/cache@v4
+      with:
+        path: benches/target
+        key: ${{ runner.os }}-target-bench-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-target-bench-
+    
+    - name: Build benchmarks
+      run: |
+        cd benches
+        cargo build --benches --release
+    
+    - name: Run micro-operations benchmarks
+      run: |
+        cd benches
+        cargo bench --bench micro_ops -- --output-format bencher | tee micro_ops_results.txt
+    
+    - name: Run reachability benchmarks
+      run: |
+        cd benches
+        cargo bench --bench reachability -- --output-format bencher | tee reachability_results.txt
+    
+    - name: Run dataflow pattern benchmarks
+      run: |
+        cd benches
+        cargo bench --bench dataflow_patterns -- --output-format bencher | tee dataflow_results.txt
+    
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmark-results
+        path: |
+          benches/*_results.txt
+          benches/target/criterion/
+    
+    - name: Comment PR with results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const microResults = fs.readFileSync('benches/micro_ops_results.txt', 'utf8');
+          const reachResults = fs.readFileSync('benches/reachability_results.txt', 'utf8');
+          const dataflowResults = fs.readFileSync('benches/dataflow_results.txt', 'utf8');
+          
+          const body = `## 📊 Benchmark Results
+          
+          <details>
+          <summary>Micro-operations</summary>
+          
+          \`\`\`
+          ${microResults}
+          \`\`\`
+          </details>
+          
+          <details>
+          <summary>Reachability</summary>
+          
+          \`\`\`
+          ${reachResults}
+          \`\`\`
+          </details>
+          
+          <details>
+          <summary>Dataflow Patterns</summary>
+          
+          \`\`\`
+          ${dataflowResults}
+          \`\`\`
+          </details>
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: body
+          });
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+    
+    - name: Run tests
+      run: |
+        cd benches
+        cargo test
+    
+    - name: Check formatting
+      run: |
+        cd benches
+        cargo fmt -- --check
+    
+    - name: Run clippy
+      run: |
+        cd benches
+        cargo clippy -- -D warnings
