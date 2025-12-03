@@ -1,0 +1,11 @@
+/target
+Cargo.lock
+**/.DS_Store
+
+# Profiling related outputs
+perf.data
+perf.data.old
+flamegraph.svg
+
+# Criterion benchmark outputs
+**/target/criterion/
