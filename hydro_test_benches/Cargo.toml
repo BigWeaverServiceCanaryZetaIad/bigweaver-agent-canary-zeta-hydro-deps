@@ -1,0 +1,43 @@
+[package]
+name = "hydro_test_benches"
+publish = false
+version = "0.0.0"
+edition = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+
+[lints]
+workspace = true
+
+[dependencies]
+# Reference hydro dependencies from the main hydro repository
+hydro_lang = { git = "https://github.com/hydro-project/hydro.git", features = ["debugging"] }
+hydro_std = { git = "https://github.com/hydro-project/hydro.git" }
+
+# Required for timely and differential-dataflow integration
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+
+# Additional dependencies
+bincode = "1.0"
+bytes = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.29.0", features = ["rt-multi-thread", "macros"] }
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = ["async_tokio", "html_reports"] }
+dfir_lang = { git = "https://github.com/hydro-project/hydro.git", features = ["debugging"] }
+hydro_deploy = { git = "https://github.com/hydro-project/hydro.git" }
+regex = "1.0"
+
+[[example]]
+name = "paxos"
+path = "examples/paxos.rs"
+
+[[example]]
+name = "two_pc"
+path = "examples/two_pc.rs"
+
+[[example]]
+name = "compartmentalized_paxos"
+path = "examples/compartmentalized_paxos.rs"
