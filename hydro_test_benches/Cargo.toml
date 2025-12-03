@@ -11,8 +11,8 @@ workspace = true
 
 [dependencies]
 # Reference hydro dependencies from the main hydro repository
-hydro_lang = { git = "https://github.com/hydro-project/hydro.git", features = ["debugging"] }
-hydro_std = { git = "https://github.com/hydro-project/hydro.git" }
+hydro_lang = { git = "https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta.git", features = ["debugging"] }
+hydro_std = { git = "https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta.git" }
 
 # Required for timely and differential-dataflow integration
 timely = { package = "timely-master", version = "0.13.0-dev.1" }
@@ -26,8 +26,8 @@ tokio = { version = "1.29.0", features = ["rt-multi-thread", "macros"] }
 
 [dev-dependencies]
 criterion = { version = "0.5.0", features = ["async_tokio", "html_reports"] }
-dfir_lang = { git = "https://github.com/hydro-project/hydro.git", features = ["debugging"] }
-hydro_deploy = { git = "https://github.com/hydro-project/hydro.git" }
+dfir_lang = { git = "https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta.git", features = ["debugging"] }
+hydro_deploy = { git = "https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta.git" }
 regex = "1.0"
 
 [[example]]
