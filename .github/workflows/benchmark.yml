@@ -1,0 +1,97 @@
+name: benchmark
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: "35 03 * * *" # Daily at 8:35 PM PDT, 7:35 PM PST.
+  workflow_dispatch:
+    inputs:
+      should_bench:
+        description: "Should Benchmark? (`true`)"
+        required: true
+        default: "false"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.pull_request.base.sha }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  pre_job:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5.3.1
+
+  benches:
+    name: Benchmarks
+    timeout-minutes: 60
+    needs: pre_job
+    if: |
+      (needs.pre_job.outputs.should_skip != 'true' || github.event_name != 'pull_request') &&
+      (
+        github.event_name == 'schedule'
+        || (github.event_name == 'workflow_dispatch' && github.event.inputs.should_bench == 'true')
+        || (github.event_name == 'push' && contains(github.event.head_commit.message, '[ci-bench]'))
+        || (
+          github.event_name == 'pull_request'
+          && (
+            contains(github.event.pull_request.title, '[ci-bench]')
+            || contains(github.event.pull_request.body, '[ci-bench]')
+          )
+        )
+      )
+    runs-on: ubuntu-latest
+    env:
+      WWW_DIR: target
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+
+      - name: Run benchmark
+        run: |
+          time cargo bench -p benches --output-format bencher | tee output.txt
+
+      - name: Generate benchmark page
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          tool: cargo
+          output-file-path: output.txt
+          external-data-json-path: target/bench/data.json
+
+      - name: Upload benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark
+          path: |
+            target/criterion
+            output.txt
+
+      - name: Comment benchmark results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync('output.txt', 'utf8');
+            const body = `## Benchmark Results\n\n\`\`\`\n${output}\n\`\`\``;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
