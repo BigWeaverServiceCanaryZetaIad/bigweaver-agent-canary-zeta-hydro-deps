@@ -1,0 +1,21 @@
+[package]
+name = "hydro_deps_benches"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[[bench]]
+name = "timely_reachability"
+harness = false
+
+[[bench]]
+name = "differential_dataflow_ops"
+harness = false
+
+[dependencies]
+timely = "0.12"
+differential-dataflow = "0.12"
+criterion = "0.5"
+
+[dev-dependencies]
+criterion = "0.5"
