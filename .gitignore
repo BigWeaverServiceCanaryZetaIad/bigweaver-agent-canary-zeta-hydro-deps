@@ -1,0 +1,18 @@
+/target
+__pycache__/
+**/.DS_Store
+
+# Profiling related outputs
+perf.data
+perf.data.old
+flamegraph.svg
+
+/rustc-ice-*.txt
+/.hydro/
+/*.data.folded
+/*.perf.data
+/*.svg
+/*.profile
+
+# Benchmark outputs
+/benches/benches/fork_join_*.hf
