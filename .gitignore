@@ -1,0 +1,25 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Cargo.lock for libraries (keep it for applications)
+# Since this is a benchmark repository, we'll keep Cargo.lock
+# Cargo.lock
+
+# Generated files
+**/*.rs.bk
+*.pdb
+
+# Criterion benchmark results
+**/criterion/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
