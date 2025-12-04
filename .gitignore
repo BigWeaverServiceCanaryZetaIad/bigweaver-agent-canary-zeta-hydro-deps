@@ -1,0 +1,19 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# Criterion benchmark output
+/benches/criterion/
+/benches/**/*.profdata
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

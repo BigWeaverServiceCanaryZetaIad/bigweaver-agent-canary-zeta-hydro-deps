@@ -1,0 +1,51 @@
+[package]
+name = "hydro-timely-differential-benchmarks"
+publish = false
+version = "0.0.0"
+edition = "2024"
+repository = "https://github.com/hydro-project/hydro"
+license = "Apache-2.0"
+
+# Timely and Differential-Dataflow benchmarks moved from bigweaver-agent-canary-hydro-zeta
+# These benchmarks compare performance against the timely and differential-dataflow frameworks
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+seq-macro = "0.2.0"
+
+# Benchmarks that use timely/differential-dataflow
+[[bench]]
+name = "arithmetic"
+harness = false
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "fan_out"
+harness = false
+
+[[bench]]
+name = "fork_join"
+harness = false
+
+[[bench]]
+name = "identity"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
