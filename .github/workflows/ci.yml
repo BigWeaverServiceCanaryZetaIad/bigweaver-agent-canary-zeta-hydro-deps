@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout hydro-deps
+        uses: actions/checkout@v4
+        with:
+          path: bigweaver-agent-canary-zeta-hydro-deps
+
+      - name: Checkout main hydro repository
+        uses: actions/checkout@v4
+        with:
+          repository: hydro-project/hydro
+          path: bigweaver-agent-canary-hydro-zeta
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.91.1
+          components: rustfmt, clippy
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Check formatting
+        working-directory: bigweaver-agent-canary-zeta-hydro-deps
+        run: cargo fmt --all --check
+
+      - name: Run clippy
+        working-directory: bigweaver-agent-canary-zeta-hydro-deps
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Build
+        working-directory: bigweaver-agent-canary-zeta-hydro-deps
+        run: cargo build --verbose
+
+      - name: Check documentation
+        working-directory: bigweaver-agent-canary-zeta-hydro-deps
+        run: cargo doc --no-deps --document-private-items
