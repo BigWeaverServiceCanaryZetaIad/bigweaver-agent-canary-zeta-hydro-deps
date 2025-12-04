@@ -1,0 +1,78 @@
+[package]
+name = "benches"
+publish = false
+version = "0.0.0"
+edition = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+
+[lints]
+workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { workspace = true }
+# Reference dfir_rs and sinktools from the main bigweaver-agent-canary-hydro-zeta repository
+# To run these benchmarks, clone bigweaver-agent-canary-hydro-zeta as a sibling directory
+dfir_rs = { path = "../../bigweaver-agent-canary-hydro-zeta/dfir_rs", features = ["debugging"] }
+differential-dataflow = { workspace = true }
+futures = "0.3"
+nameof = "1.0.0"
+rand = "0.8.0"
+rand_distr = "0.4.3"
+seq-macro = "0.2.0"
+sinktools = { path = "../../bigweaver-agent-canary-hydro-zeta/sinktools", version = "^0.0.1" }
+static_assertions = "1.0.0"
+timely = { workspace = true }
+tokio = { version = "1.29.0", features = ["rt-multi-thread"] }
+
+[[bench]]
+name = "arithmetic"
+harness = false
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "fan_out"
+harness = false
+
+[[bench]]
+name = "fork_join"
+harness = false
+
+[[bench]]
+name = "identity"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
+
+[[bench]]
+name = "micro_ops"
+harness = false
+
+[[bench]]
+name = "symmetric_hash_join"
+harness = false
+
+[[bench]]
+name = "words_diamond"
+harness = false
+
+[[bench]]
+name = "futures"
+harness = false
