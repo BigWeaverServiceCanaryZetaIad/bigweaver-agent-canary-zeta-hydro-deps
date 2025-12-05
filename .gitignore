@@ -1,0 +1,14 @@
+/target
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# Misc
+.DS_Store
+.idea
+.vscode/
+*.swp
+*~
+
+# Criterion benchmark outputs
+criterion/
