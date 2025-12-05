@@ -1,0 +1,17 @@
+# Rust
+/target/
+Cargo.lock
+
+# Criterion benchmark results
+/target/criterion/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
