@@ -1,0 +1,18 @@
+/target
+Cargo.lock
+**/.DS_Store
+
+# Benchmark outputs
+/benches/target
+*.svg
+*.profile
+
+# Criterion reports
+/benches/criterion
+
+# Generated files
+*.folded
+*.data
+perf.data
+perf.data.old
+flamegraph.svg
