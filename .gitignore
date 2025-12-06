@@ -1,0 +1,18 @@
+# Build artifacts
+/target/
+
+# Task and temporary files
+.task_completion_summary.md
+*.tmp
+*.log
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
