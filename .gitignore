@@ -1,0 +1,18 @@
+# Rust build artifacts
+target/
+Cargo.lock
+
+# Benchmark outputs
+*.profraw
+*.profdata
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
