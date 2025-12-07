@@ -1,0 +1,62 @@
+[package]
+name = "hydro-benches-timely-differential"
+publish = false
+version = "0.0.0"
+edition = "2024"
+
+[lints.rust]
+impl_trait_overcaptures = "warn"
+missing_unsafe_on_extern = "deny"
+unsafe_attr_outside_unsafe = "deny"
+unused_qualifications = "warn"
+
+[lints.clippy]
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+explicit_into_iter_loop = "warn"
+let_and_return = "allow"
+uninlined_format_args = "allow"
+upper_case_acronyms = "warn"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+# Use published version of dfir_rs for benchmarks
+dfir_rs = { version = "0.14.0", features = [ "debugging" ] }
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+
+[[bench]]
+name = "arithmetic"
+harness = false
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "fan_out"
+harness = false
+
+[[bench]]
+name = "fork_join"
+harness = false
+
+[[bench]]
+name = "identity"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
