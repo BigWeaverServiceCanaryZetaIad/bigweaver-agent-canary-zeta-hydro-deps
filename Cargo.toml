@@ -1,0 +1,24 @@
+[workspace]
+members = [
+    "benches",
+]
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/hydro-project/hydro-deps"
+
+[workspace.lints.rust]
+impl_trait_overcaptures = "warn"
+missing_unsafe_on_extern = "deny"
+unsafe_attr_outside_unsafe = "deny"
+unused_qualifications = "warn"
+
+[workspace.lints.clippy]
+explicit_iter_loop = "deny"
+missing_panics_doc = "allow"
+module_name_repetitions = "allow"
+needless_doctest_main = "allow"
+ptr_as_ptr = "deny"
+single_match_else = "allow"
+used_underscore_binding = "allow"
