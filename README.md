@@ -35,11 +35,24 @@ cargo bench -p benches --bench arithmetic
 - **upcase**: String uppercase transformation benchmark
 - **words_diamond**: Diamond pattern with word processing benchmark
 
+## Repository Structure
+
+This repository must be cloned as a sibling to the `bigweaver-agent-canary-hydro-zeta` repository:
+
+```
+/projects/sandbox/
+├── bigweaver-agent-canary-hydro-zeta/
+└── bigweaver-agent-canary-zeta-hydro-deps/
+    └── benches/
+```
+
+The benchmarks reference code from the main repository using relative paths.
+
 ## Dependencies
 
 This repository depends on:
-- **dfir_rs** from bigweaver-agent-canary-hydro-zeta
-- **sinktools** from bigweaver-agent-canary-hydro-zeta
+- **dfir_rs** from bigweaver-agent-canary-hydro-zeta (via `../../bigweaver-agent-canary-hydro-zeta/dfir_rs`)
+- **sinktools** from bigweaver-agent-canary-hydro-zeta (via `../../bigweaver-agent-canary-hydro-zeta/sinktools`)
 - **timely** (timely-master 0.13.0-dev.1)
 - **differential-dataflow** (differential-dataflow-master 0.13.0-dev.1)
 
