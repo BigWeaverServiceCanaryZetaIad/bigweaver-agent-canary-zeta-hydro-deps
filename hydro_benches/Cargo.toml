@@ -1,0 +1,50 @@
+[package]
+name = "hydro_benches"
+publish = false
+version = "0.0.0"
+edition = "2024"
+
+[lints]
+workspace = true
+
+[dependencies]
+# Note: Using path dependencies pointing to the source repository
+# In production, these should be published crates or git dependencies
+hydro_lang = { path = "../../bigweaver-agent-canary-hydro-zeta/hydro_lang", version = "^0.14.0" }
+hydro_std = { path = "../../bigweaver-agent-canary-hydro-zeta/hydro_std", version = "^0.14.0" }
+stageleft.workspace = true
+rand = "0.8.0"
+serde = { version = "1.0.197", features = ["derive"] }
+colored = "3.0.0"
+tokio = "1.29.0"
+
+[build-dependencies]
+stageleft_tool.workspace = true
+hydro_build_utils = { path = "../../bigweaver-agent-canary-hydro-zeta/hydro_build_utils", version = "0.0.1" }
+
+[dev-dependencies]
+clap = { version = "4.4", features = ["derive"] }
+dfir_lang = { path = "../../bigweaver-agent-canary-hydro-zeta/dfir_lang", version = "^0.14.0" }
+hydro_deploy = { path = "../../bigweaver-agent-canary-hydro-zeta/hydro_deploy/core", version = "^0.14.0" }
+hydro_lang = { path = "../../bigweaver-agent-canary-hydro-zeta/hydro_lang", version = "^0.14.0", features = [
+    "deploy",
+    "sim",
+    "viz",
+] }
+hydro_build_utils = { path = "../../bigweaver-agent-canary-hydro-zeta/hydro_build_utils", version = "0.0.1" }
+regex = "1"
+tokio = { version = "1.29.0", features = ["full"] }
+tokio-test = "0.4.4"
+dfir_rs = { path = "../../bigweaver-agent-canary-hydro-zeta/dfir_rs", version = "^0.14.0", default-features = false }
+
+[[example]]
+name = "paxos"
+path = "examples/paxos.rs"
+
+[[example]]
+name = "two_pc"
+path = "examples/two_pc.rs"
+
+[[example]]
+name = "compartmentalized_paxos"
+path = "examples/compartmentalized_paxos.rs"
