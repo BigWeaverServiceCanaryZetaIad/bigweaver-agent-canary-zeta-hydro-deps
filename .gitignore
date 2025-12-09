@@ -1,0 +1,16 @@
+/target
+**/.DS_Store
+
+# Profiling related outputs
+perf.data
+perf.data.old
+flamegraph.svg
+*.profile
+*.svg
+
+# Criterion benchmark results
+target/criterion/
+
+# Generated files
+*.folded
+*.perf.data
