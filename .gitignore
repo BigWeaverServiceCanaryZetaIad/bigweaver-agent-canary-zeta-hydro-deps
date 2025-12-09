@@ -1,0 +1,21 @@
+# Rust build artifacts
+/target
+**/target
+
+# Cargo.lock for libraries (keep for binaries)
+Cargo.lock
+
+# Benchmark results
+benches/target
+criterion-results/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
