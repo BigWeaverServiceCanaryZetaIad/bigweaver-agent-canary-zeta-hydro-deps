@@ -51,6 +51,12 @@ All benchmark files from `benches/benches/` directory:
 - `clippy.toml` - Linting configuration
 - `rust-toolchain.toml` - Rust toolchain specification
 
+### GitHub Actions Workflow
+- `.github/workflows/benchmark.yml` - Automated benchmark runner
+- `.github/gh-pages/` - GitHub Pages configuration for benchmark results
+  - `index.md` - Landing page for benchmark results
+  - `.gitignore` - Git ignore rules for gh-pages branch
+
 ## Changes Made
 
 ### Dependency Updates
@@ -77,12 +83,21 @@ Created a new workspace `Cargo.toml` with:
 ### Removed
 - `benches/` directory and all contents
 - `benches` from workspace members in root `Cargo.toml`
-- `.github/workflows/benchmark.yml` workflow (if it existed)
+- `.github/workflows/benchmark.yml` workflow
 - Direct dependencies on timely and differential-dataflow
 
 ### Updated
 - `CONTRIBUTING.md` - Added section explaining benchmark location and usage
 - Documentation now points to this repository for running benchmarks
+
+## Additions in This Repository
+
+### GitHub Actions Integration
+Added a complete CI/CD pipeline for running benchmarks:
+- Automated benchmark execution on schedule and manual trigger
+- Support for `[ci-bench]` tag in commits and pull requests
+- Benchmark result publishing to GitHub Pages
+- Historical benchmark tracking and visualization
 
 ## Running Benchmarks
 

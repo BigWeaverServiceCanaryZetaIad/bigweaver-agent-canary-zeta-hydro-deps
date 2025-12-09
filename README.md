@@ -46,6 +46,20 @@ Available benchmarks:
 
 Results are generated in the `target/criterion` directory with HTML reports that can be viewed in a browser.
 
+### Viewing Historical Results
+
+Benchmark results are automatically tracked and published via GitHub Actions:
+
+- **Latest Benchmarks**: Available in the GitHub Actions artifacts for each run
+- **Benchmark History**: Published to GitHub Pages (if enabled for this repository)
+- **CI Integration**: Benchmarks run automatically on:
+  - Scheduled daily runs (8:35 PM PDT / 7:35 PM PST)
+  - Commits to main branch with `[ci-bench]` in the commit message
+  - Pull requests with `[ci-bench]` in the title or description
+  - Manual workflow dispatch
+
+To manually trigger a benchmark run, use the GitHub Actions "workflow_dispatch" event with the `should_bench` input set to `true`.
+
 ## Dependencies
 
 The benchmarks depend on:
