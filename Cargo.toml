@@ -1,0 +1,13 @@
+[workspace]
+
+# Timely and differential-dataflow benchmarks moved from main repo
+members = [
+    "benches",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/hydro-project/hydro-deps"
