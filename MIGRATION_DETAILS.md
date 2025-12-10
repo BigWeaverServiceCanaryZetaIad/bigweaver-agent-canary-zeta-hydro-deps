@@ -22,8 +22,8 @@ This repository includes the following key dependencies:
 
 - `timely` (package: `timely-master`, version: `0.13.0-dev.1`)
 - `differential-dataflow` (package: `differential-dataflow-master`, version: `0.13.0-dev.1`)
-- `dfir_rs` - Referenced from the main Hydro repository via git
-- `sinktools` - Referenced from the main Hydro repository via git
+- `dfir_rs` - Referenced from the sibling `bigweaver-agent-canary-hydro-zeta` repository via path dependency
+- `sinktools` - Referenced from the sibling `bigweaver-agent-canary-hydro-zeta` repository via path dependency
 
 ## Usage
 
@@ -50,9 +50,11 @@ This separation allows:
 ## Maintenance
 
 When updating benchmarks:
-1. Ensure the git revision for `dfir_rs` and `sinktools` is kept in sync with the main repository
+1. Ensure the path dependencies for `dfir_rs` and `sinktools` point to the correct location in the main repository
 2. Test benchmarks after any dependency updates
 3. Compare performance results with historical data
+
+**Note**: The dependencies use path references to the sibling `bigweaver-agent-canary-hydro-zeta` repository. Both repositories should be checked out in the same parent directory for the build to succeed.
 
 ## Related Documentation
 
