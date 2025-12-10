@@ -1,0 +1,17 @@
+# Rust build artifacts
+/target
+Cargo.lock
+
+# Benchmark generated files
+/benches/fork_join_*.hf
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

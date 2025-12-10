@@ -1,0 +1,69 @@
+[package]
+name = "hydro-deps-benches"
+publish = false
+version = "0.0.0"
+edition = "2021"
+license = "Apache-2.0"
+
+[workspace]
+members = []
+
+[lints.rust]
+impl_trait_overcaptures = "warn"
+missing_unsafe_on_extern = "deny"
+unsafe_attr_outside_unsafe = "deny"
+unused_qualifications = "warn"
+
+[lints.clippy]
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+explicit_into_iter_loop = "warn"
+let_and_return = "allow"
+uninlined_format_args = "allow"
+upper_case_acronyms = "warn"
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+dfir_rs = { git = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta.git", rev = "484e6fddffa97d507384773d51bf728770a6ac38" }
+sinktools = { git = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta.git", rev = "484e6fddffa97d507384773d51bf728770a6ac38" }
+rand = "0.8.0"
+rand_distr = "0.4.3"
+seq-macro = "0.2.0"
+static_assertions = "1.0.0"
+timely = "0.12"
+differential-dataflow = "0.12"
+tokio = { version = "1.29.0", features = [ "rt-multi-thread" ] }
+
+[[bench]]
+name = "arithmetic"
+harness = false
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "fan_out"
+harness = false
+
+[[bench]]
+name = "fork_join"
+harness = false
+
+[[bench]]
+name = "identity"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
