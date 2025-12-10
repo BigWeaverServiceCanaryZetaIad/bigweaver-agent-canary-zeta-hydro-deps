@@ -2,8 +2,12 @@
 name = "hydro-timely-differential-benches"
 publish = false
 version = "0.0.0"
-edition = "2024"
-license = "Apache-2.0"
+edition = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+
+[lints]
+workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
