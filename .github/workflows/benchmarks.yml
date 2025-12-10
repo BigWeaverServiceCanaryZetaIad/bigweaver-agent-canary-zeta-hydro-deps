@@ -1,0 +1,53 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout hydro-deps repository
+      uses: actions/checkout@v4
+      with:
+        path: bigweaver-agent-canary-zeta-hydro-deps
+    
+    - name: Checkout main hydro repository
+      uses: actions/checkout@v4
+      with:
+        repository: BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta
+        path: bigweaver-agent-canary-hydro-zeta
+    
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+    
+    - name: Cache cargo registry
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('bigweaver-agent-canary-zeta-hydro-deps/**/Cargo.lock') }}
+    
+    - name: Cache cargo index
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-index-${{ hashFiles('bigweaver-agent-canary-zeta-hydro-deps/**/Cargo.lock') }}
+    
+    - name: Cache cargo build
+      uses: actions/cache@v3
+      with:
+        path: bigweaver-agent-canary-zeta-hydro-deps/target
+        key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('bigweaver-agent-canary-zeta-hydro-deps/**/Cargo.lock') }}
+    
+    - name: Build benchmarks
+      working-directory: bigweaver-agent-canary-zeta-hydro-deps
+      run: cargo build --release -p benches
+    
+    - name: Run benchmarks
+      working-directory: bigweaver-agent-canary-zeta-hydro-deps
+      run: cargo bench -p benches --no-fail-fast
