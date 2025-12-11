@@ -1,0 +1,59 @@
+[package]
+name = "benches"
+publish = false
+version = "0.0.0"
+edition = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+
+# Benchmarks for comparing Hydro/DFIR with timely-dataflow and differential-dataflow.
+# This repository contains benchmarks that require external dependencies (timely/differential-dataflow)
+# which have been separated from the main bigweaver-agent-canary-hydro-zeta repository.
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+dfir_rs = { git = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta.git", features = [ "debugging" ] }
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+futures = "0.3"
+nameof = "1.0.0"
+rand = "0.8.0"
+rand_distr = "0.4.3"
+seq-macro = "0.2.0"
+sinktools = { git = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta.git" }
+static_assertions = "1.0.0"
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+tokio = { version = "1.29.0", features = [ "rt-multi-thread" ] }
+
+[[bench]]
+name = "arithmetic"
+harness = false
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "fan_out"
+harness = false
+
+[[bench]]
+name = "fork_join"
+harness = false
+
+[[bench]]
+name = "identity"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
