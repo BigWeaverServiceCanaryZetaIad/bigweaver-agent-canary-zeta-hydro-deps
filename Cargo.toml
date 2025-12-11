@@ -1,0 +1,40 @@
+[workspace]
+
+members = [
+    "benches",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+
+[workspace.lints.rust]
+# unsafe_code = "forbid" # We use `unsafe` in some places.
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+# unreachable_pub = "warn" # Annoying when rapidly developing.
+elided_lifetimes_in_paths = "warn"
+
+[workspace.lints.rustdoc]
+private_doc_tests = "warn"
+
+[workspace.lints.clippy]
+# Lints changes here should be backported to `.cargo/config`.
+clone_on_ref_ptr = "warn"
+missing_const_for_fn = "warn"
+unused_async = "warn"
+
+[profile.release]
+strip = true
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.profile]
+inherits = "release"
+debug = 2
+lto = "off"
+strip = "none"
