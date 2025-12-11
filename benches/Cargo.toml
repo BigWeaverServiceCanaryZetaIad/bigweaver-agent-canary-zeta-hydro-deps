@@ -1,0 +1,58 @@
+[package]
+name = "benches"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+# This crate contains benchmarks comparing timely/differential-dataflow performance
+# with the Hydro project implementations. The Hydro crates are referenced from
+# the main bigweaver-agent-canary-hydro-zeta repository.
+
+[dependencies]
+
+[dev-dependencies]
+# Hydro project crates from main repository for comparison benchmarks
+dfir_rs = { path = "../../bigweaver-agent-canary-hydro-zeta/dfir_rs" }
+
+# Timely and differential-dataflow for comparison benchmarks
+timely = "0.12"
+differential-dataflow = "0.12"
+
+# Benchmark infrastructure
+criterion = { version = "0.5.0", features = [ "async_tokio" ] }
+lazy_static = "1.4.0"
+rand = "0.8.4"
+seq-macro = "0.2"
+tokio = { version = "1.29.0", features = [ "rt-multi-thread" ] }
+
+[[bench]]
+name = "arithmetic"
+harness = false
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "fan_out"
+harness = false
+
+[[bench]]
+name = "fork_join"
+harness = false
+
+[[bench]]
+name = "identity"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
