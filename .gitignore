@@ -1,0 +1,14 @@
+/target
+**/.DS_Store
+
+# Profiling related outputs
+perf.data
+perf.data.old
+flamegraph.svg
+*.profile
+
+# Criterion benchmark outputs
+/benches/target/criterion
+
+# Rust temporary files
+/rustc-ice-*.txt
