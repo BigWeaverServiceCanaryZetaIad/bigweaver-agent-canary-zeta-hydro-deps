@@ -1,0 +1,16 @@
+[workspace]
+members = ["benches"]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/hydro-project/hydro"
+
+[workspace.lints.rust]
+missing_docs = "warn"
+unsafe_code = "warn"
+
+[workspace.lints.clippy]
+too_many_arguments = "allow"
+type_complexity = "allow"
