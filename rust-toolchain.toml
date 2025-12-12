@@ -1,0 +1,8 @@
+[toolchain]
+# <https://rust-lang.github.io/rustup/overrides.html#the-toolchain-file>
+# nightly-2024-10-24
+channel = "nightly-2024-10-24"
+components = ["rustfmt", "clippy"]
+targets = ["wasm32-unknown-unknown"]
+# required for building docs.rs properly
+profile = "minimal"
