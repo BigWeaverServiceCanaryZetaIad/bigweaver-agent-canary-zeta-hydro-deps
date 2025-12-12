@@ -1,0 +1,70 @@
+[package]
+name = "hydro_benchmarks"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+hydro_lang = { path = "../bigweaver-agent-canary-hydro-zeta/hydro_lang", version = "^0.14.0" }
+hydro_std = { path = "../bigweaver-agent-canary-hydro-zeta/hydro_std", version = "^0.14.0" }
+stageleft = "0.10.2"
+rand = "0.8.0"
+serde = { version = "1.0.197", features = ["derive"] }
+ctor = "0.2.9"
+colored = "3.0.0"
+palette = "0.7.6"
+tokio = "1.29.0"
+bytes = "1.1.0"
+
+[build-dependencies]
+stageleft_tool = "0.10.2"
+hydro_build_utils = { path = "../bigweaver-agent-canary-hydro-zeta/hydro_build_utils", version = "0.0.1" }
+
+[dev-dependencies]
+clap = { version = "4.4", features = ["derive"] }
+ctor = "0.2"
+dfir_lang = { path = "../bigweaver-agent-canary-hydro-zeta/dfir_lang", version = "^0.14.0" }
+futures = "0.3.0"
+hydro_deploy = { path = "../bigweaver-agent-canary-hydro-zeta/hydro_deploy/core", version = "^0.14.0" }
+hydro_lang = { path = "../bigweaver-agent-canary-hydro-zeta/hydro_lang", version = "^0.14.0", features = [
+    "deploy",
+    "sim",
+    "viz",
+] }
+hydro_build_utils = { path = "../bigweaver-agent-canary-hydro-zeta/hydro_build_utils", version = "0.0.1" }
+regex = "1"
+tokio = { version = "1.29.0", features = ["full"] }
+tokio-test = "0.4.4"
+dfir_rs = { path = "../bigweaver-agent-canary-hydro-zeta/dfir_rs", version = "^0.14.0", default-features = false }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
+
+[workspace]
+members = ["."]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/hydro-project/hydro"
+
+[workspace.lints.rust]
+impl_trait_overcaptures = "warn"
+missing_unsafe_on_extern = "deny"
+unsafe_attr_outside_unsafe = "deny"
+unused_qualifications = "warn"
+
+[workspace.lints.clippy]
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+explicit_into_iter_loop = "warn"
+let_and_return = "allow"
+uninlined_format_args = "allow"
+upper_case_acronyms = "warn"
+
+[workspace.dependencies]
+stageleft = "0.10.2"
+stageleft_tool = "0.10.2"
