@@ -1,0 +1,13 @@
+[workspace]
+members = ["hydro_test"]
+
+# Workspace-wide lints configuration
+[workspace.lints]
+rust.unused_imports = "warn"
+rust.unused_variables = "warn"
+rust.dead_code = "warn"
+
+# Common dependencies - define versions here to be shared across workspace members
+[workspace.dependencies]
+stageleft = "0.10.2"
+stageleft_tool = "0.10.2"
