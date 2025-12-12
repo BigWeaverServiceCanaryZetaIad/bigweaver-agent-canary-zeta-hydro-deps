@@ -1,0 +1,64 @@
+[workspace]
+
+# Workspace for benchmark crates that require external dataflow dependencies
+# such as timely and differential-dataflow.
+#
+# This workspace is separate from the main bigweaver-agent-canary-hydro-zeta
+# repository to:
+# - Reduce build times for the main repository
+# - Separate benchmark dependencies from production code
+# - Maintain the ability to run comprehensive performance comparisons
+# - Manage technical debt more effectively
+
+members = [
+    # Add benchmark crates here as they are created
+    # Example:
+    # "benchmarks/dataflow_benchmarks",
+    # "benchmarks/integration_benchmarks",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/hydro-project/hydro"
+
+[profile.release]
+strip = true      # Strip symbols from the binary
+opt-level = 3     # Optimize for performance
+lto = "fat"       # Full link-time optimization
+codegen-units = 1 # Better optimization at cost of compile time
+
+[profile.bench]
+inherits = "release"
+debug = true      # Include debug info for profiling
+
+[workspace.lints.rust]
+impl_trait_overcaptures = "warn"
+missing_unsafe_on_extern = "deny"
+unsafe_attr_outside_unsafe = "deny"
+unused_qualifications = "warn"
+
+[workspace.lints.clippy]
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+explicit_into_iter_loop = "warn"
+let_and_return = "allow"
+uninlined_format_args = "allow"
+upper_case_acronyms = "warn"
+
+# Common workspace dependencies for benchmarks
+# These can be used by benchmark crates without specifying versions
+[workspace.dependencies]
+# Benchmark infrastructure
+criterion = { version = "0.5.0", features = ["html_reports"] }
+
+# Dataflow dependencies (versions to be added when needed)
+# timely = "0.12"
+# differential-dataflow = "0.12"
+
+# Utilities
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.29.0", features = ["full"] }
+rand = "0.8.0"

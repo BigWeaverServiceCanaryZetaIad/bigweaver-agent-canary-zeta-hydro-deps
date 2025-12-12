@@ -1,0 +1,122 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+        components: rustfmt, clippy
+    
+    - name: Cache cargo registry
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Cache cargo index
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Cache cargo build
+      uses: actions/cache@v3
+      with:
+        path: target
+        key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Check formatting
+      run: cargo fmt --all -- --check
+    
+    - name: Run clippy
+      run: cargo clippy --all --all-targets -- -D warnings
+    
+    - name: Build all benchmarks
+      run: cargo build --all --release
+    
+    - name: Run all benchmarks
+      run: cargo bench --all --no-fail-fast
+    
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results
+        path: target/criterion/
+        retention-days: 30
+    
+    - name: Generate benchmark report
+      run: |
+        echo "# Benchmark Results" > benchmark_summary.md
+        echo "" >> benchmark_summary.md
+        echo "Benchmarks completed successfully." >> benchmark_summary.md
+        echo "See artifacts for detailed results." >> benchmark_summary.md
+    
+    - name: Upload benchmark summary
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-summary
+        path: benchmark_summary.md
+
+  # Job to compare benchmarks against main branch
+  compare:
+    name: Compare with Main
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v3
+    
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+    
+    - name: Run benchmarks on PR
+      run: cargo bench --all -- --save-baseline pr
+    
+    - name: Checkout main branch
+      uses: actions/checkout@v3
+      with:
+        ref: main
+    
+    - name: Run benchmarks on main
+      run: cargo bench --all -- --baseline pr
+    
+    - name: Generate comparison report
+      run: |
+        echo "# Benchmark Comparison" > comparison.md
+        echo "" >> comparison.md
+        echo "Comparison between PR and main branch." >> comparison.md
+        echo "See criterion HTML reports in artifacts for details." >> comparison.md
+    
+    - name: Upload comparison
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-comparison
+        path: |
+          comparison.md
+          target/criterion/

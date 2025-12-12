@@ -1,0 +1,27 @@
+# Rust
+target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Criterion benchmark results (keep baseline comparisons)
+target/criterion/*/base/
+target/criterion/*/change/
+
+# Documentation builds
+docs/
+
+# Test artifacts
+*.profraw
+*.profdata
