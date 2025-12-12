@@ -1,0 +1,1 @@
+disallowed-macros = ["std::print", "std::println", "std::eprint", "std::eprintln"]
