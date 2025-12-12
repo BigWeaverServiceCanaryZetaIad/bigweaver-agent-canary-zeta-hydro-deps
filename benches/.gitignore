@@ -1,0 +1,7 @@
+# Criterion benchmark results
+/target
+*.profraw
+*.profdata
+
+# Benchmark output
+benches/.gitignore
