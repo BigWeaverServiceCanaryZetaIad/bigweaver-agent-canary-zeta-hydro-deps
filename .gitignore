@@ -1,0 +1,6 @@
+/target
+*.data.folded
+*.perf.data
+*.svg
+*.profile
+Cargo.lock
