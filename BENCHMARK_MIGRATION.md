@@ -32,13 +32,7 @@ The following benchmarks depend on Timely or Differential Dataflow and have been
 
 ### Benchmarks Remaining in Main Repository
 
-The following benchmarks do NOT depend on Timely/Differential and remain in the main repository:
-
-- `futures.rs` - Futures-based operations
-- `micro_ops.rs` - Micro-operations benchmarks
-- `symmetric_hash_join.rs` - Symmetric hash join
-- `words_diamond.rs` - Word processing with diamond pattern
-- `words_alpha.txt` - Test data
+Note: As of the completion of this migration, the main repository does not contain a separate `benches/` directory with benchmark files. Individual crates may contain their own benchmarks as needed, but there are currently no benchmarks in the main repository that mirror the functionality of the moved benchmarks.
 
 ## Dependencies Removed from Main Repository
 
@@ -55,19 +49,13 @@ timely = { package = "timely-master", version = "0.13.0-dev.1" }
 
 ```
 bigweaver-agent-canary-hydro-zeta/
-├── benches/
-│   ├── Cargo.toml          # No timely/differential deps
-│   ├── benches/
-│   │   ├── futures.rs
-│   │   ├── micro_ops.rs
-│   │   ├── symmetric_hash_join.rs
-│   │   ├── words_diamond.rs
-│   │   └── words_alpha.txt
-│   └── build.rs
 ├── dfir_rs/
 ├── hydro_lang/
+├── hydro_test/
 └── ... (other crates)
 ```
+
+Note: The main repository no longer contains a separate `benches/` workspace member. Individual crates may contain their own internal benchmarks as needed.
 
 ### Deps Repository (bigweaver-agent-canary-zeta-hydro-deps)
 
@@ -107,18 +95,17 @@ cargo bench --bench reachability
 
 Results will be in `target/criterion/`.
 
-### Step 2: Run Equivalent Benchmarks in Main Repository
+### Step 2: Run Benchmarks in Main Repository (if applicable)
 
 ```bash
 cd bigweaver-agent-canary-hydro-zeta
-cargo bench --bench micro_ops
-cargo bench --bench futures
-# ... etc
+# Individual crates may have their own benchmarks
+# Check specific crate documentation for benchmark availability
 ```
 
 ### Step 3: Compare Results
 
-Compare the output from both repositories' `target/criterion/` directories. The benchmarks are designed to test similar patterns, allowing meaningful performance comparisons between Hydro and Timely/Differential implementations.
+Compare the output from both repositories' `target/criterion/` directories. The benchmarks in this repository test various dataflow patterns and can be used as performance baselines when developing similar patterns in Hydro.
 
 ## For Performance Engineering Team
 
@@ -131,7 +118,7 @@ When evaluating Hydro's performance against Timely/Differential:
    ```
 
 2. Run benchmarks in the deps repository for Timely/Differential baseline
-3. Run benchmarks in the main repository for Hydro implementation
+3. Compare with any equivalent benchmarks in the main repository (if available)
 4. Analyze comparative performance using Criterion's HTML reports
 
 ## For Development Team
@@ -140,7 +127,7 @@ When working on the main Hydro codebase:
 
 - You no longer need to compile Timely or Differential Dataflow dependencies
 - Faster build times for regular development
-- The `benches` directory in the main repo contains Hydro-specific benchmarks
+- Individual crates may contain their own benchmarks as needed
 - Refer to this deps repository only when needed for comparative analysis
 
 ## For CI/CD Team
@@ -148,10 +135,11 @@ When working on the main Hydro codebase:
 ### Main Repository CI
 
 ```yaml
-- name: Run Hydro Benchmarks
+- name: Run Tests
   run: |
     cd bigweaver-agent-canary-hydro-zeta
-    cargo bench
+    cargo test
+    # Individual crates may have benchmarks - see crate documentation
 ```
 
 ### Deps Repository CI (for comparative benchmarks)
@@ -186,7 +174,7 @@ Add them to the `bigweaver-agent-canary-zeta-hydro-deps` repository.
 
 ### Adding New Hydro-Only Benchmarks
 
-Add them to the main `bigweaver-agent-canary-hydro-zeta` repository's `benches` directory.
+Add them to the appropriate crate in the main `bigweaver-agent-canary-hydro-zeta` repository. Individual crates can include their own benchmark configurations.
 
 ### Dependency Updates
 

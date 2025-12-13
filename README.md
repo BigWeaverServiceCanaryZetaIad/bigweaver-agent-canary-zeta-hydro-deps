@@ -68,7 +68,7 @@ This repository complements the main [bigweaver-agent-canary-hydro-zeta](https:/
 
 | Repository | Contains | Dependencies |
 |------------|----------|--------------|
-| **bigweaver-agent-canary-hydro-zeta** (main) | Hydro framework, DFIR runtime, core benchmarks | Hydro-specific dependencies |
+| **bigweaver-agent-canary-hydro-zeta** (main) | Hydro framework, DFIR runtime | Hydro-specific dependencies |
 | **bigweaver-agent-canary-zeta-hydro-deps** (this) | Comparative benchmarks | Timely, Differential Dataflow, Hydro |
 
 ## For Different Teams
@@ -100,13 +100,14 @@ Consider separate CI workflows:
    cargo bench
    ```
 
-2. **Run benchmarks in main repository** (Hydro implementation):
+2. **Develop and test equivalent patterns in main repository** (Hydro implementation):
    ```bash
    cd bigweaver-agent-canary-hydro-zeta
-   cargo bench
+   # Develop your Hydro/DFIR implementation
+   # Individual crates may contain their own benchmarks
    ```
 
-3. **Compare results** from both `target/criterion/` directories
+3. **Compare results and performance characteristics**
 
 ## Dependencies
 
