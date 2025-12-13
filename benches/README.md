@@ -57,9 +57,9 @@ To compare performance between this repository and the main Hydro repository:
    cargo bench --bench <benchmark_name>
    ```
 
-2. Navigate to the main repository and run equivalent benchmarks there
+2. Navigate to the main repository and run any equivalent benchmarks if available (check individual crate documentation)
 
-3. Compare the results from both `target/criterion` directories
+3. Compare the results from `target/criterion` directories
 
 ## Adding New Benchmarks
 
@@ -77,5 +77,5 @@ To add a new benchmark that uses Timely or Differential Dataflow:
 ## Notes
 
 - These benchmarks are kept separate to avoid introducing Timely and Differential Dataflow dependencies into the main repository
-- The main repository contains non-Timely benchmarks (futures, micro_ops, symmetric_hash_join, words_diamond)
+- The main repository focuses on Hydro/DFIR development without these external framework dependencies
 - This separation maintains a clean dependency tree while preserving performance comparison capabilities
