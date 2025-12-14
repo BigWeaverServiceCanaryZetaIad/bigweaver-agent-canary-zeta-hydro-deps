@@ -17,14 +17,16 @@ This repository was created to isolate `timely` and `differential-dataflow` depe
 
 The `benches/` directory contains performance benchmarks that compare Hydro (DFIR) implementations with Timely Dataflow and Differential Dataflow:
 
-- **arithmetic**: Arithmetic operations pipeline benchmark
-- **fan_in**: Fan-in dataflow pattern benchmark  
-- **fan_out**: Fan-out dataflow pattern benchmark
-- **fork_join**: Fork-join pattern benchmark
-- **identity**: Identity operation benchmark
-- **join**: Join operations benchmark
-- **reachability**: Graph reachability benchmark
-- **upcase**: String uppercase transformation benchmark
+- **arithmetic**: Arithmetic operations pipeline benchmark - compares Hydro (DFIR) with Timely
+- **fan_in**: Fan-in dataflow pattern benchmark - compares Hydro (DFIR) with Timely
+- **fan_out**: Fan-out dataflow pattern benchmark - compares Hydro (DFIR) with Timely
+- **fork_join**: Fork-join pattern benchmark - compares Hydro (DFIR) with Timely
+- **identity**: Identity operation benchmark - compares Hydro (DFIR) with Timely
+- **join**: Join operations benchmark - compares Hydro (DFIR) with Timely
+- **reachability**: Graph reachability benchmark - compares Hydro (DFIR) with Timely and Differential Dataflow
+- **upcase**: String uppercase transformation benchmark - compares Hydro (DFIR) with Timely
+
+All benchmarks include Hydro (DFIR) implementations for complete performance comparison capabilities.
 
 See [benches/README.md](benches/README.md) for detailed information about running benchmarks.
 

@@ -1,4 +1,6 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use dfir_rs::dfir_syntax;
+use static_assertions::const_assert;
 use timely::dataflow::operators::{Inspect, Map, ToStream};
 
 const NUM_OPS: usize = 20;
@@ -105,8 +107,44 @@ fn benchmark_timely<O: 'static + Operation>(c: &mut Criterion) {
     });
 }
 
+fn benchmark_hydroflow<O: 'static + Operation>(c: &mut Criterion) {
+    const_assert!(NUM_OPS == 20); // This benchmark is hardcoded for 20 ops, so assert that NUM_OPS is 20.
+    c.bench_function(format!("{}/dfir_rs", O::name()).as_str(), |b| {
+        b.iter(|| {
+            let mut df = dfir_syntax! {
+                source_iter((0..NUM_ROWS).map(|_| STARTING_STRING.to_owned()))
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> map(O::action)
+                -> for_each(|x| { black_box(x); });
+            };
+            df.run_available_sync();
+        })
+    });
+}
+
 criterion_group!(
     upcase_dataflow,
+    benchmark_hydroflow::<UpcaseInPlace>,
+    benchmark_hydroflow::<UpcaseAllocating>,
+    benchmark_hydroflow::<Concatting>,
     benchmark_timely::<UpcaseInPlace>,
     benchmark_timely::<UpcaseAllocating>,
     benchmark_timely::<Concatting>,
