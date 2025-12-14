@@ -15,15 +15,22 @@ This repository was created to isolate `timely` and `differential-dataflow` depe
 
 ### Benchmarks
 
-The `benches/` directory contains performance benchmarks that compare Hydro (DFIR) implementations with Timely Dataflow and Differential Dataflow:
+The `benches/` directory contains performance benchmarks that compare Hydro (DFIR) implementations with Timely Dataflow and Differential Dataflow.
+
+#### Primary Benchmarks Moved from Main Repository
+
+These benchmarks with Timely and Differential Dataflow dependencies were migrated from `bigweaver-agent-canary-hydro-zeta`:
+
+- **fan_out**: Fan-out dataflow pattern benchmark with Timely comparisons
+- **fan_in**: Fan-in dataflow pattern benchmark with Timely comparisons
+- **fork_join**: Fork-join pattern benchmark with Timely comparisons
+- **reachability**: Graph reachability benchmark with Differential Dataflow comparisons
+- **join**: Join operations benchmark
+
+#### Additional Benchmarks
 
 - **arithmetic**: Arithmetic operations pipeline benchmark
-- **fan_in**: Fan-in dataflow pattern benchmark  
-- **fan_out**: Fan-out dataflow pattern benchmark
-- **fork_join**: Fork-join pattern benchmark
 - **identity**: Identity operation benchmark
-- **join**: Join operations benchmark
-- **reachability**: Graph reachability benchmark
 - **upcase**: String uppercase transformation benchmark
 
 See [benches/README.md](benches/README.md) for detailed information about running benchmarks.
@@ -45,9 +52,12 @@ cd bigweaver-agent-canary-zeta-hydro-deps
 # Run all benchmarks
 cargo bench
 
-# Run a specific benchmark
-cargo bench --bench arithmetic
+# Run specific benchmarks that were moved from main repository
+cargo bench --bench fan_out
+cargo bench --bench fan_in
+cargo bench --bench fork_join
 cargo bench --bench reachability
+cargo bench --bench join
 ```
 
 ### Viewing Results
@@ -110,13 +120,17 @@ Consider separate CI workflows:
 
 ## Dependencies
 
-This repository depends on:
+This repository isolates the following dependencies that were removed from the main repository:
 
 - **timely-master** (v0.13.0-dev.1): Timely Dataflow framework
 - **differential-dataflow-master** (v0.13.0-dev.1): Differential Dataflow framework
+
+Additional dependencies:
 - **dfir_rs**: Hydro's DFIR runtime (from main repository)
 - **criterion**: Benchmarking framework
 - Supporting utilities from the Hydro ecosystem
+
+The main repository (`bigweaver-agent-canary-hydro-zeta`) no longer has `timely` or `differential-dataflow` dependencies, resulting in faster build times for day-to-day development.
 
 ## Contributing
 

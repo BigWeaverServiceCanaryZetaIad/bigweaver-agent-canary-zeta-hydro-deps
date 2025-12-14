@@ -8,13 +8,20 @@ These benchmarks were moved from the main `bigweaver-agent-canary-hydro-zeta` re
 
 ## Available Benchmarks
 
+### Primary Benchmarks Migrated from Main Repository
+
+These benchmarks with Timely and Differential Dataflow dependencies were moved from `bigweaver-agent-canary-hydro-zeta`:
+
+- **fan_out**: Fan-out dataflow patterns with Timely comparisons
+- **fan_in**: Fan-in dataflow patterns with Timely comparisons
+- **fork_join**: Fork-join patterns with Timely comparisons
+- **reachability**: Graph reachability with Differential Dataflow comparisons
+- **join**: Join operations
+
+### Additional Benchmarks
+
 - **arithmetic**: Arithmetic operations pipeline benchmark
-- **fan_in**: Fan-in dataflow pattern benchmark
-- **fan_out**: Fan-out dataflow pattern benchmark
-- **fork_join**: Fork-join pattern benchmark
 - **identity**: Identity operation benchmark
-- **join**: Join operations benchmark
-- **reachability**: Graph reachability benchmark
 - **upcase**: String uppercase transformation benchmark
 
 ## Running Benchmarks
@@ -28,9 +35,17 @@ cargo bench
 To run a specific benchmark:
 
 ```bash
-cargo bench --bench arithmetic
+# Primary benchmarks moved from main repository
+cargo bench --bench fan_out
 cargo bench --bench fan_in
+cargo bench --bench fork_join
 cargo bench --bench reachability
+cargo bench --bench join
+
+# Additional benchmarks
+cargo bench --bench arithmetic
+cargo bench --bench identity
+cargo bench --bench upcase
 ```
 
 ## Benchmark Results
@@ -42,11 +57,14 @@ Benchmark results are generated in the `target/criterion` directory and include:
 
 ## Dependencies
 
-These benchmarks depend on:
-- `timely-master`: Timely Dataflow framework
-- `differential-dataflow-master`: Differential Dataflow framework
+These benchmarks depend on the following packages isolated in this repository's `Cargo.toml`:
+
+- `timely-master` (v0.13.0-dev.1): Timely Dataflow framework
+- `differential-dataflow-master` (v0.13.0-dev.1): Differential Dataflow framework
 - `dfir_rs`: Hydro's DFIR runtime (for comparison)
 - `criterion`: Benchmarking framework
+
+The main repository (`bigweaver-agent-canary-hydro-zeta`) no longer has `timely` or `differential-dataflow` dependencies.
 
 ## Cross-Repository Performance Comparison
 
