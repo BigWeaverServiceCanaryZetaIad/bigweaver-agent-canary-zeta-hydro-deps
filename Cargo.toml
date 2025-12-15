@@ -1,0 +1,33 @@
+[workspace]
+
+# Benchmarks repository for bigweaver-agent-canary-hydro-zeta
+# This repository contains benchmarks that depend on timely and differential-dataflow
+# to keep these dependencies separate from the main repository
+
+members = [
+    "benches/timely_benchmarks",
+    "benches/differential_benchmarks",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/hydro-project/hydro"
+
+[profile.release]
+strip = true
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.profile]
+inherits = "release"
+debug = 2
+lto = "off"
+strip = "none"
+
+[workspace.dependencies]
+timely = "0.12"
+differential-dataflow = "0.12"
