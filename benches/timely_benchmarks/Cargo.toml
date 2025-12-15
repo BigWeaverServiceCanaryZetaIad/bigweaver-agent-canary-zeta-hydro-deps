@@ -1,0 +1,20 @@
+[package]
+name = "timely_benchmarks"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+
+[dependencies]
+timely.workspace = true
+
+[[bin]]
+name = "fanout_bench"
+path = "fanout_bench.rs"
+
+[[bin]]
+name = "join_bench"
+path = "join_bench.rs"
+
+[[bin]]
+name = "reachability_bench"
+path = "reachability_bench.rs"

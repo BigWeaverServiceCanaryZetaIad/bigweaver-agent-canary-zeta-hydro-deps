@@ -1,0 +1,21 @@
+[package]
+name = "differential_benchmarks"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+
+[dependencies]
+timely.workspace = true
+differential-dataflow.workspace = true
+
+[[bin]]
+name = "arrange_bench"
+path = "arrange_bench.rs"
+
+[[bin]]
+name = "reduce_bench"
+path = "reduce_bench.rs"
+
+[[bin]]
+name = "iterate_bench"
+path = "iterate_bench.rs"
