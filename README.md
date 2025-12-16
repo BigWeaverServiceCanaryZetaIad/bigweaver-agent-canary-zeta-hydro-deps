@@ -1,84 +1,142 @@
-# Hydro Timely and Differential-Dataflow Benchmarks
+# BigWeaver Agent Canary Zeta Hydro Dependencies
 
-This repository contains performance benchmarks comparing Hydro implementations with timely and differential-dataflow implementations. These benchmarks were moved from the main [bigweaver-agent-canary-hydro-zeta](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta) repository to maintain a clean separation of concerns and reduce the dependency footprint of the main repository.
+This repository contains benchmarks and dependencies for comparing Hydro performance with Timely Dataflow and Differential Dataflow implementations.
 
 ## Purpose
 
-The benchmarks in this repository serve to:
-- Compare performance between Hydro and timely/differential-dataflow implementations
-- Track performance regressions and improvements over time
-- Validate that Hydro's optimizations maintain competitive performance
+This repository was created to isolate `timely` and `differential-dataflow` dependencies from the main [bigweaver-agent-canary-hydro-zeta](https://github.com/hydro-project/hydro) repository. By separating these dependencies, we:
 
-## Available Benchmarks
+- **Reduce build times** for the main repository
+- **Minimize dependency bloat** in the core Hydro codebase
+- **Preserve benchmarking capabilities** for performance comparisons
+- **Maintain clean separation** between Hydro and comparative frameworks
 
-The following benchmarks are available:
+## Repository Contents
 
-- **arithmetic**: Pipeline of arithmetic operations
-- **fan_in**: Multiple inputs merging into a single stream
-- **fan_out**: Single input distributing to multiple streams
-- **fork_join**: Fork-join pattern with filtering
-- **futures**: Async operations benchmarks
-- **identity**: Identity transformation (baseline)
-- **join**: Join operations
-- **micro_ops**: Various micro-operations
-- **reachability**: Graph reachability computation
-- **symmetric_hash_join**: Symmetric hash join operations
-- **upcase**: String transformation operations
-- **words_diamond**: Diamond pattern on word processing
+### Benchmarks
 
-## Running Benchmarks
+The `benches/` directory contains performance benchmarks that compare Hydro (DFIR) implementations with Timely Dataflow and Differential Dataflow:
 
-### Run All Benchmarks
+- **arithmetic**: Arithmetic operations pipeline benchmark
+- **fan_in**: Fan-in dataflow pattern benchmark  
+- **fan_out**: Fan-out dataflow pattern benchmark
+- **fork_join**: Fork-join pattern benchmark
+- **identity**: Identity operation benchmark
+- **join**: Join operations benchmark
+- **reachability**: Graph reachability benchmark
+- **upcase**: String uppercase transformation benchmark
+
+See [benches/README.md](benches/README.md) for detailed information about running benchmarks.
+
+## Quick Start
+
+### Prerequisites
+
+- Rust toolchain (see `rust-toolchain.toml` for version)
+- Cargo
+
+### Running Benchmarks
 
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd bigweaver-agent-canary-zeta-hydro-deps
+
+# Run all benchmarks
 cargo bench
-```
 
-### Run Specific Benchmark
-
-```bash
-cargo bench --bench <benchmark_name>
-```
-
-For example:
-```bash
-cargo bench --bench reachability
+# Run a specific benchmark
 cargo bench --bench arithmetic
+cargo bench --bench reachability
 ```
 
-### Run Specific Test Within a Benchmark
+### Viewing Results
 
-```bash
-cargo bench --bench <benchmark_name> <test_pattern>
-```
+Benchmark results are generated in `target/criterion/` with HTML reports including:
+- Performance metrics
+- Statistical analysis
+- Historical comparisons
 
-For example:
-```bash
-cargo bench --bench arithmetic dfir_rs
-```
+## Documentation
+
+- **[BENCHMARK_MIGRATION.md](BENCHMARK_MIGRATION.md)**: Complete guide to the benchmark migration from the main repository
+- **[benches/README.md](benches/README.md)**: Detailed benchmark documentation
+
+## Relationship to Main Repository
+
+This repository complements the main [bigweaver-agent-canary-hydro-zeta](https://github.com/hydro-project/hydro) repository:
+
+| Repository | Contains | Dependencies |
+|------------|----------|--------------|
+| **bigweaver-agent-canary-hydro-zeta** (main) | Hydro framework, DFIR runtime, core benchmarks | Hydro-specific dependencies |
+| **bigweaver-agent-canary-zeta-hydro-deps** (this) | Comparative benchmarks | Timely, Differential Dataflow, Hydro |
+
+## For Different Teams
+
+### Performance Engineering Team
+
+Use this repository to:
+- Run comparative benchmarks between Hydro and Timely/Differential implementations
+- Analyze performance characteristics
+- Generate performance reports
+
+### Development Team
+
+- The main repository no longer requires Timely/Differential dependencies
+- Refer to this repository only when conducting performance comparisons
+- Faster build times for day-to-day development
+
+### CI/CD Team
+
+Consider separate CI workflows:
+- Main repository: Run on every commit
+- This repository: Run weekly or on-demand for performance analysis
+
+## Performance Comparison Workflow
+
+1. **Run benchmarks in this repository** (Timely/Differential baseline):
+   ```bash
+   cd bigweaver-agent-canary-zeta-hydro-deps
+   cargo bench
+   ```
+
+2. **Run benchmarks in main repository** (Hydro implementation):
+   ```bash
+   cd bigweaver-agent-canary-hydro-zeta
+   cargo bench
+   ```
+
+3. **Compare results** from both `target/criterion/` directories
 
 ## Dependencies
 
 This repository depends on:
-- **timely-master**: Timely dataflow framework
-- **differential-dataflow-master**: Differential dataflow framework  
-- **dfir_rs**: DFIR (Dataflow IR) from the main Hydro repository
-- **sinktools**: Utilities from the main Hydro repository
+
+- **timely-master** (v0.13.0-dev.1): Timely Dataflow framework
+- **differential-dataflow-master** (v0.13.0-dev.1): Differential Dataflow framework
+- **dfir_rs**: Hydro's DFIR runtime (from main repository)
 - **criterion**: Benchmarking framework
-
-The `dfir_rs` and `sinktools` dependencies are pulled from the main Hydro repository via git dependencies to ensure benchmarks always test against the latest version.
-
-## Benchmark Results
-
-Benchmark results are generated in HTML format and can be found in `target/criterion/` after running the benchmarks.
+- Supporting utilities from the Hydro ecosystem
 
 ## Contributing
 
-When adding new benchmarks:
-1. Add the benchmark file to the `benches/` directory
-2. Register it in `Cargo.toml` under `[[bench]]` sections
-3. Update this README with a description of the benchmark
+For benchmark-related contributions:
 
-## Migration
+1. Add new Timely/Differential benchmarks to this repository
+2. Add new Hydro-only benchmarks to the main repository
+3. Follow existing benchmark patterns and naming conventions
+4. Update documentation accordingly
 
-These benchmarks were migrated from the main Hydro repository. For more information on the migration, see the [BENCHMARK_MIGRATION.md](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta/blob/main/BENCHMARK_MIGRATION.md) in the main repository.
+## License
+
+Apache-2.0 (same as main Hydro repository)
+
+## Questions and Support
+
+- For benchmark usage: See [benches/README.md](benches/README.md)
+- For migration details: See [BENCHMARK_MIGRATION.md](BENCHMARK_MIGRATION.md)
+- For Hydro framework: See the main repository documentation
+
+## History
+
+This repository was created to separate Timely and Differential Dataflow benchmark dependencies from the main Hydro repository, maintaining performance comparison capabilities while improving the development experience.
