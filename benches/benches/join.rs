@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use dfir_rs::dfir_syntax;
 use timely::dataflow::channels::pact::Pipeline;
 use timely::dataflow::operators::{Operator, ToStream};
 
@@ -122,10 +123,35 @@ where
     );
 }
 
+fn benchmark_hydroflow<L, R>(c: &mut Criterion)
+where
+    L: 'static + JoinValue,
+    R: 'static + JoinValue,
+{
+    c.bench_function(
+        format!("join/{}/{}/dfir_rs", L::name(), R::name()).as_str(),
+        |b| {
+            b.iter(|| {
+                let mut df = dfir_syntax! {
+                    source_iter((0..NUM_INTS).map(|x| (x, L::new(x)))) -> [0]my_join;
+                    source_iter((0..NUM_INTS).map(|x| (x, R::new(x)))) -> [1]my_join;
+                    
+                    my_join = join::<'tick>() -> for_each(|(k, (v1, v2))| {
+                        black_box((k, v1, v2));
+                    });
+                };
+                df.run_available_sync();
+            })
+        },
+    );
+}
+
 criterion_group!(
     fan_in_dataflow,
+    benchmark_hydroflow<usize, usize>,
     benchmark_timely<usize, usize>,
     benchmark_sol<usize, usize>,
+    benchmark_hydroflow<String, String>,
     benchmark_timely<String, String>,
     benchmark_sol<String, String>,
 );

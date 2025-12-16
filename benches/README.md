@@ -8,14 +8,16 @@ These benchmarks were moved from the main `bigweaver-agent-canary-hydro-zeta` re
 
 ## Available Benchmarks
 
-- **arithmetic**: Arithmetic operations pipeline benchmark
-- **fan_in**: Fan-in dataflow pattern benchmark
-- **fan_out**: Fan-out dataflow pattern benchmark
-- **fork_join**: Fork-join pattern benchmark
-- **identity**: Identity operation benchmark
-- **join**: Join operations benchmark
-- **reachability**: Graph reachability benchmark
-- **upcase**: String uppercase transformation benchmark
+All benchmarks include Hydro (DFIR) implementations alongside Timely Dataflow and/or Differential Dataflow implementations for complete performance comparison:
+
+- **arithmetic**: Arithmetic operations pipeline benchmark - Hydro (DFIR) vs Timely
+- **fan_in**: Fan-in dataflow pattern benchmark - Hydro (DFIR) vs Timely
+- **fan_out**: Fan-out dataflow pattern benchmark - Hydro (DFIR) vs Timely
+- **fork_join**: Fork-join pattern benchmark - Hydro (DFIR) vs Timely
+- **identity**: Identity operation benchmark - Hydro (DFIR) vs Timely
+- **join**: Join operations benchmark - Hydro (DFIR) vs Timely
+- **reachability**: Graph reachability benchmark - Hydro (DFIR) vs Timely vs Differential Dataflow
+- **upcase**: String uppercase transformation benchmark - Hydro (DFIR) vs Timely
 
 ## Running Benchmarks
 
