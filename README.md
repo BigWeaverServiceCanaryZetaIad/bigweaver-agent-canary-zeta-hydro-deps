@@ -27,6 +27,19 @@ The `benches/` directory contains 12 benchmarks that compare different dataflow 
 - **upcase.rs** - String transformation benchmark
 - **words_diamond.rs** - Diamond-shaped dataflow pattern with word processing
 
+## Dependencies
+
+### Timely and Differential-Dataflow
+- `timely-master` version 0.13.0-dev.1
+- `differential-dataflow-master` version 0.13.0-dev.1
+
+### Supporting Libraries
+- criterion (benchmarking framework)
+- futures
+- rand, rand_distr
+- tokio
+- Other utilities
+
 ## Running Benchmarks
 
 To run all benchmarks:
@@ -47,11 +60,54 @@ For example:
 cargo bench --bench arithmetic
 ```
 
+For specific benchmarks:
+```bash
+cargo bench --bench micro_ops
+cargo bench --bench symmetric_hash_join
+cargo bench --bench words_diamond
+cargo bench --bench futures
+```
+
+## Performance Comparison Workflow
+
+### 1. Run Hydro-Native Benchmarks
+From the main [bigweaver-agent-canary-hydro-zeta](https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta) repository:
+```bash
+cd bigweaver-agent-canary-hydro-zeta/benches
+cargo bench
+```
+
+### 2. Run Timely/Differential-Dataflow Benchmarks
+From this repository:
+```bash
+cd bigweaver-agent-canary-zeta-hydro-deps
+cargo bench
+```
+
+### 3. Compare Results
+Criterion generates HTML reports in `target/criterion/` that can be used to compare performance between implementations.
+
 ## Requirements
 
 - Rust 1.91.1 or later (specified in `rust-toolchain.toml`)
 - Dependencies are fetched from the main hydro repository via Git
 
+## Benefits
+
+1. **Reduced Build Dependencies**: The main repository no longer needs timely and differential-dataflow
+2. **Faster Build Times**: Core development builds are faster without external dataflow dependencies
+3. **Maintained Functionality**: Performance comparison capabilities are preserved in this repository
+4. **Clear Separation**: Clean architectural boundary between core implementation and comparative benchmarks
+5. **Improved Maintainability**: Each repository has a focused purpose and dependency set
+
 ## Documentation
 
 For more information about the benchmarks and their implementation, see the [benches/README.md](benches/README.md) file.
+
+## Related Repositories
+
+- **[bigweaver-agent-canary-hydro-zeta](https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta)** - Main Hydro repository with DFIR-native benchmarks and implementations
+
+## Migration
+
+For information about the benchmark migration from the main repository, see the MIGRATION_SUMMARY.md document in this repository.
