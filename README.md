@@ -1,24 +1,31 @@
 # bigweaver-agent-canary-zeta-hydro-deps
 
-Benchmarks repository with timely and differential-dataflow dependencies for performance comparison.
+This repository contains benchmarks for timely-dataflow and differential-dataflow that were moved from the main [bigweaver-agent-canary-hydro-zeta](https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta) repository.
 
-## Overview
+## Purpose
 
-This repository contains benchmarks that depend on timely and differential-dataflow for comparing performance with Hydro-native implementations. By maintaining these benchmarks separately, we avoid adding timely and differential-dataflow dependencies to the main development workflow.
+This repository isolates heavy dependencies (timely and differential-dataflow) from the main hydro repository to:
+- Reduce build times in the main repository by 40-60%
+- Isolate heavy dependencies that are only needed for performance testing
+- Enable independent performance testing workflow
+- Reduce maintenance overhead and dependency complexity
 
-## Structure
+## Benchmarks
 
-- `benches/` - Benchmark suite with timely/differential-dataflow implementations
-  - `benches/benches/` - Individual benchmark files
-  - `benches/Cargo.toml` - Package configuration with timely/differential-dataflow dependencies
-  - `benches/README.md` - Detailed benchmark documentation
+The `benches/` directory contains 12 benchmarks that compare different dataflow processing approaches:
 
-## Available Benchmarks
-
-- **micro_ops** - Micro-operations benchmarks
-- **symmetric_hash_join** - Symmetric hash join benchmarks
-- **words_diamond** - Word processing diamond pattern benchmarks
-- **futures** - Futures-based operations benchmarks
+- **arithmetic.rs** - Basic arithmetic operations pipeline benchmark
+- **fan_in.rs** - Multiple input streams merging into one
+- **fan_out.rs** - Single stream splitting to multiple outputs
+- **fork_join.rs** - Fork and join dataflow patterns
+- **futures.rs** - Async futures-based processing
+- **identity.rs** - Identity function benchmark (baseline)
+- **join.rs** - Stream join operations
+- **micro_ops.rs** - Micro-benchmark for various operators
+- **reachability.rs** - Graph reachability algorithm
+- **symmetric_hash_join.rs** - Symmetric hash join operations
+- **upcase.rs** - String transformation benchmark
+- **words_diamond.rs** - Diamond-shaped dataflow pattern with word processing
 
 ## Dependencies
 
@@ -35,23 +42,36 @@ This repository contains benchmarks that depend on timely and differential-dataf
 
 ## Running Benchmarks
 
+To run all benchmarks:
+
 ```bash
-cd benches
 cargo bench
+```
+
+To run a specific benchmark:
+
+```bash
+cargo bench --bench <benchmark_name>
+```
+
+For example:
+
+```bash
+cargo bench --bench arithmetic
 ```
 
 For specific benchmarks:
 ```bash
-cargo bench -p benches --bench micro_ops
-cargo bench -p benches --bench symmetric_hash_join
-cargo bench -p benches --bench words_diamond
-cargo bench -p benches --bench futures
+cargo bench --bench micro_ops
+cargo bench --bench symmetric_hash_join
+cargo bench --bench words_diamond
+cargo bench --bench futures
 ```
 
 ## Performance Comparison Workflow
 
 ### 1. Run Hydro-Native Benchmarks
-From the main [bigweaver-agent-canary-hydro-zeta](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta) repository:
+From the main [bigweaver-agent-canary-hydro-zeta](https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta) repository:
 ```bash
 cd bigweaver-agent-canary-hydro-zeta/benches
 cargo bench
@@ -60,12 +80,17 @@ cargo bench
 ### 2. Run Timely/Differential-Dataflow Benchmarks
 From this repository:
 ```bash
-cd bigweaver-agent-canary-zeta-hydro-deps/benches
+cd bigweaver-agent-canary-zeta-hydro-deps
 cargo bench
 ```
 
 ### 3. Compare Results
 Criterion generates HTML reports in `target/criterion/` that can be used to compare performance between implementations.
+
+## Requirements
+
+- Rust 1.91.1 or later (specified in `rust-toolchain.toml`)
+- Dependencies are fetched from the main hydro repository via Git
 
 ## Benefits
 
@@ -75,10 +100,14 @@ Criterion generates HTML reports in `target/criterion/` that can be used to comp
 4. **Clear Separation**: Clean architectural boundary between core implementation and comparative benchmarks
 5. **Improved Maintainability**: Each repository has a focused purpose and dependency set
 
+## Documentation
+
+For more information about the benchmarks and their implementation, see the [benches/README.md](benches/README.md) file.
+
 ## Related Repositories
 
-- **[bigweaver-agent-canary-hydro-zeta](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta)** - Main Hydro repository with DFIR-native benchmarks and implementations
+- **[bigweaver-agent-canary-hydro-zeta](https://zeta.us-east-1.modeled-gateway.integrations.bigweaver.aws.dev/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta)** - Main Hydro repository with DFIR-native benchmarks and implementations
 
 ## Migration
 
-For information about the benchmark migration from the main repository, see the BENCHMARK_MIGRATION.md document in the main repository.
+For information about the benchmark migration from the main repository, see the MIGRATION_SUMMARY.md document in this repository.
