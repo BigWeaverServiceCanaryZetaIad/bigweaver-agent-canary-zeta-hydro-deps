@@ -1,0 +1,43 @@
+[package]
+name = "hydro-deps-benches"
+publish = false
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+# Core dependencies for Hydro-native benchmarks
+criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+futures = "0.3"
+nameof = "1.0.0"
+rand = "0.8.0"
+rand_distr = "0.4.3"
+seq-macro = "0.2.0"
+static_assertions = "1.0.0"
+tokio = { version = "1.29.0", features = [ "rt-multi-thread" ] }
+
+# Hydro dependencies - configure path or git reference as needed
+# dfir_rs = { path = "../../path/to/dfir_rs", features = [ "debugging" ] }
+# sinktools = { path = "../../path/to/sinktools", version = "^0.0.1" }
+
+# Timely and Differential Dataflow dependencies for performance comparison
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+
+[[bench]]
+name = "micro_ops"
+harness = false
+
+[[bench]]
+name = "symmetric_hash_join"
+harness = false
+
+[[bench]]
+name = "words_diamond"
+harness = false
+
+[[bench]]
+name = "futures"
+harness = false
