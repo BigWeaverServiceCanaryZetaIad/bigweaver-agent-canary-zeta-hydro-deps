@@ -8,18 +8,23 @@ These benchmarks are maintained separately from the main [bigweaver-agent-canary
 
 ## Available Benchmarks
 
-- **micro_ops** - Micro-operations benchmark with timely/differential-dataflow dependencies
-- **symmetric_hash_join** - Symmetric hash join benchmark with timely/differential-dataflow dependencies
-- **words_diamond** - Word processing diamond pattern benchmark with timely/differential-dataflow dependencies
-- **futures** - Futures-based operations benchmark with timely/differential-dataflow dependencies
+**Current Status**: All benchmarks currently use Hydro-native (dfir_rs) implementations. The repository is configured with timely and differential-dataflow dependencies to enable future implementation of alternative versions for performance comparison.
+
+- **micro_ops** - Micro-operations benchmark (currently Hydro-native)
+- **symmetric_hash_join** - Symmetric hash join benchmark (currently Hydro-native)
+- **words_diamond** - Word processing diamond pattern benchmark (currently Hydro-native)
+- **futures** - Futures-based operations benchmark (currently Hydro-native)
 
 ## Dependencies
 
-This benchmark suite includes:
+This benchmark suite is configured with:
 - `timely` (package: timely-master, version: 0.13.0-dev.1)
 - `differential-dataflow` (package: differential-dataflow-master, version: 0.13.0-dev.1)
+- `dfir_rs` (Hydro's DFIR implementation, referenced from main repository)
 - `criterion` for benchmarking framework
 - Supporting libraries (futures, rand, tokio, etc.)
+
+**Note**: Current benchmark implementations use dfir_rs (Hydro-native). The timely and differential-dataflow dependencies are configured and available for future implementation of alternative benchmark versions for performance comparison.
 
 ## Running Benchmarks
 
@@ -53,9 +58,9 @@ cargo bench -p benches
 ```
 
 ### Comparing Results
-Results from both repositories can be compared to evaluate performance characteristics between:
-- Hydro-native implementations (main repository)
-- Timely/Differential-Dataflow implementations (this repository)
+Currently, both repositories run Hydro-native (dfir_rs) benchmark implementations. Results can be compared between repositories to verify consistency. In the future, when timely/differential-dataflow implementations are added to this repository, results can be compared to evaluate performance characteristics between:
+- Hydro-native implementations (main repository and current implementations in this repository)
+- Timely/Differential-Dataflow implementations (future implementations in this repository)
 
 ## Data Files
 
