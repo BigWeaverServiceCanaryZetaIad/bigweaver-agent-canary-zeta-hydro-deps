@@ -1,23 +1,27 @@
-# Timely and Differential-Dataflow Benchmarks
+# Hydro Benchmarks Suite
 
-This directory contains benchmarks for performance comparison with timely and differential-dataflow implementations.
+This directory contains ALL benchmarks for the Hydro project.
 
 ## Overview
 
-These benchmarks are maintained separately from the main [bigweaver-agent-canary-hydro-zeta](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta) repository to avoid pulling in timely and differential-dataflow dependencies for the core Hydro development workflow.
+All Hydro benchmarks are maintained in this repository to keep the main [bigweaver-agent-canary-hydro-zeta](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta) repository clean and fast to build. This includes both Hydro-native implementations and the infrastructure for future performance comparisons with timely/differential-dataflow.
 
 ## Available Benchmarks
 
-- **micro_ops** - Micro-operations benchmark with timely/differential-dataflow dependencies
-- **symmetric_hash_join** - Symmetric hash join benchmark with timely/differential-dataflow dependencies
-- **words_diamond** - Word processing diamond pattern benchmark with timely/differential-dataflow dependencies
-- **futures** - Futures-based operations benchmark with timely/differential-dataflow dependencies
+All benchmarks currently use Hydro-native (dfir_rs) implementations:
+- **micro_ops** - Micro-operations benchmark
+- **symmetric_hash_join** - Symmetric hash join benchmark  
+- **words_diamond** - Word processing diamond pattern benchmark
+- **futures** - Futures-based operations benchmark
+
+*Note: Timely/differential-dataflow comparison implementations are planned for future work.*
 
 ## Dependencies
 
 This benchmark suite includes:
-- `timely` (package: timely-master, version: 0.13.0-dev.1)
-- `differential-dataflow` (package: differential-dataflow-master, version: 0.13.0-dev.1)
+- `dfir_rs` - Referenced from the main repository via path
+- `timely` (package: timely-master, version: 0.13.0-dev.1) - for future comparison implementations
+- `differential-dataflow` (package: differential-dataflow-master, version: 0.13.0-dev.1) - for future comparison implementations
 - `criterion` for benchmarking framework
 - Supporting libraries (futures, rand, tokio, etc.)
 
@@ -36,26 +40,7 @@ cargo bench -p benches --bench words_diamond
 cargo bench -p benches --bench futures
 ```
 
-## Performance Comparison
-
-### Running Hydro-Native Benchmarks
-From the main repository:
-```bash
-cd bigweaver-agent-canary-hydro-zeta
-cargo bench -p benches
-```
-
-### Running Timely/Differential-Dataflow Benchmarks
-From this repository:
-```bash
-cd bigweaver-agent-canary-zeta-hydro-deps
-cargo bench -p benches
-```
-
-### Comparing Results
-Results from both repositories can be compared to evaluate performance characteristics between:
-- Hydro-native implementations (main repository)
-- Timely/Differential-Dataflow implementations (this repository)
+Results are generated in `target/criterion/` with detailed HTML reports for performance analysis.
 
 ## Data Files
 
@@ -63,6 +48,6 @@ Results from both repositories can be compared to evaluate performance character
 
 ## Migration Notes
 
-These benchmarks were migrated from the main repository to reduce build dependencies and improve build times for core development. The Hydro-native implementations remain in the main repository for development and testing.
+All benchmarks have been completely migrated from the main repository to this repository. The main repository no longer contains any benchmark code, which significantly improves build times for core development work. This repository serves as the centralized location for all Hydro performance testing.
 
-For more information about the benchmark migration, see [BENCHMARK_MIGRATION.md](../BENCHMARK_MIGRATION.md) in the main repository.
+For detailed migration history, see [BENCHMARK_MIGRATION.md](../../bigweaver-agent-canary-hydro-zeta/BENCHMARK_MIGRATION.md) in the main repository.
