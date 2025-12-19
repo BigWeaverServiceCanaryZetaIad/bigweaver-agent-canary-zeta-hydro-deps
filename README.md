@@ -22,6 +22,11 @@ This repository contains benchmarks that depend on timely and differential-dataf
 
 ## Dependencies
 
+### External Repositories
+This repository depends on the main Hydro repository for dfir_rs:
+- The `benches/Cargo.toml` includes a path dependency to `../../bigweaver-agent-canary-hydro-zeta/dfir_rs`
+- Both repositories should be cloned as sibling directories for the benchmarks to build successfully
+
 ### Timely and Differential-Dataflow
 - `timely-master` version 0.13.0-dev.1
 - `differential-dataflow-master` version 0.13.0-dev.1
@@ -35,6 +40,17 @@ This repository contains benchmarks that depend on timely and differential-dataf
 
 ## Running Benchmarks
 
+### Prerequisites
+Ensure both repositories are cloned as sibling directories:
+```
+/your-workspace/
+  ├── bigweaver-agent-canary-hydro-zeta/
+  └── bigweaver-agent-canary-zeta-hydro-deps/
+```
+
+The benchmarks depend on dfir_rs from the main repository via a path dependency.
+
+### Build and Run
 ```bash
 cd benches
 cargo bench
@@ -50,35 +66,35 @@ cargo bench -p benches --bench futures
 
 ## Performance Comparison Workflow
 
-### 1. Run Hydro-Native Benchmarks
-From the main [bigweaver-agent-canary-hydro-zeta](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta) repository:
-```bash
-cd bigweaver-agent-canary-hydro-zeta/benches
-cargo bench
-```
+All benchmarks are now in this repository. The benchmarks use:
+- Hydro-native (dfir_rs) implementations via path dependency to the main repository
+- Timely/Differential-Dataflow implementations where available
 
-### 2. Run Timely/Differential-Dataflow Benchmarks
+### Run All Benchmarks
 From this repository:
 ```bash
 cd bigweaver-agent-canary-zeta-hydro-deps/benches
 cargo bench
 ```
 
-### 3. Compare Results
+### Compare Results
 Criterion generates HTML reports in `target/criterion/` that can be used to compare performance between implementations.
 
 ## Benefits
 
-1. **Reduced Build Dependencies**: The main repository no longer needs timely and differential-dataflow
-2. **Faster Build Times**: Core development builds are faster without external dataflow dependencies
-3. **Maintained Functionality**: Performance comparison capabilities are preserved in this repository
-4. **Clear Separation**: Clean architectural boundary between core implementation and comparative benchmarks
-5. **Improved Maintainability**: Each repository has a focused purpose and dependency set
+1. **Eliminated Dependencies from Main Repo**: The main repository no longer needs timely, differential-dataflow, or benchmark dependencies
+2. **Faster Build Times**: Core Hydro development builds are significantly faster
+3. **Maintained Functionality**: Performance comparison capabilities are fully preserved
+4. **Unified Benchmark Location**: All benchmarks in one repository for easier maintenance
+5. **Clear Separation**: Clean architectural boundary between core implementation and benchmarks
+6. **Flexible Comparison**: Same location for both Hydro-native and timely/differential implementations
 
 ## Related Repositories
 
-- **[bigweaver-agent-canary-hydro-zeta](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta)** - Main Hydro repository with DFIR-native benchmarks and implementations
+- **[bigweaver-agent-canary-hydro-zeta](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta)** - Main Hydro repository with DFIR-native implementations (required dependency for benchmarks)
 
 ## Migration
 
-For information about the benchmark migration from the main repository, see the BENCHMARK_MIGRATION.md document in the main repository.
+For detailed information about the benchmark migration from the main repository, see the [BENCHMARK_MIGRATION.md](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta/blob/main/BENCHMARK_MIGRATION.md) document in the main repository.
+
+All benchmarks, including those previously in the main repository, have been consolidated here to provide a unified location for performance testing and comparison. The main repository now focuses exclusively on core Hydro/DFIR development.
