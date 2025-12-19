@@ -11,8 +11,7 @@ edition = "2021"
 [dev-dependencies]
 criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
 # Note: dfir_rs is referenced from the main repository
-# Current benchmarks use Hydro-native (dfir_rs) implementations
-# Future work: Add timely/differential-dataflow implementations alongside Hydro-native ones
+# Benchmarks include both Hydro-native (dfir_rs) and timely/differential-dataflow implementations
 dfir_rs = { path = "../../bigweaver-agent-canary-hydro-zeta/dfir_rs", features = [ "debugging" ] }
 differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
 futures = "0.3"
@@ -24,6 +23,44 @@ static_assertions = "1.0.0"
 timely = { package = "timely-master", version = "0.13.0-dev.1" }
 tokio = { version = "1.29.0", features = [ "rt-multi-thread" ] }
 
+# Benchmarks with timely/differential-dataflow implementations
+[[bench]]
+name = "arithmetic"
+harness = false
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "fan_out"
+harness = false
+
+[[bench]]
+name = "fork_join"
+harness = false
+
+[[bench]]
+name = "identity"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
+
+# Hydro-native benchmarks (also available in main repository for reference)
+[[bench]]
+name = "futures"
+harness = false
+
 [[bench]]
 name = "micro_ops"
 harness = false
@@ -34,8 +71,4 @@ harness = false
 
 [[bench]]
 name = "words_diamond"
-harness = false
-
-[[bench]]
-name = "futures"
 harness = false
