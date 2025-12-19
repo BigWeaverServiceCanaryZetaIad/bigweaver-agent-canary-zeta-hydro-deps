@@ -1,10 +1,10 @@
 # bigweaver-agent-canary-zeta-hydro-deps
 
-Benchmarks repository with timely and differential-dataflow dependencies for performance comparison.
+**Unified Benchmarks Repository** - All Hydro benchmarks with timely and differential-dataflow dependencies for performance comparison.
 
 ## Overview
 
-This repository contains benchmarks that depend on timely and differential-dataflow for comparing performance with Hydro-native implementations. By maintaining these benchmarks separately, we avoid adding timely and differential-dataflow dependencies to the main development workflow.
+As of December 19, 2024, this repository contains ALL benchmarks for Hydro and related crates. The main repository no longer contains any benchmarks, allowing it to focus exclusively on core Hydro/DFIR development. By consolidating all benchmarks here, we eliminate build dependencies from the main development workflow while maintaining comprehensive performance testing capabilities.
 
 ## Structure
 
@@ -82,12 +82,12 @@ Criterion generates HTML reports in `target/criterion/` that can be used to comp
 
 ## Benefits
 
-1. **Eliminated Dependencies from Main Repo**: The main repository no longer needs timely, differential-dataflow, or benchmark dependencies
-2. **Faster Build Times**: Core Hydro development builds are significantly faster
-3. **Maintained Functionality**: Performance comparison capabilities are fully preserved
-4. **Unified Benchmark Location**: All benchmarks in one repository for easier maintenance
-5. **Clear Separation**: Clean architectural boundary between core implementation and benchmarks
-6. **Flexible Comparison**: Same location for both Hydro-native and timely/differential implementations
+1. **Complete Elimination of Benchmark Dependencies**: The main repository has zero benchmark-related dependencies (no timely, differential-dataflow, criterion, or supporting libs)
+2. **Significantly Faster Build Times**: Core Hydro development builds are much faster without any benchmark overhead
+3. **Maintained Functionality**: Full performance comparison capabilities are preserved
+4. **Unified Benchmark Location**: ALL benchmarks consolidated in one repository for easier maintenance and comparison
+5. **Clear Separation**: Clean architectural boundary between core implementation and all benchmarking activities
+6. **Flexible Comparison**: Single location for both Hydro-native and timely/differential implementations
 
 ## Related Repositories
 
@@ -95,6 +95,7 @@ Criterion generates HTML reports in `target/criterion/` that can be used to comp
 
 ## Migration
 
+**Complete Migration (December 19, 2024):**
 For detailed information about the benchmark migration from the main repository, see the [BENCHMARK_MIGRATION.md](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta/blob/main/BENCHMARK_MIGRATION.md) document in the main repository.
 
-All benchmarks, including those previously in the main repository, have been consolidated here to provide a unified location for performance testing and comparison. The main repository now focuses exclusively on core Hydro/DFIR development.
+All benchmarks have been moved from the main repository to this repository, including all source files, data files, and configuration. The main repository now contains no benchmark-related code or dependencies, focusing exclusively on core Hydro/DFIR development.

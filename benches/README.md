@@ -1,17 +1,21 @@
-# Timely and Differential-Dataflow Benchmarks
+# Unified Benchmark Repository
 
-This directory contains benchmarks for performance comparison with timely and differential-dataflow implementations.
+This directory contains ALL benchmarks for Hydro and related crates, including both Hydro-native (dfir_rs) implementations and timely/differential-dataflow comparison implementations.
 
 ## Overview
 
-These benchmarks are maintained separately from the main [bigweaver-agent-canary-hydro-zeta](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta) repository to avoid pulling in timely and differential-dataflow dependencies for the core Hydro development workflow.
+As of December 19, 2024, all benchmarks have been consolidated in this repository. The main [bigweaver-agent-canary-hydro-zeta](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta) repository no longer contains any benchmarks, allowing it to focus exclusively on core Hydro/DFIR development without benchmark overhead or dependencies.
 
 ## Available Benchmarks
 
-- **micro_ops** - Micro-operations benchmark with timely/differential-dataflow dependencies
-- **symmetric_hash_join** - Symmetric hash join benchmark with timely/differential-dataflow dependencies
-- **words_diamond** - Word processing diamond pattern benchmark with timely/differential-dataflow dependencies
-- **futures** - Futures-based operations benchmark with timely/differential-dataflow dependencies
+### Currently Implemented (Hydro-native)
+- **micro_ops** - Micro-operations benchmark using dfir_rs
+- **symmetric_hash_join** - Symmetric hash join benchmark using dfir_rs
+- **words_diamond** - Word processing diamond pattern benchmark using dfir_rs
+- **futures** - Futures-based operations benchmark using dfir_rs
+
+### Future Work
+These benchmarks currently use Hydro-native (dfir_rs) implementations. Future work will add timely/differential-dataflow implementations alongside the Hydro-native ones for direct performance comparison.
 
 ## Dependencies
 
@@ -67,12 +71,19 @@ Results can be compared to evaluate performance characteristics between Hydro-na
 
 ## Migration Notes
 
-All benchmarks, including those previously in the main repository, have been migrated here to:
-- Reduce build dependencies in the main Hydro repository
-- Improve build times for core development
-- Provide a unified location for all performance testing
-- Enable side-by-side comparison of Hydro-native and timely/differential implementations
+**Complete Migration (December 19, 2024):**
+All benchmarks have been moved from the main repository to this repository, including:
+- All benchmark source files
+- All data files (words_alpha.txt, etc.)
+- All benchmark configuration and dependencies
+
+Benefits:
+- **Eliminated Dependencies**: The main repository has zero benchmark dependencies
+- **Faster Build Times**: Core Hydro development builds are significantly faster
+- **Unified Location**: All benchmarks (both Hydro-native and future timely/differential implementations) are in one place
+- **Maintained Functionality**: Full performance comparison capabilities are preserved
+- **Clear Separation**: Clean architectural boundary between core implementation and benchmarking
 
 The main repository now focuses exclusively on core Hydro/DFIR development without any benchmark overhead.
 
-For more information about the benchmark migration, see [BENCHMARK_MIGRATION.md](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta/blob/main/BENCHMARK_MIGRATION.md) in the main repository.
+For detailed migration information, see [BENCHMARK_MIGRATION.md](https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta/blob/main/BENCHMARK_MIGRATION.md) in the main repository.
