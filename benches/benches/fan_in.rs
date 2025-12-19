@@ -1,0 +1,51 @@
+use babyflow::babyflow::Query;
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use timely::dataflow::operators::{Concatenate, Inspect, ToStream};
+
+const NUM_OPS: usize = 20;
+const NUM_INTS: usize = 1_000_000;
+
+fn benchmark_babyflow(c: &mut Criterion) {
+    c.bench_function("babyflow", |b| {
+        b.iter(|| {
+            let mut q = Query::new();
+
+            let sources: Vec<_> = (0..NUM_OPS)
+                .map(|i| {
+                    q.source(move |send| {
+                        send.give_iterator((i * NUM_INTS)..((i + 1) * NUM_INTS));
+                    })
+                })
+                .collect();
+
+            let op = q.concat(sources);
+
+            op.sink(move |v| {
+                black_box(v);
+            });
+
+            (*q.df).borrow_mut().run();
+        })
+    });
+}
+
+fn benchmark_timely(c: &mut Criterion) {
+    c.bench_function("timely", |b| {
+        b.iter(|| {
+            timely::example(move |scope| {
+                let sources: Vec<_> = (0..NUM_OPS)
+                    .map(|i| ((i * NUM_INTS)..((i + 1) * NUM_INTS)).to_stream(scope))
+                    .collect();
+
+                let merged = scope.concatenate(sources);
+
+                merged.inspect(|x| {
+                    black_box(x);
+                });
+            });
+        })
+    });
+}
+
+criterion_group!(fan_in_dataflow, benchmark_babyflow, benchmark_timely);
+criterion_main!(fan_in_dataflow);
