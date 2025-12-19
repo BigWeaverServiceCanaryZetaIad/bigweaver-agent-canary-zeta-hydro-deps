@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "spinachflow",
+    "babyflow",
+    "benches",
+]
