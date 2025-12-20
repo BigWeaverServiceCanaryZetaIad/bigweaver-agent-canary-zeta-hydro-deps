@@ -1,0 +1,47 @@
+[package]
+name = "timely-differential-benches"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.3", features = ["async_tokio"] }
+timely = "0.12"
+differential-dataflow = "0.12"
+lazy_static = "1.4.0"
+rand = "0.8.4"
+seq-macro = "0.2"
+tokio = { version = "1.0", features = ["rt-multi-thread"] }
+
+[[bench]]
+name = "arithmetic_timely"
+harness = false
+
+[[bench]]
+name = "fan_in_timely"
+harness = false
+
+[[bench]]
+name = "fan_out_timely"
+harness = false
+
+[[bench]]
+name = "fork_join_timely"
+harness = false
+
+[[bench]]
+name = "identity_timely"
+harness = false
+
+[[bench]]
+name = "join_timely"
+harness = false
+
+[[bench]]
+name = "reachability_timely_differential"
+harness = false
+
+[[bench]]
+name = "upcase_timely"
+harness = false
