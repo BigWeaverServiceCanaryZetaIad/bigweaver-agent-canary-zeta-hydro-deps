@@ -31,8 +31,16 @@ benches/
 
 - Rust toolchain (latest stable)
 - Cargo
+- Network access (to fetch dfir_rs and sinktools from GitHub)
 
-### Run All Benchmarks
+### Quick Start
+
+Run all benchmarks with the helper script:
+```bash
+./scripts/run_comparison_benchmarks.sh
+```
+
+### Run All Benchmarks Manually
 
 ```bash
 cargo bench -p hydro-benches-comparison
