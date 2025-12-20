@@ -1,56 +1,66 @@
-# Timely and Differential-Dataflow Benchmarks
+# Hydro Comparison Benchmarks
 
-This repository contains performance comparison benchmarks for DFIR (Hydro) against timely-dataflow and differential-dataflow.
+This directory contains performance comparison benchmarks between DFIR (Dataflow Intermediate Representation) and timely-dataflow/differential-dataflow.
 
 ## Purpose
 
-These benchmarks compare the performance of DFIR implementations with equivalent implementations using timely-dataflow and differential-dataflow. By separating these benchmarks from the main Hydro repository, we avoid introducing timely and differential-dataflow as dependencies in the core codebase while still maintaining the ability to run performance comparisons.
+These benchmarks enable direct performance comparisons between:
+- **DFIR**: The dataflow runtime used by Hydro
+- **Timely Dataflow**: A low-latency cyclic dataflow computational model
+- **Differential Dataflow**: An implementation of differential computation on timely dataflow
 
 ## Running Benchmarks
 
 Run all benchmarks:
 ```bash
-cargo bench -p timely-differential-benchmarks
+cargo bench
 ```
 
 Run specific benchmarks:
 ```bash
-cargo bench -p timely-differential-benchmarks --bench arithmetic
-cargo bench -p timely-differential-benchmarks --bench fan_in
-cargo bench -p timely-differential-benchmarks --bench fan_out
-cargo bench -p timely-differential-benchmarks --bench fork_join
-cargo bench -p timely-differential-benchmarks --bench identity
-cargo bench -p timely-differential-benchmarks --bench join
-cargo bench -p timely-differential-benchmarks --bench reachability
-cargo bench -p timely-differential-benchmarks --bench upcase
+cargo bench --bench arithmetic
+cargo bench --bench reachability
+cargo bench --bench join
+cargo bench --bench fan_in
+cargo bench --bench fan_out
+cargo bench --bench fork_join
+cargo bench --bench identity
+cargo bench --bench upcase
 ```
 
 ## Benchmark Descriptions
 
-- **arithmetic** - Arithmetic operation benchmarks comparing DFIR, timely-dataflow, and pipeline implementations
-- **fan_in** - Fan-in pattern benchmarks testing multiple input streams merging
-- **fan_out** - Fan-out pattern benchmarks testing single stream splitting to multiple outputs
-- **fork_join** - Fork-join pattern benchmarks with filtering and merging
-- **identity** - Identity operation benchmarks testing basic data flow
-- **join** - Join operation benchmarks comparing different join implementations
-- **reachability** - Graph reachability benchmarks using real-world graph data
-- **upcase** - String uppercase transformation benchmarks
+- **arithmetic** - Basic arithmetic operations comparing DFIR pipeline, raw iteration, compiled DFIR, timely, and differential dataflow
+- **reachability** - Graph reachability analysis (transitive closure) comparing DFIR and differential dataflow
+- **join** - Join operation performance comparing symmetric hash joins, timely joins, and differential joins
+- **fan_in** - Multiple streams merging into one
+- **fan_out** - One stream splitting into multiple
+- **fork_join** - Parallel processing with synchronization
+- **identity** - Pass-through operations
+- **upcase** - String transformation operations
+
+## Viewing Results
+
+After running benchmarks, view HTML reports:
+```bash
+open target/criterion/report/index.html
+```
+
+Or view individual benchmark reports in `target/criterion/*/report/index.html`
 
 ## Data Files
 
-- **reachability_edges.txt** - Graph edge data for reachability benchmarks
-- **reachability_reachable.txt** - Expected reachable nodes for validation
+- `reachability_edges.txt` - Graph edge data for reachability benchmarks
+- `reachability_reachable.txt` - Expected reachability results for validation
 
-## Dependencies
+## Migration Note
 
-These benchmarks depend on:
-- `timely-dataflow-master` (0.13.0-dev.1) - For timely-dataflow comparisons
-- `differential-dataflow-master` (0.13.0-dev.1) - For differential-dataflow comparisons
-- `dfir_rs` - Referenced from the main Hydro repository via git
-- `sinktools` - Referenced from the main Hydro repository via git
+These benchmarks were migrated from the main `bigweaver-agent-canary-hydro-zeta` repository to isolate timely and differential-dataflow dependencies. See the repository root MIGRATION.md for details.
 
-## Migration Notes
+## Related Benchmarks
 
-These benchmarks were moved from the main `bigweaver-agent-canary-hydro-zeta` repository to remove timely and differential-dataflow dependencies from the core Hydro codebase. The DFIR-native benchmarks (micro_ops, futures, symmetric_hash_join, words_diamond) remain in the main repository.
-
-For more information about the main Hydro repository, visit: https://github.com/hydro-project/hydro
+DFIR-native benchmarks (without timely/differential dependencies) are in the main repository:
+```bash
+cd ../bigweaver-agent-canary-hydro-zeta
+cargo bench -p benches
+```
