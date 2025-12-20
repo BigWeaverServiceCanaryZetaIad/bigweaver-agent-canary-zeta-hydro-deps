@@ -1,10 +1,22 @@
 [package]
-name = "timely-differential-benchmarks"
+name = "hydro-benches-comparison"
 publish = false
-version = "0.0.0"
-edition = "2024"
-repository = "https://github.com/hydro-project/hydro"
+version = "0.1.0"
+edition = "2021"
 license = "Apache-2.0"
+
+[lints.rust]
+missing_unsafe_on_extern = "deny"
+unsafe_attr_outside_unsafe = "deny"
+unused_qualifications = "warn"
+
+[lints.clippy]
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+explicit_into_iter_loop = "warn"
+let_and_return = "allow"
+uninlined_format_args = "allow"
+upper_case_acronyms = "warn"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -12,7 +24,6 @@ license = "Apache-2.0"
 
 [dev-dependencies]
 criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
-# Reference the hydro repository for dfir_rs and sinktools to enable performance comparisons
 dfir_rs = { git = "https://github.com/hydro-project/hydro.git", features = [ "debugging" ] }
 differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
 futures = "0.3"

@@ -2,166 +2,191 @@
 
 ## Overview
 
-This document describes the migration of timely-dataflow and differential-dataflow benchmarks from the `bigweaver-agent-canary-hydro-zeta` repository to the `bigweaver-agent-canary-zeta-hydro-deps` repository.
+This document describes the migration of timely-dataflow and differential-dataflow comparison benchmarks from the `bigweaver-agent-canary-hydro-zeta` repository to this dedicated `bigweaver-agent-canary-zeta-hydro-deps` repository.
 
-## Motivation
+## Migration Date
 
-The main Hydro repository (bigweaver-agent-canary-hydro-zeta) aims to remain dependency-free with respect to timely-dataflow and differential-dataflow. However, maintaining performance comparison benchmarks is valuable for:
+December 20, 2024
 
-1. **Performance Validation** - Ensuring DFIR performance remains competitive
-2. **Regression Detection** - Identifying performance regressions across releases
-3. **Research & Development** - Supporting academic and industrial research
-4. **Design Decisions** - Informing architectural and implementation choices
+## Rationale
 
-By separating these benchmarks into a dedicated repository, we achieve both goals: keeping the main codebase clean while preserving performance comparison capabilities.
+### Why Separate the Benchmarks?
 
-## Migration Details
+1. **Dependency Isolation**: The timely and differential-dataflow dependencies are substantial and only needed for performance comparison purposes, not for core functionality.
 
-### Date
-December 20, 2025
+2. **Build Performance**: Removing these dependencies from the main repository reduces compilation time for developers working on core Hydro features.
 
-### Migrated Benchmarks
+3. **Clearer Architecture**: Separating reference implementations from native DFIR benchmarks makes the purpose of each benchmark suite clearer.
 
-The following benchmarks were moved from `bigweaver-agent-canary-hydro-zeta/benches/` to `bigweaver-agent-canary-zeta-hydro-deps/benches/`:
+4. **Maintenance**: Allows independent versioning and updating of comparison benchmarks without affecting the main codebase.
 
-| Benchmark File | Description | Data Files |
-|----------------|-------------|------------|
-| `arithmetic.rs` | Arithmetic operation performance tests | - |
-| `fan_in.rs` | Fan-in pattern (multiple inputs to one) | - |
-| `fan_out.rs` | Fan-out pattern (one input to multiple) | - |
-| `fork_join.rs` | Fork-join with filtering operations | - |
-| `identity.rs` | Identity/pass-through operations | - |
-| `join.rs` | Join operation implementations | - |
-| `reachability.rs` | Graph reachability algorithms | `reachability_edges.txt`, `reachability_reachable.txt` |
-| `upcase.rs` | String uppercase transformations | - |
+## What Was Migrated
 
-### Benchmarks Remaining in Main Repository
+### Benchmark Files
+The following benchmark files were moved from `bigweaver-agent-canary-hydro-zeta/benches/benches/` to this repository:
 
-The following DFIR-native benchmarks remain in `bigweaver-agent-canary-hydro-zeta/benches/`:
+- `arithmetic.rs` - Arithmetic operation comparisons
+- `fan_in.rs` - Fan-in pattern comparisons
+- `fan_out.rs` - Fan-out pattern comparisons
+- `fork_join.rs` - Fork-join pattern comparisons
+- `identity.rs` - Identity operation comparisons
+- `join.rs` - Join operation comparisons
+- `reachability.rs` - Graph reachability comparisons
+- `upcase.rs` - String transformation comparisons
 
-| Benchmark File | Description | Data Files |
-|----------------|-------------|------------|
-| `micro_ops.rs` | DFIR micro-operation benchmarks | - |
-| `futures.rs` | Async/futures operation benchmarks | - |
-| `symmetric_hash_join.rs` | Symmetric hash join performance tests | - |
-| `words_diamond.rs` | Word processing diamond pattern | `words_alpha.txt` |
+### Data Files
+Supporting data files for benchmarks:
+- `reachability_edges.txt` - Graph edge data for reachability benchmarks
+- `reachability_reachable.txt` - Expected reachability results
 
-These benchmarks do not require timely or differential-dataflow dependencies and use only DFIR operations.
-
-## Dependencies
-
-### Before Migration (bigweaver-agent-canary-hydro-zeta)
-
-The benchmarks package included:
+### Dependencies
+The following dependencies were moved from the main repository to this repository:
 - `timely = { package = "timely-master", version = "0.13.0-dev.1" }`
 - `differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }`
-- Local path dependencies: `dfir_rs`, `sinktools`
 
-### After Migration
+## What Remained in the Main Repository
 
-**bigweaver-agent-canary-hydro-zeta:**
-- Removed timely and differential-dataflow dependencies
-- Retained only DFIR-native benchmarks
-- Local path dependencies: `dfir_rs`, `sinktools`
+### DFIR-Native Benchmarks
+The following benchmarks remain in `bigweaver-agent-canary-hydro-zeta` as they are pure DFIR implementations without external dependencies:
 
-**bigweaver-agent-canary-zeta-hydro-deps:**
-- Added timely and differential-dataflow dependencies
-- Git dependencies: `dfir_rs`, `sinktools` (from upstream hydro repository)
-- All timely/differential comparison benchmarks
+- `futures.rs` - Futures/async operation benchmarks
+- `micro_ops.rs` - Micro-operation benchmarks
+- `symmetric_hash_join.rs` - Symmetric hash join performance tests
+- `words_diamond.rs` - Word processing diamond pattern benchmark
+- `words_alpha.txt` - Word list data file
 
-## Usage After Migration
+## Impact on Existing Workflows
 
-### Running DFIR-Native Benchmarks
+### For Developers Working on DFIR
 
-In the main repository:
+**Before Migration:**
 ```bash
 cd bigweaver-agent-canary-hydro-zeta
-cargo bench -p benches
+cargo bench -p benches  # Runs all benchmarks including comparisons
 ```
 
-### Running Comparison Benchmarks
-
-In the deps repository:
+**After Migration:**
 ```bash
+# Run DFIR-native benchmarks
+cd bigweaver-agent-canary-hydro-zeta
+cargo bench -p benches
+
+# Run comparison benchmarks separately
 cd bigweaver-agent-canary-zeta-hydro-deps
-cargo bench -p timely-differential-benchmarks
+cargo bench -p hydro-benches-comparison
 ```
 
-### Running All Benchmarks
+### For CI/CD Pipelines
 
-To run both sets of benchmarks:
-```bash
-# In main repository
-cd bigweaver-agent-canary-hydro-zeta
-cargo bench -p benches
+If your CI/CD pipeline runs benchmarks, you'll need to update it to:
+1. Clone both repositories
+2. Run benchmarks in each repository separately
+3. Aggregate results if needed
 
-# In deps repository
-cd ../bigweaver-agent-canary-zeta-hydro-deps
-cargo bench -p timely-differential-benchmarks
+### For Performance Analysis
+
+To perform comprehensive performance analysis:
+
+1. **Run native benchmarks:**
+   ```bash
+   cd bigweaver-agent-canary-hydro-zeta
+   cargo bench -p benches
+   ```
+
+2. **Run comparison benchmarks:**
+   ```bash
+   cd bigweaver-agent-canary-zeta-hydro-deps
+   cargo bench -p hydro-benches-comparison
+   ```
+
+3. **View results:**
+   - Native benchmark results: `bigweaver-agent-canary-hydro-zeta/target/criterion/`
+   - Comparison benchmark results: `bigweaver-agent-canary-zeta-hydro-deps/target/criterion/`
+
+## Repository Structure After Migration
+
+### bigweaver-agent-canary-hydro-zeta
 ```
-
-## File Structure
-
-### bigweaver-agent-canary-zeta-hydro-deps Structure
-
-```
-bigweaver-agent-canary-zeta-hydro-deps/
-├── README.md                      # Repository overview
-├── MIGRATION.md                   # This file
+benches/
+├── Cargo.toml          # No timely/differential dependencies
+├── README.md           # Updated to reference this repository
 └── benches/
-    ├── Cargo.toml                 # Package configuration with timely/differential deps
-    ├── README.md                  # Benchmark documentation
-    ├── build.rs                   # Build script for generated code
-    └── benches/
-        ├── arithmetic.rs          # Arithmetic benchmarks
-        ├── fan_in.rs             # Fan-in benchmarks
-        ├── fan_out.rs            # Fan-out benchmarks
-        ├── fork_join.rs          # Fork-join benchmarks
-        ├── identity.rs           # Identity benchmarks
-        ├── join.rs               # Join benchmarks
-        ├── reachability.rs       # Reachability benchmarks
-        ├── upcase.rs             # Upcase benchmarks
-        ├── reachability_edges.txt       # Graph data
-        ├── reachability_reachable.txt   # Expected results
-        └── .gitignore            # Ignore generated files
+    ├── futures.rs
+    ├── micro_ops.rs
+    ├── symmetric_hash_join.rs
+    ├── words_diamond.rs
+    └── words_alpha.txt
 ```
 
-## Maintaining Benchmarks
+### bigweaver-agent-canary-zeta-hydro-deps (this repository)
+```
+benches/
+├── Cargo.toml          # Includes timely/differential dependencies
+├── README.md           # Comprehensive documentation
+└── benches/
+    ├── arithmetic.rs
+    ├── fan_in.rs
+    ├── fan_out.rs
+    ├── fork_join.rs
+    ├── identity.rs
+    ├── join.rs
+    ├── reachability.rs
+    ├── reachability_edges.txt
+    ├── reachability_reachable.txt
+    └── upcase.rs
+```
+
+## Technical Notes
+
+### Dependency References
+
+The benchmarks in this repository use git dependencies to reference `dfir_rs` and `sinktools`:
+
+```toml
+dfir_rs = { git = "https://github.com/hydro-project/hydro.git", features = [ "debugging" ] }
+sinktools = { git = "https://github.com/hydro-project/hydro.git", version = "^0.0.1" }
+```
+
+This ensures the benchmarks always use the latest version of DFIR for accurate comparisons.
+
+### Benchmark Compatibility
+
+All benchmarks were migrated without modification to their core logic. The performance characteristics should remain identical to their previous implementations.
+
+## Future Considerations
 
 ### Adding New Comparison Benchmarks
 
-New benchmarks that compare DFIR with timely/differential-dataflow should be added to the `bigweaver-agent-canary-zeta-hydro-deps` repository.
+When adding new benchmarks that compare DFIR with timely/differential-dataflow:
 
-### Adding New DFIR-Native Benchmarks
+1. Add the benchmark to this repository (`bigweaver-agent-canary-zeta-hydro-deps`)
+2. Ensure both DFIR and reference implementations are included
+3. Document the benchmark purpose and expected performance characteristics
 
-New benchmarks that only use DFIR features should be added to the `bigweaver-agent-canary-hydro-zeta` repository.
+### Adding New DFIR-Only Benchmarks
 
-### Updating Existing Benchmarks
+When adding benchmarks that only test DFIR functionality:
 
-When updating benchmarks:
-1. Ensure DFIR implementations are in sync across both repositories
-2. Test both benchmark suites after changes
-3. Update documentation if benchmark behavior changes
+1. Add the benchmark to the main repository (`bigweaver-agent-canary-hydro-zeta`)
+2. Ensure no timely or differential-dataflow dependencies are introduced
+3. Consider if a comparison version would be valuable in this repository
 
-## Performance Comparison Workflow
+## Rollback Procedure
 
-To maintain performance validation:
+If the migration needs to be reverted:
 
-1. **Before Releases**: Run both benchmark suites
-2. **Compare Results**: Check for regressions in DFIR performance
-3. **Document Changes**: Note significant performance changes in release notes
-4. **Investigate Regressions**: If DFIR performance degrades relative to timely/differential, investigate and address
+1. Copy benchmark files from this repository back to `bigweaver-agent-canary-hydro-zeta/benches/benches/`
+2. Update `bigweaver-agent-canary-hydro-zeta/benches/Cargo.toml` to include timely and differential dependencies
+3. Add the benchmark entries back to the `[[bench]]` sections
+4. Update the README.md to remove migration references
 
-## References
+## Questions or Issues
 
-- Main Hydro Repository: https://github.com/hydro-project/hydro
-- Timely Dataflow: https://github.com/TimelyDataflow/timely-dataflow
-- Differential Dataflow: https://github.com/TimelyDataflow/differential-dataflow
+If you encounter issues related to this migration:
 
-## Questions and Support
+1. Check that you have both repositories cloned
+2. Verify you're running benchmarks in the correct repository
+3. Ensure dependencies are up to date: `cargo update`
+4. Check that git dependencies can be fetched: `cargo fetch`
 
-For questions about:
-- **Benchmark implementation**: See individual benchmark source files
-- **Running benchmarks**: See `benches/README.md`
-- **Migration rationale**: See this document's Motivation section
-- **Contributing**: See `CONTRIBUTING.md` in the main repository
+For persistent issues, please file an issue in the appropriate repository.
