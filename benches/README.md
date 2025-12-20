@@ -19,6 +19,14 @@ These benchmarks were moved from the main bigweaver-agent-canary-hydro-zeta repo
 
 ## Running Benchmarks
 
+### Using the convenience script:
+```bash
+./run_benchmarks.sh              # Run all benchmarks
+./run_benchmarks.sh arithmetic   # Run specific benchmark
+```
+
+### Using cargo directly:
+
 Run all benchmarks:
 ```bash
 cargo bench
@@ -29,6 +37,13 @@ Run specific benchmarks:
 cargo bench --bench reachability
 cargo bench --bench arithmetic
 ```
+
+### Benchmark results
+
+Results are saved to `target/criterion/` and include:
+- HTML reports with graphs
+- Statistical analysis (mean, median, standard deviation)
+- Comparison with previous runs (if available)
 
 ## Performance Comparisons
 
