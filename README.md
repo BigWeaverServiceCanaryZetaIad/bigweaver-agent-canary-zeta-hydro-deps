@@ -25,7 +25,7 @@ benches/
     └── upcase.rs       # String uppercase transformation benchmarks
 ```
 
-## Running Benchmarks
+## Quick Start
 
 ### Prerequisites
 
@@ -36,6 +36,16 @@ benches/
 
 ```bash
 cargo bench -p hydro-benches-comparison
+```
+
+For detailed usage instructions, troubleshooting, and advanced features, see [BENCHMARK_USAGE.md](BENCHMARK_USAGE.md).
+
+### Verify Setup
+
+To verify all benchmarks are properly configured:
+
+```bash
+bash scripts/verify_benchmarks.sh
 ```
 
 ### Run Specific Benchmarks
@@ -130,6 +140,20 @@ To compare DFIR performance with timely/differential-dataflow:
    ```
 3. Compare results using criterion's HTML reports in `target/criterion/`
 
+**Automated Comparison**: Use the provided script to run benchmarks in both repositories:
+
+```bash
+bash scripts/compare_with_main.sh
+```
+
+This script will:
+- Run benchmarks in both repositories
+- Update DFIR dependencies to latest version
+- Generate comparison summary
+- Open HTML reports
+
+For detailed instructions on cross-repository benchmarking, see [BENCHMARK_USAGE.md](BENCHMARK_USAGE.md).
+
 ## Contributing
 
 When adding new comparison benchmarks:
@@ -138,6 +162,22 @@ When adding new comparison benchmarks:
 2. Use meaningful benchmark names that clearly indicate the implementation
 3. Document any non-obvious performance characteristics
 4. Update this README with benchmark descriptions
+5. Add the benchmark entry to `benches/Cargo.toml`
+
+See [BENCHMARK_USAGE.md](BENCHMARK_USAGE.md) for detailed contribution guidelines.
+
+## Documentation
+
+- **[BENCHMARK_USAGE.md](BENCHMARK_USAGE.md)** - Comprehensive guide to using, running, and interpreting benchmarks
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Quick reference for common commands and patterns
+- **[SETUP_VERIFICATION.md](SETUP_VERIFICATION.md)** - Checklist to verify proper benchmark setup
+- **[MIGRATION.md](MIGRATION.md)** - Details about the benchmark migration from the main repository
+- **[benches/README.md](benches/README.md)** - Quick reference for benchmark operations
+
+## Scripts
+
+- **[scripts/compare_with_main.sh](scripts/compare_with_main.sh)** - Run benchmarks in both repositories and compare results
+- **[scripts/verify_benchmarks.sh](scripts/verify_benchmarks.sh)** - Verify all benchmarks are properly configured
 
 ## License
 
