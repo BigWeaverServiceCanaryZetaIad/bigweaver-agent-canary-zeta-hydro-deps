@@ -2,6 +2,8 @@
 
 members = [
     "timely-differential-benches",
+    "babyflow",
+    "spinachflow",
 ]
 
 resolver = "2"

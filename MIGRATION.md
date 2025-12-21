@@ -6,7 +6,7 @@ This document describes the migration of timely-dataflow and differential-datafl
 
 ## Migration Date
 
-December 20, 2025
+December 21, 2025 (Updated)
 
 ## Reason for Migration
 
@@ -45,6 +45,10 @@ The following dependencies were moved from the main repository to this repositor
 ### Added to bigweaver-agent-canary-zeta-hydro-deps
 - `timely = "0.12"`
 - `differential-dataflow = "0.12"`
+- `hydroflow = "0.5"` (from crates.io)
+- Supporting local projects:
+  - `babyflow` (path dependency)
+  - `spinachflow` (path dependency)
 - Supporting dependencies:
   - `criterion = { version = "0.3", features = ["async_tokio"] }`
   - `lazy_static = "1.4.0"`
@@ -65,6 +69,12 @@ bigweaver-agent-canary-zeta-hydro-deps/
 ├── Cargo.toml                           # Workspace configuration
 ├── README.md                            # Repository documentation
 ├── MIGRATION.md                         # This file
+├── babyflow/                            # Local babyflow implementation
+│   ├── Cargo.toml
+│   └── src/
+├── spinachflow/                         # Local spinachflow implementation
+│   ├── Cargo.toml
+│   └── src/
 ├── scripts/
 │   └── compare_benchmarks.sh           # Cross-repository comparison script
 └── timely-differential-benches/
@@ -122,7 +132,23 @@ To verify the migration was successful:
    ```bash
    cd bigweaver-agent-canary-hydro-zeta
    # Check Cargo.toml files for absence of timely/differential dependencies
+   # (The main repository no longer contains any Cargo.toml files)
    ```
+
+## Migration Completion Status
+
+✅ **Completed December 21, 2025**
+
+All required components have been successfully migrated:
+- ✅ All benchmark files moved to timely-differential-benches/benches/
+- ✅ babyflow and spinachflow local projects added to workspace
+- ✅ hydroflow added as crates.io dependency
+- ✅ All benchmark dependencies properly configured in Cargo.toml
+- ✅ Workspace Cargo.toml updated with all workspace members
+- ✅ Documentation updated (README.md, MIGRATION.md)
+- ✅ compare_benchmarks.sh script verified and made executable
+- ✅ Source repository cleaned (no Cargo.toml files remain)
+- ✅ Source repository README.md documents the migration
 
 ## Post-Migration Changes in Main Repository
 
