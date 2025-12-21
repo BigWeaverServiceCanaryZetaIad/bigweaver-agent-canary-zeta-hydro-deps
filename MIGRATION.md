@@ -43,6 +43,8 @@ The following files were extracted from commit `513b2091` and migrated to this r
 The following dependencies were moved from the main repository to this repository:
 
 ### Added to bigweaver-agent-canary-zeta-hydro-deps
+
+**External Dependencies:**
 - `timely = "0.12"`
 - `differential-dataflow = "0.12"`
 - Supporting dependencies:
@@ -51,6 +53,13 @@ The following dependencies were moved from the main repository to this repositor
   - `rand = "0.8.4"`
   - `seq-macro = "0.2"`
   - `tokio = { version = "1.0", features = ["rt-multi-thread"] }`
+
+**Support Crates (for benchmark comparisons):**
+- `babyflow` - A minimal dataflow library (extracted from commit 513b2091)
+- `hydroflow` - Early Hydro dataflow implementation (extracted from commit 513b2091)
+- `spinachflow` - Alternative dataflow implementation (extracted from commit 513b2091)
+
+These support crates enable the benchmarks to compare timely/differential-dataflow performance against other dataflow implementations.
 
 ### Removed from bigweaver-agent-canary-hydro-zeta
 - `timely = "*"` (from benches/Cargo.toml)
@@ -65,6 +74,15 @@ bigweaver-agent-canary-zeta-hydro-deps/
 ├── Cargo.toml                           # Workspace configuration
 ├── README.md                            # Repository documentation
 ├── MIGRATION.md                         # This file
+├── babyflow/                            # Support crate for benchmarks
+│   ├── Cargo.toml
+│   └── src/
+├── hydroflow/                           # Support crate for benchmarks
+│   ├── Cargo.toml
+│   └── src/
+├── spinachflow/                         # Support crate for benchmarks
+│   ├── Cargo.toml
+│   └── src/
 ├── scripts/
 │   └── compare_benchmarks.sh           # Cross-repository comparison script
 └── timely-differential-benches/
