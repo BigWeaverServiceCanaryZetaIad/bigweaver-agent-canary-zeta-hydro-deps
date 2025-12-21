@@ -1,99 +1,13 @@
-use babyflow::babyflow::Query;
+
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use hydroflow::scheduled::query::Query as Q;
-use hydroflow::scheduled::{collections::Iter, handoff::VecHandoff, Hydroflow, SendCtx};
+
 use timely::dataflow::operators::{Concatenate, Filter, Inspect, ToStream};
 
 const NUM_OPS: usize = 20;
 const NUM_INTS: usize = 100_000;
 const BRANCH_FACTOR: usize = 2;
 
-fn benchmark_hydroflow(c: &mut Criterion) {
-    c.bench_function("fork_join/hydroflow", |b| {
-        b.iter(|| {
-            let mut df = Hydroflow::new();
 
-            let mut sent = false;
-            let source = df.add_source(move |send: &mut SendCtx<VecHandoff<_>>| {
-                if !sent {
-                    sent = true;
-                    send.give(Iter(0..NUM_INTS));
-                }
-            });
-
-            let (tee_in, mut out1, mut out2) = df.add_binary_out(
-                |recv, send1: &mut SendCtx<VecHandoff<_>>, send2: &mut SendCtx<VecHandoff<_>>| {
-                    for v in recv.into_iter() {
-                        if v % 2 == 0 {
-                            send1.give(Some(v));
-                        } else {
-                            send2.give(Some(v));
-                        }
-                    }
-                },
-            );
-
-            df.add_edge(source, tee_in);
-            for _ in 0..NUM_OPS {
-                let (in1, in2, mut new_out1, mut new_out2) =
-                    df.add_binary_in_binary_out(|recv1, recv2, send1, send2| {
-                        for v in recv1.into_iter().chain(recv2.into_iter()) {
-                            if v % 2 == 0 {
-                                send1.give(Some(v));
-                            } else {
-                                send2.give(Some(v));
-                            }
-                        }
-                    });
-                std::mem::swap(&mut out1, &mut new_out1);
-                std::mem::swap(&mut out2, &mut new_out2);
-                df.add_edge(new_out1, in1);
-                df.add_edge(new_out2, in2);
-            }
-
-            let (sink1, sink2) = df.add_binary_sink(|recv1, recv2| {
-                for x in recv1.into_iter() {
-                    black_box(x);
-                }
-                for x in recv2.into_iter() {
-                    black_box(x);
-                }
-            });
-
-            df.add_edge(out1, sink1);
-            df.add_edge(out2, sink2);
-
-            df.run()
-        })
-    });
-}
-
-fn benchmark_hydroflow_builder(c: &mut Criterion) {
-    c.bench_function("fork_join/hydroflow_builder", |b| {
-        b.iter(|| {
-            // TODO(justin): this creates more operators than necessary.
-            let mut q = Q::new();
-
-            let mut source = q.source(|send| {
-                send.give(Iter(0..NUM_INTS));
-            });
-
-            for _ in 0..NUM_OPS {
-                let mut outs = source.tee(2).into_iter();
-                let (mut out1, mut out2) = (outs.next().unwrap(), outs.next().unwrap());
-                out1 = out1.filter(|x| x % 2 == 0);
-                out2 = out2.filter(|x| x % 2 == 1);
-                source = out1.concat(out2);
-            }
-
-            source.sink(|v| {
-                black_box(v);
-            });
-
-            q.run();
-        })
-    });
-}
 
 fn benchmark_raw(c: &mut Criterion) {
     c.bench_function("fork_join/raw", |b| {
@@ -114,29 +28,6 @@ fn benchmark_raw(c: &mut Criterion) {
     });
 }
 
-fn benchmark_babyflow(c: &mut Criterion) {
-    c.bench_function("fork_join/babyflow", |b| {
-        b.iter(|| {
-            let mut q = Query::new();
-
-            let mut op = q.source(move |send| {
-                send.give_iterator(0..NUM_INTS);
-            });
-
-            for _ in 0..NUM_OPS {
-                op = q.concat(
-                    (0..BRANCH_FACTOR).map(|i| op.clone().filter(move |x| x % BRANCH_FACTOR == i)),
-                );
-            }
-
-            op.sink(|i| {
-                black_box(i);
-            });
-
-            (*q.df).borrow_mut().run();
-        })
-    });
-}
 
 fn benchmark_timely(c: &mut Criterion) {
     c.bench_function("fork_join/timely", |b| {
@@ -161,46 +52,6 @@ fn benchmark_timely(c: &mut Criterion) {
     });
 }
 
-fn benchmark_spinachflow_asym(c: &mut Criterion) {
-    c.bench_function("fork_join/spinachflow (asymmetric)", |b| {
-        b.to_async(
-            tokio::runtime::Builder::new_current_thread()
-                .build()
-                .unwrap(),
-        )
-        .iter(|| {
-            async {
-                use spinachflow::futures::StreamExt;
-                use spinachflow::futures::future::ready;
-
-                let stream = spinachflow::futures::stream::iter(0..NUM_INTS);
-
-                ///// MAGIC NUMBER!!!!!!!! is NUM_OPS
-                seq_macro::seq!(N in 0..20 {
-                    let mut asym_split = spinachflow::stream::AsymSplit::new(stream);
-                    let mut i = 0;
-                    let splits = [(); BRANCH_FACTOR - 1].map(|_| {
-                        i += 1;
-                        asym_split.add_split().filter(move |x| ready(i == x % BRANCH_FACTOR))
-                    });
-                    let stream = spinachflow::stream::SelectArr::new(splits);
-
-                    let asym_split = asym_split.filter(|x| ready(0 == x % BRANCH_FACTOR));
-                    let stream = spinachflow::futures::stream::select(asym_split, stream);
-                    let stream: std::pin::Pin<Box<dyn spinachflow::futures::Stream<Item = usize>>> = Box::pin(stream);
-                });
-
-                let mut stream = stream;
-                loop {
-                    let item = stream.next().await;
-                    if item.is_none() {
-                        break;
-                    }
-                }
-            }
-        });
-    });
-}
 
 // fn benchmark_spinach(c: &mut Criterion) {
 //     c.bench_function("spinach", |b| {
@@ -339,22 +190,9 @@ fn benchmark_spinachflow_asym(c: &mut Criterion) {
 //     });
 // }
 
-// criterion_group!(
-//     name = fork_join_dataflow;
-//     config = Criterion::default().with_profiler(PProfProfiler::new(100, Output::Flamegraph(None)));
-//     targets = benchmark_babyflow
-// );
-// criterion_group!(fork_join_dataflow, benchmark_timely,);
 criterion_group!(
     fork_join_dataflow,
-    benchmark_hydroflow,
-    benchmark_hydroflow_builder,
-    benchmark_babyflow,
-    benchmark_timely,
     benchmark_raw,
-    // benchmark_spinach,
-    // benchmark_spinach_switch,
-    // benchmark_spinachflow_symm,
-    benchmark_spinachflow_asym,
+    benchmark_timely,
 );
 criterion_main!(fork_join_dataflow);
