@@ -2,7 +2,11 @@
 
 ## Overview
 
-This repository contains benchmarks and dependencies for timely-dataflow and differential-dataflow that have been separated from the main `bigweaver-agent-canary-hydro-zeta` repository. This separation allows for performance comparisons without adding these dependencies to the main codebase.
+This repository contains **timely-dataflow** and **differential-dataflow** benchmarks that have been separated from the main `bigweaver-agent-canary-hydro-zeta` repository. This separation allows for performance comparisons and testing without adding these dependencies to the main codebase.
+
+### What's Included
+
+This repository contains **only** the timely-dataflow and differential-dataflow implementations of the benchmarks. Other implementations (babyflow, spinachflow, hydroflow, baseline) remain in or have been moved to their appropriate repositories.
 
 ## Repository Structure
 
@@ -31,12 +35,14 @@ This repository contains benchmarks and dependencies for timely-dataflow and dif
 
 ## Dependencies
 
-This repository includes the following external dependencies:
+This repository includes only the essential dependencies for timely and differential-dataflow benchmarks:
 
-- **timely-dataflow** (`timely`): A low-latency data-parallel dataflow system
-- **differential-dataflow**: Incremental computation based on timely-dataflow
-- **criterion**: Benchmarking framework
-- Other supporting dependencies (lazy_static, rand, seq-macro, tokio)
+- **timely-dataflow** (`timely = "0.12"`): A low-latency data-parallel dataflow system
+- **differential-dataflow** (`differential-dataflow = "0.12"`): Incremental computation based on timely-dataflow
+- **criterion** (`criterion = "0.3"`): Benchmarking framework with HTML report generation
+- **lazy_static** (`lazy_static = "1.4.0"`): For loading test data files
+
+All other framework dependencies (babyflow, spinachflow, hydroflow) have been removed to keep this repository focused solely on timely and differential-dataflow.
 
 ## Running Benchmarks
 
