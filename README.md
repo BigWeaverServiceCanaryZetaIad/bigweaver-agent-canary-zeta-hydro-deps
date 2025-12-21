@@ -10,6 +10,15 @@ This repository contains benchmarks and dependencies for timely-dataflow and dif
 .
 ├── Cargo.toml                           # Workspace configuration
 ├── README.md                            # This file
+├── babyflow/                            # Support crate for benchmarks
+│   ├── Cargo.toml
+│   └── src/
+├── hydroflow/                           # Support crate for benchmarks
+│   ├── Cargo.toml
+│   └── src/
+├── spinachflow/                         # Support crate for benchmarks
+│   ├── Cargo.toml
+│   └── src/
 ├── scripts/
 │   └── compare_benchmarks.sh           # Cross-repository benchmark comparison script
 └── timely-differential-benches/
@@ -37,6 +46,14 @@ This repository includes the following external dependencies:
 - **differential-dataflow**: Incremental computation based on timely-dataflow
 - **criterion**: Benchmarking framework
 - Other supporting dependencies (lazy_static, rand, seq-macro, tokio)
+
+The repository also includes support crates that provide alternative dataflow implementations for comparison:
+
+- **babyflow**: A minimal dataflow library for baseline comparisons
+- **hydroflow**: An early version of the Hydro dataflow system
+- **spinachflow**: An alternative dataflow implementation
+
+These support crates enable comprehensive performance comparisons between different dataflow approaches.
 
 ## Running Benchmarks
 

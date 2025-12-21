@@ -1,6 +1,9 @@
 [workspace]
 
 members = [
+    "babyflow",
+    "hydroflow",
+    "spinachflow",
     "timely-differential-benches",
 ]
 
