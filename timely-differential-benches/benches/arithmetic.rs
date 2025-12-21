@@ -1,37 +1,13 @@
-use babyflow::babyflow::Query;
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use std::sync::mpsc::channel;
 use std::thread;
+
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use dfir_rs::dfir_syntax;
+use static_assertions::const_assert;
 use timely::dataflow::operators::{Inspect, Map, ToStream};
 
 const NUM_OPS: usize = 20;
 const NUM_INTS: usize = 1_000_000;
-
-// This benchmark runs babyflow which more-or-less just copies the data directly
-// between the operators, but with some extra overhead.
-fn benchmark_babyflow(c: &mut Criterion) {
-    c.bench_function("arithmetic/babyflow", |b| {
-        b.iter(|| {
-            let mut q = Query::new();
-
-            let mut op = q.source(move |send| {
-                for i in 0..NUM_INTS {
-                    send.push(i);
-                }
-            });
-
-            for _ in 0..NUM_OPS {
-                op = op.map(|i| i + 1);
-            }
-
-            op.sink(|i| {
-                black_box(i);
-            });
-
-            (*q.df).borrow_mut().run();
-        })
-    });
-}
 
 fn benchmark_pipeline(c: &mut Criterion) {
     c.bench_function("arithmetic/pipeline", |b| {
@@ -117,136 +93,135 @@ fn benchmark_iter_collect(c: &mut Criterion) {
     });
 }
 
-async fn benchmark_spinach(num_ints: usize) {
-    type MyLatRepr = spinachflow::lattice::set_union::SetUnionRepr<spinachflow::tag::VEC, usize>;
-    let op = <spinachflow::op::OnceOp<MyLatRepr>>::new((0..num_ints).collect());
-
-    struct MyMorphism();
-    impl spinachflow::func::unary::Morphism for MyMorphism {
-        type InLatRepr = MyLatRepr;
-        type OutLatRepr = MyLatRepr;
-        fn call<Y: spinachflow::hide::Qualifier>(
-            &self,
-            item: spinachflow::hide::Hide<Y, Self::InLatRepr>,
-        ) -> spinachflow::hide::Hide<Y, Self::OutLatRepr> {
-            item.map(|x| x + 1)
-        }
-    }
-
-    ///// MAGIC NUMBER!!!!!!!! is NUM_OPS
-    seq_macro::seq!(N in 0..20 {
-        let op = spinachflow::op::MorphismOp::new(op, MyMorphism());
-    });
-
-    let comp = spinachflow::comp::NullComp::new(op);
-    spinachflow::comp::CompExt::run(&comp).await.unwrap_err();
-}
-
 fn benchmark_hydroflow_compiled(c: &mut Criterion) {
-    use hydroflow::compiled::{ForEach, Map, Pusherator};
+    use dfir_rs::sinktools::{SinkBuild, SinkBuilder, ToSinkBuild};
 
-    c.bench_function("arithmetic/hydroflow/compiled", |b| {
-        b.iter(|| {
-            let sink = ForEach::new(|x| {
-                black_box(x);
-            });
-
-            let map = Map::new(|x| x + 1, sink);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let map = Map::new(|x| x + 1, map);
-            let mut map = Map::new(|x| x + 1, map);
-
-            for i in 0..NUM_INTS {
-                map.give(i);
-            }
-        });
-    });
-}
-
-fn criterion_spinach(c: &mut Criterion) {
-    c.bench_function("arithmetic/spinach", |b| {
+    c.bench_function("arithmetic/dfir_rs/compiled", |b| {
         b.to_async(
             tokio::runtime::Builder::new_current_thread()
                 .build()
                 .unwrap(),
         )
-        .iter(|| benchmark_spinach(NUM_INTS));
+        .iter(|| async {
+            let sink = SinkBuilder::<usize>::new()
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .map(|x| x + 1)
+                .for_each(|x| {
+                    black_box(x);
+                });
+
+            (0..NUM_INTS)
+                .iter_to_sink_build()
+                .send_to(sink)
+                .await
+                .unwrap();
+        });
     });
 }
 
-fn benchmark_spinach_chunks(num_ints: usize) -> impl std::future::Future {
-    type MyLatRepr = spinachflow::lattice::set_union::SetUnionRepr<spinachflow::tag::VEC, usize>;
+fn benchmark_hydroflow_compiled_no_cheating(c: &mut Criterion) {
+    use dfir_rs::sinktools::{SinkBuild, SinkBuilder, ToSinkBuild};
 
-    struct MyMorphism();
-    impl spinachflow::func::unary::Morphism for MyMorphism {
-        type InLatRepr = MyLatRepr;
-        type OutLatRepr = MyLatRepr;
-        fn call<Y: spinachflow::hide::Qualifier>(
-            &self,
-            item: spinachflow::hide::Hide<Y, Self::InLatRepr>,
-        ) -> spinachflow::hide::Hide<Y, Self::OutLatRepr> {
-            item.map(black_box)
-        }
-    }
+    c.bench_function("arithmetic/dfir_rs/compiled_no_cheating", |b| {
+        b.to_async(
+            tokio::runtime::Builder::new_current_thread()
+                .build()
+                .unwrap(),
+        )
+        .iter(|| async {
+            let sink = SinkBuilder::<usize>::new()
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .map(|x| black_box(x + 1))
+                .for_each(|x| {
+                    black_box(x);
+                });
 
-    let data: Vec<_> = (0..num_ints).collect();
-    let chunks: Vec<Vec<Vec<_>>> = data
-        .chunks(100 * 100)
-        .map(|chunk| chunk.iter().copied().collect())
-        .map(|chunk_vec: Vec<_>| {
-            chunk_vec
-                .chunks(100)
-                .map(|chunk| chunk.iter().copied().collect())
-                .collect()
-        })
-        .collect();
-
-    let local = tokio::task::LocalSet::new();
-
-    for chunk in chunks {
-        let op = <spinachflow::op::IterOp<MyLatRepr, _>>::new(chunk);
-
-        ///// MAGIC NUMBER!!!!!!!! is NUM_OPS
-        seq_macro::seq!(N in 0..20 {
-            let op = spinachflow::op::MorphismOp::new(op, MyMorphism());
+            black_box(0..NUM_INTS)
+                .iter_to_sink_build()
+                .send_to(sink)
+                .await
+                .unwrap();
         });
-
-        let comp = spinachflow::comp::NullComp::new(op);
-        local.spawn_local(async move {
-            spinachflow::comp::CompExt::run(&comp).await.unwrap_err();
-        });
-    }
-    local
+    });
 }
 
-fn criterion_spinach_chunks(c: &mut Criterion) {
-    c.bench_function(
-        "arithmetic/spinach (size 10_000 chunks in 100 tasks)",
-        |b| {
-            b.to_async(
-                tokio::runtime::Builder::new_current_thread()
-                    .build()
-                    .unwrap(),
-            )
-            .iter(|| benchmark_spinach_chunks(NUM_INTS));
-        },
-    );
+fn benchmark_hydroflow_surface(c: &mut Criterion) {
+    const_assert!(NUM_OPS == 20); // This benchmark is hardcoded for 20 ops, so assert that NUM_OPS is 20.
+    c.bench_function("arithmetic/dfir_rs/surface", |b| {
+        b.iter_batched(
+            || {
+                dfir_syntax! {
+                    source_iter(black_box(0..NUM_INTS))
+
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+                    -> map(|x| black_box(x + 1))
+
+                    -> for_each(|x| { black_box(x); });
+                }
+            },
+            |mut df| {
+                df.run_available_sync();
+            },
+            criterion::BatchSize::SmallInput,
+        )
+    });
 }
 
 fn benchmark_timely(c: &mut Criterion) {
@@ -269,13 +244,12 @@ fn benchmark_timely(c: &mut Criterion) {
 criterion_group!(
     identity_dataflow,
     benchmark_timely,
-    benchmark_babyflow,
-    criterion_spinach,
-    criterion_spinach_chunks,
     benchmark_pipeline,
     benchmark_iter,
     benchmark_iter_collect,
     benchmark_raw_copy,
     benchmark_hydroflow_compiled,
+    benchmark_hydroflow_compiled_no_cheating,
+    benchmark_hydroflow_surface,
 );
 criterion_main!(identity_dataflow);

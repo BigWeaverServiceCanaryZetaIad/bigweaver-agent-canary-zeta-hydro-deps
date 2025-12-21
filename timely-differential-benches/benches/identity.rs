@@ -1,37 +1,14 @@
-use babyflow::babyflow::Query;
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use std::sync::mpsc::channel;
 use std::thread;
+
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use dfir_rs::dfir_syntax;
+use dfir_rs::scheduled::graph_ext::GraphExt;
+use static_assertions::const_assert;
 use timely::dataflow::operators::{Inspect, Map, ToStream};
 
 const NUM_OPS: usize = 20;
 const NUM_INTS: usize = 1_000_000;
-
-// This benchmark runs babyflow which more-or-less just copies the data directly
-// between the operators, but with some extra overhead.
-fn benchmark_babyflow(c: &mut Criterion) {
-    c.bench_function("identity/babyflow", |b| {
-        b.iter(|| {
-            let mut q = Query::new();
-
-            let mut op = q.source(move |send| {
-                for i in 0..NUM_INTS {
-                    send.push(i);
-                }
-            });
-
-            for _ in 0..NUM_OPS {
-                op = op.map(black_box);
-            }
-
-            op.sink(|i| {
-                black_box(i);
-            });
-
-            (*q.df).borrow_mut().run();
-        })
-    });
-}
 
 fn benchmark_pipeline(c: &mut Criterion) {
     c.bench_function("identity/pipeline", |b| {
@@ -117,98 +94,6 @@ fn benchmark_iter_collect(c: &mut Criterion) {
     });
 }
 
-async fn benchmark_spinach(num_ints: usize) {
-    type MyLatRepr = spinachflow::lattice::set_union::SetUnionRepr<spinachflow::tag::VEC, usize>;
-    let op = <spinachflow::op::OnceOp<MyLatRepr>>::new((0..num_ints).collect());
-
-    struct MyMorphism();
-    impl spinachflow::func::unary::Morphism for MyMorphism {
-        type InLatRepr = MyLatRepr;
-        type OutLatRepr = MyLatRepr;
-        fn call<Y: spinachflow::hide::Qualifier>(
-            &self,
-            item: spinachflow::hide::Hide<Y, Self::InLatRepr>,
-        ) -> spinachflow::hide::Hide<Y, Self::OutLatRepr> {
-            item.map(black_box)
-        }
-    }
-
-    ///// MAGIC NUMBER!!!!!!!! is NUM_OPS
-    seq_macro::seq!(N in 0..20 {
-        let op = spinachflow::op::MorphismOp::new(op, MyMorphism());
-    });
-
-    let comp = spinachflow::comp::NullComp::new(op);
-    spinachflow::comp::CompExt::run(&comp).await.unwrap_err();
-}
-
-fn criterion_spinach(c: &mut Criterion) {
-    c.bench_function("identity/spinach", |b| {
-        b.to_async(
-            tokio::runtime::Builder::new_current_thread()
-                .build()
-                .unwrap(),
-        )
-        .iter(|| benchmark_spinach(NUM_INTS));
-    });
-}
-
-fn benchmark_spinach_chunks(num_ints: usize) -> impl std::future::Future {
-    type MyLatRepr = spinachflow::lattice::set_union::SetUnionRepr<spinachflow::tag::VEC, usize>;
-
-    struct MyMorphism();
-    impl spinachflow::func::unary::Morphism for MyMorphism {
-        type InLatRepr = MyLatRepr;
-        type OutLatRepr = MyLatRepr;
-        fn call<Y: spinachflow::hide::Qualifier>(
-            &self,
-            item: spinachflow::hide::Hide<Y, Self::InLatRepr>,
-        ) -> spinachflow::hide::Hide<Y, Self::OutLatRepr> {
-            item.map(black_box)
-        }
-    }
-
-    let data: Vec<_> = (0..num_ints).collect();
-    let chunks: Vec<Vec<Vec<_>>> = data
-        .chunks(100 * 100)
-        .map(|chunk| chunk.iter().copied().collect())
-        .map(|chunk_vec: Vec<_>| {
-            chunk_vec
-                .chunks(100)
-                .map(|chunk| chunk.iter().copied().collect())
-                .collect()
-        })
-        .collect();
-
-    let local = tokio::task::LocalSet::new();
-
-    for chunk in chunks {
-        let op = <spinachflow::op::IterOp<MyLatRepr, _>>::new(chunk);
-
-        ///// MAGIC NUMBER!!!!!!!! is NUM_OPS
-        seq_macro::seq!(N in 0..20 {
-            let op = spinachflow::op::MorphismOp::new(op, MyMorphism());
-        });
-
-        let comp = spinachflow::comp::NullComp::new(op);
-        local.spawn_local(async move {
-            spinachflow::comp::CompExt::run(&comp).await.unwrap_err();
-        });
-    }
-    local
-}
-
-fn criterion_spinach_chunks(c: &mut Criterion) {
-    c.bench_function("identity/spinach (size 10_000 chunks in 100 tasks)", |b| {
-        b.to_async(
-            tokio::runtime::Builder::new_current_thread()
-                .build()
-                .unwrap(),
-        )
-        .iter(|| benchmark_spinach_chunks(NUM_INTS));
-    });
-}
-
 fn benchmark_timely(c: &mut Criterion) {
     c.bench_function("identity/timely", |b| {
         b.iter(|| {
@@ -227,92 +112,133 @@ fn benchmark_timely(c: &mut Criterion) {
 }
 
 fn benchmark_hydroflow_compiled(c: &mut Criterion) {
-    use hydroflow::compiled::{ForEach, Map, Pusherator};
+    use dfir_rs::sinktools::{SinkBuild, SinkBuilder, ToSinkBuild};
 
-    c.bench_function("identity/hydroflow/compiled", |b| {
-        b.iter(|| {
-            let sink = ForEach::new(|x| {
-                black_box(x);
-            });
+    c.bench_function("identity/dfir_rs/compiled", |b| {
+        b.to_async(
+            tokio::runtime::Builder::new_current_thread()
+                .build()
+                .unwrap(),
+        )
+        .iter(|| async {
+            let sink = SinkBuilder::<usize>::new()
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .map(black_box)
+                .for_each(|x| {
+                    black_box(x);
+                });
 
-            // Lol
-            let map = Map::new(black_box, sink);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let map = Map::new(black_box, map);
-            let mut map = map;
-
-            for i in 0..NUM_INTS {
-                map.give(i);
-            }
+            (0..NUM_INTS)
+                .iter_to_sink_build()
+                .send_to(sink)
+                .await
+                .unwrap();
         });
     });
 }
 
 fn benchmark_hydroflow(c: &mut Criterion) {
-    use hydroflow::scheduled::collections::Iter;
-    use hydroflow::scheduled::handoff::VecHandoff;
-    use hydroflow::scheduled::{Hydroflow, RecvCtx, SendCtx};
+    use dfir_rs::scheduled::graph::Dfir;
+    use dfir_rs::scheduled::handoff::{Iter, VecHandoff};
 
-    c.bench_function("identity/hydroflow", |b| {
+    c.bench_function("identity/dfir_rs", |b| {
         b.iter(|| {
-            let mut df = Hydroflow::new();
+            let mut df = Dfir::new();
+
+            let (next_send, mut next_recv) = df.make_edge::<_, VecHandoff<usize>>("end");
 
             let mut sent = false;
-            let mut it = df.add_source(move |send: &mut SendCtx<VecHandoff<_>>| {
+            df.add_subgraph_source("source", next_send, move |_ctx, send| {
                 if !sent {
                     sent = true;
                     send.give(Iter(0..NUM_INTS));
                 }
             });
             for _ in 0..NUM_OPS {
-                let (next_in, mut next_out) = df.add_inout(|recv, send| {
-                    send.give(Iter(recv.into_iter()));
+                let (next_send, next_next_recv) = df.make_edge("handoff");
+
+                df.add_subgraph_in_out("identity", next_recv, next_send, |_ctx, recv, send| {
+                    send.give(Iter(recv.take_inner().into_iter()));
                 });
 
-                std::mem::swap(&mut it, &mut next_out);
-                df.add_edge(next_out, next_in);
+                next_recv = next_next_recv;
             }
 
-            let sink = df.add_sink(|recv: &mut RecvCtx<VecHandoff<usize>>| {
-                for x in &*recv {
+            df.add_subgraph_sink("sink", next_recv, |_ctx, recv| {
+                for x in recv.take_inner() {
                     black_box(x);
                 }
             });
-            df.add_edge(it, sink);
 
-            df.run();
+            df.run_available_sync();
         });
+    });
+}
+
+fn benchmark_hydroflow_surface(c: &mut Criterion) {
+    const_assert!(NUM_OPS == 20); // This benchmark is hardcoded for 20 ops, so assert that NUM_OPS is 20.
+    c.bench_function("identity/dfir_rs/surface", |b| {
+        b.iter(|| {
+            let mut df = dfir_syntax! {
+                source_iter(black_box(0..NUM_INTS))
+
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+                -> map(black_box)
+
+                -> for_each(|x| { black_box(x); });
+            };
+
+            df.run_available_sync();
+        })
     });
 }
 
 criterion_group!(
     identity_dataflow,
     benchmark_timely,
-    benchmark_babyflow,
-    criterion_spinach,
-    criterion_spinach_chunks,
     benchmark_pipeline,
     benchmark_iter,
     benchmark_iter_collect,
     benchmark_raw_copy,
     benchmark_hydroflow,
     benchmark_hydroflow_compiled,
+    benchmark_hydroflow_surface,
 );
 criterion_main!(identity_dataflow);

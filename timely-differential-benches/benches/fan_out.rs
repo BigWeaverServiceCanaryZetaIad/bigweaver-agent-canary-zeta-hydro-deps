@@ -1,67 +1,80 @@
-use babyflow::babyflow::Query;
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use hydroflow::compiled::{ForEach, Pivot, TeeN};
-use hydroflow::scheduled::{collections::Iter, query::Query as Q};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use dfir_rs::dfir_syntax;
+use static_assertions::const_assert;
 use timely::dataflow::operators::{Map, ToStream};
 
 const NUM_OPS: usize = 20;
 const NUM_INTS: usize = 1_000_000;
 
-fn benchmark_hydroflow_scheduled(c: &mut Criterion) {
-    c.bench_function("fan_out/hydroflow/scheduled", |b| {
+fn benchmark_hydroflow_surface(c: &mut Criterion) {
+    const_assert!(NUM_OPS == 20); // This benchmark is hardcoded for 20 ops, so assert that NUM_OPS is 20.
+    c.bench_function("fan_out/dfir_rs/surface", |b| {
         b.iter(|| {
-            let mut q = Q::new();
+            let mut df = dfir_syntax! {
+                my_tee = tee();
 
-            let source = q.source(|send| {
-                send.give(Iter(0..NUM_INTS));
-            });
+                source_iter(black_box(0..NUM_INTS)) -> my_tee;
 
-            for op in source.tee(NUM_OPS) {
-                let _ = op.sink(|x| {
-                    black_box(x);
-                });
-            }
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
 
-            q.run();
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+                my_tee -> for_each(|x| { black_box(x); });
+            };
+
+            df.run_available_sync();
         })
     });
 }
 
-fn benchmark_hydroflow_compiled(c: &mut Criterion) {
-    c.bench_function("fan_out/hydroflow/compiled (push)", |b| {
-        b.iter(|| {
-            let source = 0..NUM_INTS;
+// fn benchmark_hydroflow_teer(c: &mut Criterion) {
+//     c.bench_function("fan_out/dfir/teer", |b| {
+//         b.iter(|| {
+//             let mut df = Hydroflow::new();
+//             let output = df.add_source(|send: &SendCtx<TeeingHandoff<_>>| {
+//                 send.give((0..NUM_INTS).collect());
+//             });
 
-            let sinks = [(); NUM_OPS].map(|_| {
-                ForEach::new(|x: usize| {
-                    black_box(x);
-                })
-            });
-            let sinks = TeeN::new(sinks);
+//             for _ in 0..(NUM_OPS - 1) {
+//                 let input = df.add_sink(|recv| {
+//                     for v in recv.take_inner() {
+//                         black_box(v);
+//                     }
+//                 });
 
-            let pivot = Pivot::new(source, sinks);
-            pivot.run();
-        })
-    });
-}
+//                 df.add_edge(output.clone(), input);
+//             }
 
-fn benchmark_babyflow(c: &mut Criterion) {
-    c.bench_function("fan_out/babyflow", |b| {
-        b.iter(|| {
-            let mut q = Query::new();
+//             let input = df.add_sink(|recv| {
+//                 for v in recv.take_inner() {
+//                     black_box(v);
+//                 }
+//             });
 
-            let source = q.source(|send| {
-                send.give_iterator(0..NUM_INTS);
-            });
+//             df.add_edge(output, input);
 
-            let _sinks: Vec<_> = (0..NUM_OPS)
-                .map(|_| source.clone().map(black_box))
-                .collect();
-
-            (*q.df).borrow_mut().run();
-        })
-    });
-}
+//             df.tick();
+//         })
+//     });
+// }
 
 fn benchmark_timely(c: &mut Criterion) {
     c.bench_function("fan_out/timely", |b| {
@@ -74,52 +87,6 @@ fn benchmark_timely(c: &mut Criterion) {
                     .collect();
             });
         })
-    });
-}
-
-fn benchmark_spinachflow_asym(c: &mut Criterion) {
-    c.bench_function("fan_out/spinachflow (asym)", |b| {
-        b.to_async(
-            tokio::runtime::Builder::new_current_thread()
-                .build()
-                .unwrap(),
-        )
-        .iter(|| {
-            async {
-                use spinachflow::futures::StreamExt;
-
-                let local_set = spinachflow::tokio::task::LocalSet::new();
-
-                let stream = spinachflow::futures::stream::iter(0..NUM_INTS);
-                let mut asym_split = spinachflow::stream::AsymSplit::new(stream);
-
-                // N - 1
-                for _ in 1..NUM_OPS {
-                    let split = asym_split.add_split();
-                    local_set.spawn_local(async move {
-                        let mut split = split;
-                        loop {
-                            let item = split.next().await;
-                            if item.is_none() {
-                                break;
-                            }
-                        }
-                    });
-                }
-                // 1
-                local_set.spawn_local(async move {
-                    let mut split = asym_split;
-                    loop {
-                        let item = split.next().await;
-                        if item.is_none() {
-                            break;
-                        }
-                    }
-                });
-
-                local_set.await;
-            }
-        });
     });
 }
 
@@ -137,11 +104,9 @@ fn benchmark_sol(c: &mut Criterion) {
 
 criterion_group!(
     fan_out_dataflow,
-    benchmark_hydroflow_scheduled,
-    benchmark_hydroflow_compiled,
-    benchmark_babyflow,
+    benchmark_hydroflow_surface,
+    // benchmark_hydroflow_teer,
     benchmark_timely,
-    benchmark_spinachflow_asym,
     benchmark_sol,
 );
 criterion_main!(fan_out_dataflow);
