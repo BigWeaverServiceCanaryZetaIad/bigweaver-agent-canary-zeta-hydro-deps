@@ -7,7 +7,10 @@ publish = false
 [dependencies]
 
 [dev-dependencies]
+babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
 criterion = { version = "0.3", features = ["async_tokio"] }
+hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
 timely = "0.12"
 differential-dataflow = "0.12"
 lazy_static = "1.4.0"
