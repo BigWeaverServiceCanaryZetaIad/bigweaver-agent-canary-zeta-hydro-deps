@@ -7,13 +7,10 @@ publish = false
 [dependencies]
 
 [dev-dependencies]
-criterion = { version = "0.3", features = ["async_tokio"] }
+criterion = { version = "0.3", features = ["html_reports"] }
 timely = "0.12"
 differential-dataflow = "0.12"
 lazy_static = "1.4.0"
-rand = "0.8.4"
-seq-macro = "0.2"
-tokio = { version = "1.0", features = ["rt-multi-thread"] }
 
 [[bench]]
 name = "arithmetic"
