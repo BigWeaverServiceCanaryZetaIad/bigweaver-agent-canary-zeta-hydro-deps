@@ -1,112 +1,120 @@
 # bigweaver-agent-canary-zeta-hydro-deps
 
-## Overview
+This repository contains timely and differential-dataflow benchmark implementations that were extracted from the main `bigweaver-agent-canary-hydro-zeta` repository. This separation allows for cleaner dependency management and facilitates performance comparisons between different dataflow systems.
 
-This repository contains benchmarks and dependencies for timely-dataflow and differential-dataflow that have been separated from the main `bigweaver-agent-canary-hydro-zeta` repository. This separation allows for performance comparisons without adding these dependencies to the main codebase.
+## Purpose
+
+This repository serves as a reference implementation for performance benchmarking of timely and differential-dataflow. It allows comparison with the Hydroflow, Babyflow, and Spinachflow implementations in the main repository without requiring those projects to maintain timely/differential-dataflow as dependencies.
 
 ## Repository Structure
 
 ```
-.
-├── Cargo.toml                           # Workspace configuration
-├── README.md                            # This file
-├── scripts/
-│   └── compare_benchmarks.sh           # Cross-repository benchmark comparison script
-└── timely-differential-benches/
-    ├── Cargo.toml                       # Benchmark package configuration
-    ├── README.md                        # Benchmark documentation
-    └── benches/                         # Benchmark implementations
-        ├── arithmetic.rs
-        ├── fan_in.rs
-        ├── fan_out.rs
-        ├── fork_join.rs
-        ├── identity.rs
-        ├── join.rs
-        ├── reachability.rs
-        ├── reachability_edges.txt       # Test data
-        ├── reachability_reachable.txt   # Test data
-        ├── upcase.rs
-        └── zip.rs
+timely-differential-benches/
+├── benches/
+│   ├── arithmetic_timely.rs          # Arithmetic operations benchmark
+│   ├── fan_in_timely.rs               # Fan-in (merge) benchmark
+│   ├── fan_out_timely.rs              # Fan-out (split) benchmark
+│   ├── fork_join_timely.rs            # Fork-join pattern benchmark
+│   ├── identity_timely.rs             # Identity mapping benchmark
+│   ├── join_timely.rs                 # Hash join benchmark
+│   ├── reachability_timely_differential.rs  # Graph reachability (both timely & differential)
+│   ├── upcase_timely.rs               # String transformation benchmark
+│   ├── reachability_edges.txt         # Test data for reachability
+│   └── reachability_reachable.txt     # Expected results for reachability
+├── Cargo.toml
+└── README.md
 ```
-
-## Dependencies
-
-This repository includes the following external dependencies:
-
-- **timely-dataflow** (`timely`): A low-latency data-parallel dataflow system
-- **differential-dataflow**: Incremental computation based on timely-dataflow
-- **criterion**: Benchmarking framework
-- Other supporting dependencies (lazy_static, rand, seq-macro, tokio)
 
 ## Running Benchmarks
 
-### Run All Benchmarks
+To run all benchmarks:
 
 ```bash
+cd timely-differential-benches
 cargo bench
 ```
 
-### Run Specific Benchmark
+To run a specific benchmark:
 
 ```bash
-cargo bench -p timely-differential-benches --bench <benchmark_name>
+cargo bench --bench arithmetic_timely
+cargo bench --bench reachability_timely_differential
 ```
 
-Available benchmarks:
-- `arithmetic`
-- `fan_in`
-- `fan_out`
-- `fork_join`
-- `identity`
-- `join`
-- `reachability`
-- `upcase`
-- `zip`
+## Cross-Repository Performance Comparison
 
-### Cross-Repository Comparison
+### Quick Comparison
 
-To compare performance between this repository and the main repository:
+Use the provided comparison script to run benchmarks across both repositories and generate a comparison report:
 
 ```bash
 ./scripts/compare_benchmarks.sh
 ```
 
-This script will:
-1. Run all timely/differential-dataflow benchmarks in this repository
-2. Run any benchmarks in the main repository (if available)
-3. Generate comparison reports
+This will:
+1. Run benchmarks in the main hydro-zeta repository
+2. Run benchmarks in this deps repository
+3. Generate a consolidated performance report
+4. Compare results across implementations
 
-## Migration Notes
+### Manual Comparison
 
-These benchmarks were migrated from the main `bigweaver-agent-canary-hydro-zeta` repository to:
+If you prefer manual comparison:
 
-1. **Separate dependencies**: Remove timely and differential-dataflow dependencies from the main codebase
-2. **Maintain comparisons**: Allow performance comparisons between different dataflow implementations
-3. **Reduce build time**: Avoid compiling these dependencies in the main repository
-4. **Focused development**: Keep the main repository focused on its core functionality
+1. Run benchmarks in the main repository:
+   ```bash
+   cd ../bigweaver-agent-canary-hydro-zeta
+   cargo bench --bench <benchmark_name> > ../results_hydro.txt
+   ```
 
-## Development
+2. Run benchmarks in this repository:
+   ```bash
+   cd ../bigweaver-agent-canary-zeta-hydro-deps/timely-differential-benches
+   cargo bench --bench <benchmark_name>_timely > ../results_timely.txt
+   ```
 
-### Building
+3. Compare the results using the criterion reports in `target/criterion/`
 
-```bash
-cargo build
-```
+## Benchmark Details
 
-### Testing
+Each benchmark has been extracted to include only the timely/differential-dataflow implementations while maintaining the same test parameters and data as the original benchmarks in the main repository.
 
-```bash
-cargo test
-```
+### Available Benchmarks
 
-### Benchmarking
+- **arithmetic_timely**: Tests arithmetic operations on data streams
+- **fan_in_timely**: Tests merging multiple streams into one
+- **fan_out_timely**: Tests splitting one stream to multiple consumers
+- **fork_join_timely**: Tests forking and joining data streams
+- **identity_timely**: Tests identity mapping (no-op transformations)
+- **join_timely**: Tests hash join operations (both usize and String types)
+- **reachability_timely_differential**: Tests graph reachability using both timely and differential-dataflow
+- **upcase_timely**: Tests string transformations (in-place, allocating, and concatenating)
 
-```bash
-cargo bench
-```
+## Dependencies
 
-Results are saved in `target/criterion/` and can be viewed by opening `target/criterion/report/index.html` in a web browser.
+This repository uses:
+- `timely` version 0.12
+- `differential-dataflow` version 0.12
+- `criterion` for benchmarking
 
-## License
+## Performance Considerations
 
-See the main repository for license information.
+When comparing results:
+
+1. **Ensure consistent environment**: Run both sets of benchmarks on the same machine with similar system load
+2. **Multiple runs**: Consider running benchmarks multiple times to account for variance
+3. **Warm-up**: Criterion automatically handles warm-up, but be aware of cold vs. hot performance
+4. **Data scale**: Some benchmarks use large data sets (e.g., 1,000,000 items) which may stress different aspects of the implementations
+
+## Contributing
+
+When adding new benchmarks:
+
+1. Ensure they match the parameters used in the main repository
+2. Include both timely and differential-dataflow implementations where applicable
+3. Update this README with benchmark descriptions
+4. Add the benchmark to the comparison script
+
+## Related Repositories
+
+- Main repository: `bigweaver-agent-canary-hydro-zeta` - Contains Hydroflow, Babyflow, and Spinachflow implementations

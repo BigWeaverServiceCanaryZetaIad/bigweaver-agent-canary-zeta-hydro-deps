@@ -51,3 +51,15 @@ To compare performance between this repository and the main repository, use the 
 cd ..
 ./scripts/compare_benchmarks.sh
 ```
+
+## Benchmark Parameters
+
+All benchmarks use the same parameters as their counterparts in the main repository to ensure fair comparison. Constants are defined at the top of each benchmark file.
+
+## Test Data
+
+Some benchmarks (like reachability) use data files in this directory:
+- `reachability_edges.txt` - Graph edge list
+- `reachability_reachable.txt` - Expected reachable nodes
+
+These files are identical to those in the main repository.
