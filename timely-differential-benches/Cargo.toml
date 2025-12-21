@@ -55,3 +55,19 @@ harness = false
 [[bench]]
 name = "zip"
 harness = false
+
+[[bench]]
+name = "micro_ops"
+harness = false
+
+[[bench]]
+name = "symmetric_hash_join"
+harness = false
+
+[[bench]]
+name = "words_diamond"
+harness = false
+
+[[bench]]
+name = "futures"
+harness = false
