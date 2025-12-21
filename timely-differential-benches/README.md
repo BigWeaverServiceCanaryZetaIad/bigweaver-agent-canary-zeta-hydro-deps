@@ -1,10 +1,18 @@
 # Timely and Differential Dataflow Benchmarks
 
-This directory contains benchmarks that use timely-dataflow and differential-dataflow dependencies for performance comparison with the main bigweaver-agent-canary-hydro-zeta repository.
+This directory contains benchmarks that compare multiple dataflow framework implementations including timely-dataflow, differential-dataflow, hydroflow, babyflow, and spinachflow.
 
 ## Overview
 
-These benchmarks were migrated from the main repository to separate the timely and differential-dataflow dependencies from the core codebase while maintaining the ability to run performance comparisons.
+These benchmarks were migrated from the main repository to separate the timely and differential-dataflow dependencies from the core codebase while maintaining the ability to run performance comparisons across different dataflow implementations.
+
+Each benchmark compares multiple approaches:
+- **timely-dataflow**: Low-latency data-parallel dataflow system
+- **differential-dataflow**: Incremental computation framework
+- **hydroflow**: Hydro's low-level dataflow runtime
+- **babyflow**: Simple dataflow implementation
+- **spinachflow**: Alternative dataflow implementation
+- **Raw implementations**: Pipeline, iterator, and raw copy approaches for baseline comparisons
 
 ## Running Benchmarks
 
