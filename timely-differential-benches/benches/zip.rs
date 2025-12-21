@@ -1,36 +1,7 @@
-use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 // use timely::dataflow::operators::Operator;
 
 const NUM_INTS: usize = 1_000_000;
-
-fn benchmark_babyflow(c: &mut Criterion) {
-    // enum State<T, U> {
-    //     None,
-    //     Left(T),
-    //     Right(U),
-    // }
-    c.bench_function("babyflow", |b| {
-        b.iter(|| {
-            let mut q = Query::new();
-
-            let lhs = q.source(move |send| {
-                send.give_iterator((0..NUM_INTS).map(|x| (x, x)));
-            });
-            let rhs = q.source(move |send| {
-                send.give_iterator((0..NUM_INTS).map(|x| (x, x)));
-            });
-
-            let zipped = lhs.zip(rhs);
-
-            zipped.sink(move |v| {
-                black_box(v);
-            });
-
-            (*q.df).borrow_mut().run();
-        })
-    });
-}
 
 // fn benchmark_timely(c: &mut Criterion) {
 //     c.bench_function("timely", |b| {
@@ -83,28 +54,6 @@ fn benchmark_babyflow(c: &mut Criterion) {
 //     });
 // }
 
-fn benchmark_spinachflow(c: &mut Criterion) {
-    c.bench_function("spinachflow", |b| {
-        b.to_async(
-            tokio::runtime::Builder::new_current_thread()
-                .build()
-                .unwrap(),
-        )
-        .iter(|| async {
-            use spinachflow::futures::future::ready;
-            use spinachflow::futures::StreamExt;
-
-            let stream_a = spinachflow::futures::stream::iter(0..NUM_INTS);
-            let stream_b = spinachflow::futures::stream::iter(0..NUM_INTS);
-            let stream = stream_a.zip(stream_b);
-
-            let stream = stream.map(|x| ready(black_box(x)));
-            let mut stream = stream;
-            while stream.next().await.is_some() {}
-        });
-    });
-}
-
 // fn benchmark_sol(c: &mut Criterion) {
 //     c.bench_function("sol", |b| {
 //         b.iter(|| {
@@ -141,9 +90,7 @@ fn benchmark_spinachflow(c: &mut Criterion) {
 
 criterion_group!(
     zip_dataflow,
-    benchmark_babyflow,
     // benchmark_timely,
-    benchmark_spinachflow,
     // benchmark_sol,
 );
 criterion_main!(zip_dataflow);
