@@ -1,12 +1,8 @@
 use std::collections::HashMap;
 
-use babyflow::babyflow::Query;
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use spinachflow::stream::Join;
-use timely::dataflow::{
-    channels::pact::Pipeline,
-    operators::{Operator, ToStream},
-};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use timely::dataflow::channels::pact::Pipeline;
+use timely::dataflow::operators::{Operator, ToStream};
 
 trait JoinValue: Clone + std::hash::Hash + Eq {
     fn name() -> &'static str;
@@ -34,36 +30,6 @@ impl JoinValue for String {
 }
 
 const NUM_INTS: usize = 100_000;
-
-fn benchmark_babyflow<L, R>(c: &mut Criterion)
-where
-    L: 'static + JoinValue,
-    R: 'static + JoinValue,
-{
-    c.bench_function(
-        format!("join/{}/{}/babyflow", L::name(), R::name()).as_str(),
-        |b| {
-            b.iter(|| {
-                let mut q = Query::new();
-
-                let lhs = q.source(move |send| {
-                    send.give_iterator((0..NUM_INTS).map(|x| (x, L::new(x))));
-                });
-                let rhs = q.source(move |send| {
-                    send.give_iterator((0..NUM_INTS).map(|x| (x, R::new(x))));
-                });
-
-                let op = lhs.join(rhs);
-
-                op.sink(move |v| {
-                    black_box(v);
-                });
-
-                (*q.df).borrow_mut().run();
-            })
-        },
-    );
-}
 
 fn benchmark_timely<L, R>(c: &mut Criterion)
 where
@@ -95,7 +61,7 @@ where
                                         }
                                     }
 
-                                    left_tab.entry(k).or_insert_with(Vec::new).push(v);
+                                    left_tab.entry(k).or_default().push(v);
                                 }
                             });
 
@@ -110,44 +76,13 @@ where
                                         }
                                     }
 
-                                    right_tab.entry(k).or_insert_with(Vec::new).push(v);
+                                    right_tab.entry(k).or_default().push(v);
                                 }
                             });
                         }
                     });
                 });
             })
-        },
-    );
-}
-
-fn benchmark_spinachflow<L, R>(c: &mut Criterion)
-where
-    L: 'static + JoinValue,
-    R: 'static + JoinValue,
-{
-    c.bench_function(
-        format!("join/{}/{}/spinachflow", L::name(), R::name()).as_str(),
-        |b| {
-            b.to_async(
-                tokio::runtime::Builder::new_current_thread()
-                    .build()
-                    .unwrap(),
-            )
-            .iter(|| async {
-                use spinachflow::futures::future::ready;
-                use spinachflow::futures::stream::StreamExt;
-
-                let stream_a =
-                    spinachflow::futures::stream::iter((0..NUM_INTS).map(|x| (x, L::new(x))));
-                let stream_b =
-                    spinachflow::futures::stream::iter((0..NUM_INTS).map(|x| (x, R::new(x))));
-                let stream = Join::new(stream_a, stream_b);
-
-                let stream = stream.map(|x| ready(black_box(x)));
-                let mut stream = stream;
-                while stream.next().await.is_some() {}
-            });
         },
     );
 }
@@ -163,8 +98,8 @@ where
             b.iter(|| {
                 let iter_a = (0..NUM_INTS).map(|x| (x, L::new(x)));
                 let iter_b = (0..NUM_INTS).map(|x| (x, R::new(x)));
-                let mut items_a = HashMap::new();
-                let mut items_b = HashMap::new();
+                let mut items_a = HashMap::<_, Vec<_>>::new();
+                let mut items_b = HashMap::<_, Vec<_>>::new();
 
                 for (key, val_a) in iter_a {
                     if let Some(vals_b) = items_b.get(&key) {
@@ -172,7 +107,7 @@ where
                             black_box((key, val_a.clone(), val_b));
                         }
                     }
-                    items_a.entry(key).or_insert_with(Vec::new).push(val_a);
+                    items_a.entry(key).or_default().push(val_a);
                 }
                 for (key, val_b) in iter_b {
                     if let Some(vals_a) = items_a.get(&key) {
@@ -180,7 +115,7 @@ where
                             black_box((key, val_a, val_b.clone()));
                         }
                     }
-                    items_b.entry(key).or_insert_with(Vec::new).push(val_b);
+                    items_b.entry(key).or_default().push(val_b);
                 }
             });
         },
@@ -189,13 +124,9 @@ where
 
 criterion_group!(
     fan_in_dataflow,
-    benchmark_babyflow<usize, usize>,
     benchmark_timely<usize, usize>,
-    benchmark_spinachflow<usize, usize>,
     benchmark_sol<usize, usize>,
-    benchmark_babyflow<String, String>,
     benchmark_timely<String, String>,
-    benchmark_spinachflow<String,String>,
     benchmark_sol<String, String>,
 );
 criterion_main!(fan_in_dataflow);
