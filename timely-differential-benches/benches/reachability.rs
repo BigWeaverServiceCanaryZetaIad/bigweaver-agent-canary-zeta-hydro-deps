@@ -1,9 +1,9 @@
-use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::io::{BufRead, BufReader, Cursor};
-use std::rc::Rc;
 
 use criterion::{criterion_group, criterion_main, Criterion};
+use differential_dataflow::input::Input;
+use differential_dataflow::operators::{Iterate, Join, Threshold};
 
 lazy_static::lazy_static! {
     static ref EDGES: HashMap<usize, Vec<usize>> = {
@@ -20,6 +20,16 @@ lazy_static::lazy_static! {
             edges.entry(a).or_insert_with(Vec::new).push(b);
         }
         edges
+    };
+    static ref EDGE_VEC: Vec<(usize, usize)> = {
+        let cursor = Cursor::new(include_bytes!("reachability_edges.txt"));
+        let reader = BufReader::new(cursor);
+
+        reader.lines().map(|line| {
+            let line = line.unwrap();
+            let mut v = line.split_whitespace().map(|n| n.parse::<usize>().unwrap());
+            (v.next().unwrap(), v.next().unwrap())
+        }).collect()
     };
     static ref REACHABLE: HashSet<usize> = {
         let cursor = Cursor::new(include_bytes!("reachability_reachable.txt"));
@@ -76,73 +86,28 @@ fn benchmark_timely(c: &mut Criterion) {
     });
 }
 
-fn benchmark_hydroflow(c: &mut Criterion) {
-    use hydroflow::scheduled::collections::Iter;
-    use hydroflow::scheduled::handoff::VecHandoff;
-    use hydroflow::scheduled::{Hydroflow, RecvCtx, SendCtx};
+fn benchmark_differential(c: &mut Criterion) {
+    c.bench_function("reachability/differential", |b| {
+        b.iter(move || {
+            timely::execute_directly(move |worker| {
+                let probe = worker.dataflow::<u32, _, _>(|scope| {
+                    let edges = scope.new_collection_from(EDGE_VEC.iter().cloned()).1;
+                    let roots = scope.new_collection_from(vec![1]).1;
 
-    let edges = &*EDGES;
-    let reachable = &*REACHABLE;
+                    let reachable = roots.iterate(|reach| {
+                        edges
+                            .enter(&reach.scope())
+                            .semijoin(reach)
+                            .map(|(_src, dst)| dst)
+                            .concat(reach)
+                            .distinct()
+                    });
 
-    c.bench_function("reachability/hydroflow", |b| {
-        b.iter(|| {
-            // A dataflow that represents graph reachability.
-            let mut df = Hydroflow::new();
-
-            let reachable_out = df.add_source(move |send: &mut SendCtx<VecHandoff<usize>>| {
-                send.give(Some(1));
-            });
-
-            let mut seen = HashSet::new();
-            let (distinct_in, distinct_out) = df.add_inout(
-                move |recv: &mut RecvCtx<VecHandoff<usize>>,
-                      send: &mut SendCtx<VecHandoff<usize>>| {
-                    let iter = recv.into_iter().filter(|v| seen.insert(*v));
-                    send.give(Iter(iter));
-                },
-            );
-
-            let (merge_lhs, merge_rhs, merge_out) =
-                df.add_binary(|recv1, recv2, send: &mut SendCtx<VecHandoff<usize>>| {
-                    send.give(Iter(recv1.into_iter()));
-                    send.give(Iter(recv2.into_iter()));
+                    reachable.probe()
                 });
 
-            let (neighbors_in, neighbors_out) = df.add_inout(move |recv, send| {
-                for v in &*recv {
-                    if let Some(neighbors) = edges.get(&v) {
-                        send.give(Iter(neighbors.iter().copied()));
-                    }
-                }
+                worker.step_while(|| !probe.done());
             });
-
-            let (tee_in, tee_out1, tee_out2) = df.add_binary_out(
-                |recv: &mut RecvCtx<VecHandoff<usize>>,
-                 send1: &mut SendCtx<VecHandoff<usize>>,
-                 send2: &mut SendCtx<VecHandoff<usize>>| {
-                    for v in &*recv {
-                        send1.give(Some(v));
-                        send2.give(Some(v));
-                    }
-                },
-            );
-
-            let reachable_verts = Rc::new(RefCell::new(HashSet::new()));
-            let reachable_inner = reachable_verts.clone();
-            let sink_in = df.add_sink(move |recv| {
-                (*reachable_inner).borrow_mut().extend(recv.into_iter());
-            });
-
-            df.add_edge(reachable_out, merge_lhs);
-            df.add_edge(neighbors_out, merge_rhs);
-            df.add_edge(merge_out, distinct_in);
-            df.add_edge(distinct_out, tee_in);
-            df.add_edge(tee_out1, neighbors_in);
-            df.add_edge(tee_out2, sink_in);
-
-            df.run();
-
-            assert_eq!(&*reachable_verts.borrow(), reachable);
         });
     });
 }
@@ -150,7 +115,6 @@ fn benchmark_hydroflow(c: &mut Criterion) {
 criterion_group!(
     reachability,
     benchmark_timely,
-    // benchmark_babyflow,
-    benchmark_hydroflow,
+    benchmark_differential,
 );
 criterion_main!(reachability);

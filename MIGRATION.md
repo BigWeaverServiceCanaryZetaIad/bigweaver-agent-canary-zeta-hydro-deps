@@ -21,18 +21,19 @@ The benchmarks and their associated dependencies (timely-dataflow and differenti
 
 ### From bigweaver-agent-canary-hydro-zeta
 
-The following files were extracted from commit `513b2091` and migrated to this repository:
+The following files were extracted from the source repository and migrated. **Note**: Only the timely-dataflow and differential-dataflow benchmark functions were extracted from each file. Other implementations (hydroflow, babyflow, spinachflow, baseline) were removed to keep this repository focused on timely/differential dependencies only.
 
 #### Benchmark Files
-- `benches/benches/arithmetic.rs` → `timely-differential-benches/benches/arithmetic.rs`
-- `benches/benches/fan_in.rs` → `timely-differential-benches/benches/fan_in.rs`
-- `benches/benches/fan_out.rs` → `timely-differential-benches/benches/fan_out.rs`
-- `benches/benches/fork_join.rs` → `timely-differential-benches/benches/fork_join.rs`
-- `benches/benches/identity.rs` → `timely-differential-benches/benches/identity.rs`
-- `benches/benches/join.rs` → `timely-differential-benches/benches/join.rs`
-- `benches/benches/reachability.rs` → `timely-differential-benches/benches/reachability.rs`
-- `benches/benches/upcase.rs` → `timely-differential-benches/benches/upcase.rs`
-- `benches/benches/zip.rs` → `timely-differential-benches/benches/zip.rs`
+- `benches/benches/arithmetic.rs` → `timely-differential-benches/benches/arithmetic.rs` (timely implementation only)
+- `benches/benches/fan_in.rs` → `timely-differential-benches/benches/fan_in.rs` (timely implementation only)
+- `benches/benches/fan_out.rs` → `timely-differential-benches/benches/fan_out.rs` (timely implementation only)
+- `benches/benches/fork_join.rs` → `timely-differential-benches/benches/fork_join.rs` (timely implementation only)
+- `benches/benches/identity.rs` → `timely-differential-benches/benches/identity.rs` (timely implementation only)
+- `benches/benches/join.rs` → `timely-differential-benches/benches/join.rs` (timely implementation only)
+- `benches/benches/reachability.rs` → `timely-differential-benches/benches/reachability.rs` (timely and differential implementations)
+- `benches/benches/upcase.rs` → `timely-differential-benches/benches/upcase.rs` (timely implementation only)
+
+**Note**: `zip.rs` was not migrated as it did not contain any timely or differential-dataflow implementations.
 
 #### Data Files
 - `benches/benches/reachability_edges.txt` → `timely-differential-benches/benches/reachability_edges.txt`
@@ -40,23 +41,23 @@ The following files were extracted from commit `513b2091` and migrated to this r
 
 ## Dependencies Migrated
 
-The following dependencies were moved from the main repository to this repository:
+The following dependencies are used in this repository for timely/differential benchmarks:
 
-### Added to bigweaver-agent-canary-zeta-hydro-deps
+### In bigweaver-agent-canary-zeta-hydro-deps
 - `timely = "0.12"`
 - `differential-dataflow = "0.12"`
 - Supporting dependencies:
   - `criterion = { version = "0.3", features = ["async_tokio"] }`
   - `lazy_static = "1.4.0"`
   - `rand = "0.8.4"`
-  - `seq-macro = "0.2"`
   - `tokio = { version = "1.0", features = ["rt-multi-thread"] }`
 
 ### Removed from bigweaver-agent-canary-hydro-zeta
-- `timely = "*"` (from benches/Cargo.toml)
-- Any references to differential-dataflow in benchmark files
+- `timely` dependency removed from all Cargo.toml files
+- `differential-dataflow` dependency removed from all Cargo.toml files
+- All benchmark files with timely/differential implementations removed
 
-Note: The main repository's benchmark directory may have been removed entirely or may contain only non-timely/differential benchmarks after migration.
+Note: The main repository no longer contains any benchmarks or dependencies related to timely-dataflow or differential-dataflow.
 
 ## New Structure in bigweaver-agent-canary-zeta-hydro-deps
 
@@ -80,8 +81,7 @@ bigweaver-agent-canary-zeta-hydro-deps/
         ├── reachability.rs
         ├── reachability_edges.txt
         ├── reachability_reachable.txt
-        ├── upcase.rs
-        └── zip.rs
+        └── upcase.rs
 ```
 
 ## Performance Comparison

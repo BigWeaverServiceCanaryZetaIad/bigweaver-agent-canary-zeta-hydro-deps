@@ -10,6 +10,7 @@ This repository contains benchmarks and dependencies for timely-dataflow and dif
 .
 ├── Cargo.toml                           # Workspace configuration
 ├── README.md                            # This file
+├── MIGRATION.md                         # Migration documentation
 ├── scripts/
 │   └── compare_benchmarks.sh           # Cross-repository benchmark comparison script
 └── timely-differential-benches/
@@ -25,8 +26,7 @@ This repository contains benchmarks and dependencies for timely-dataflow and dif
         ├── reachability.rs
         ├── reachability_edges.txt       # Test data
         ├── reachability_reachable.txt   # Test data
-        ├── upcase.rs
-        └── zip.rs
+        └── upcase.rs
 ```
 
 ## Dependencies
@@ -36,7 +36,7 @@ This repository includes the following external dependencies:
 - **timely-dataflow** (`timely`): A low-latency data-parallel dataflow system
 - **differential-dataflow**: Incremental computation based on timely-dataflow
 - **criterion**: Benchmarking framework
-- Other supporting dependencies (lazy_static, rand, seq-macro, tokio)
+- Other supporting dependencies (lazy_static, rand, tokio)
 
 ## Running Benchmarks
 
@@ -53,15 +53,14 @@ cargo bench -p timely-differential-benches --bench <benchmark_name>
 ```
 
 Available benchmarks:
-- `arithmetic`
-- `fan_in`
-- `fan_out`
-- `fork_join`
-- `identity`
-- `join`
-- `reachability`
-- `upcase`
-- `zip`
+- `arithmetic` - Timely-dataflow arithmetic operations
+- `fan_in` - Timely-dataflow fan-in pattern
+- `fan_out` - Timely-dataflow fan-out pattern
+- `fork_join` - Timely-dataflow fork-join pattern
+- `identity` - Timely-dataflow identity operations
+- `join` - Timely-dataflow join operations
+- `reachability` - Timely and differential-dataflow graph reachability
+- `upcase` - Timely-dataflow string operations
 
 ### Cross-Repository Comparison
 
