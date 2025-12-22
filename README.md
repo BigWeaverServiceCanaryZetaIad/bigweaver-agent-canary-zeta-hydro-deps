@@ -36,7 +36,18 @@ This repository includes the following external dependencies:
 - **timely-dataflow** (`timely`): A low-latency data-parallel dataflow system
 - **differential-dataflow**: Incremental computation based on timely-dataflow
 - **criterion**: Benchmarking framework
+- **babyflow** (optional path dependency): Reference to the main repository for cross-implementation comparisons
 - Other supporting dependencies (lazy_static, rand, seq-macro, tokio)
+
+### Path Dependencies
+
+The benchmarks reference `babyflow` from the main `bigweaver-agent-canary-hydro-zeta` repository via a path dependency. Ensure both repositories are cloned as siblings:
+
+```
+/path/to/repos/
+├── bigweaver-agent-canary-hydro-zeta/
+└── bigweaver-agent-canary-zeta-hydro-deps/
+```
 
 ## Running Benchmarks
 

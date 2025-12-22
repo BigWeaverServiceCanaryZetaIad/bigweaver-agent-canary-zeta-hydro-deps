@@ -45,6 +45,7 @@ The following dependencies were moved from the main repository to this repositor
 ### Added to bigweaver-agent-canary-zeta-hydro-deps
 - `timely = "0.12"`
 - `differential-dataflow = "0.12"`
+- `babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta", optional = true }` (for cross-implementation benchmarks)
 - Supporting dependencies:
   - `criterion = { version = "0.3", features = ["async_tokio"] }`
   - `lazy_static = "1.4.0"`
@@ -107,18 +108,26 @@ After migration, performance comparisons can still be conducted using:
 
 To verify the migration was successful:
 
-1. Build the deps repository:
+1. Ensure both repositories are cloned as siblings:
+   ```bash
+   # Directory structure should be:
+   # /path/to/repos/
+   # ├── bigweaver-agent-canary-hydro-zeta/
+   # └── bigweaver-agent-canary-zeta-hydro-deps/
+   ```
+
+2. Build the deps repository:
    ```bash
    cd bigweaver-agent-canary-zeta-hydro-deps
    cargo build
    ```
 
-2. Run the benchmarks:
+3. Run the benchmarks:
    ```bash
    cargo bench
    ```
 
-3. Check that the main repository no longer has timely/differential dependencies:
+4. Check that the main repository no longer has timely/differential dependencies:
    ```bash
    cd bigweaver-agent-canary-hydro-zeta
    # Check Cargo.toml files for absence of timely/differential dependencies
