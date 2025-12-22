@@ -1,14 +1,38 @@
-use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use hydroflow::scheduled::query::Query as Q;
-use hydroflow::scheduled::{collections::Iter, handoff::VecHandoff, Hydroflow, SendCtx};
 use timely::dataflow::operators::{Concatenate, Filter, Inspect, ToStream};
 
 const NUM_OPS: usize = 20;
 const NUM_INTS: usize = 100_000;
 const BRANCH_FACTOR: usize = 2;
 
-fn benchmark_hydroflow(c: &mut Criterion) {
+fn benchmark_timely(c: &mut Criterion) {
+    c.bench_function("fork_join/timely", |b| {
+        b.iter(|| {
+            timely::example(|scope| {
+                let mut op = (0..NUM_INTS).to_stream(scope);
+                for _ in 0..NUM_OPS {
+                    let mut ops = Vec::new();
+
+                    for i in 0..BRANCH_FACTOR {
+                        ops.push(op.filter(move |x| x % BRANCH_FACTOR == i))
+                    }
+
+                    op = scope.concatenate(ops);
+                }
+
+                op.inspect(|i| {
+                    black_box(i);
+                });
+            });
+        })
+    });
+}
+
+criterion_group!(fork_join_dataflow, benchmark_timely);
+criterion_main!(fork_join_dataflow);
+
+criterion_group!(fork_join_dataflow, benchmark_timely);
+criterion_main!(fork_join_dataflow);
     c.bench_function("fork_join/hydroflow", |b| {
         b.iter(|| {
             let mut df = Hydroflow::new();
