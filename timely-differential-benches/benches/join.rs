@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
-use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use spinachflow::stream::Join;
 use timely::dataflow::{
     channels::pact::Pipeline,
     operators::{Operator, ToStream},
@@ -35,36 +33,6 @@ impl JoinValue for String {
 
 const NUM_INTS: usize = 100_000;
 
-fn benchmark_babyflow<L, R>(c: &mut Criterion)
-where
-    L: 'static + JoinValue,
-    R: 'static + JoinValue,
-{
-    c.bench_function(
-        format!("join/{}/{}/babyflow", L::name(), R::name()).as_str(),
-        |b| {
-            b.iter(|| {
-                let mut q = Query::new();
-
-                let lhs = q.source(move |send| {
-                    send.give_iterator((0..NUM_INTS).map(|x| (x, L::new(x))));
-                });
-                let rhs = q.source(move |send| {
-                    send.give_iterator((0..NUM_INTS).map(|x| (x, R::new(x))));
-                });
-
-                let op = lhs.join(rhs);
-
-                op.sink(move |v| {
-                    black_box(v);
-                });
-
-                (*q.df).borrow_mut().run();
-            })
-        },
-    );
-}
-
 fn benchmark_timely<L, R>(c: &mut Criterion)
 where
     L: 'static + JoinValue,
@@ -78,76 +46,40 @@ where
                     let lhs = (0..NUM_INTS).map(|x| (x, L::new(x))).to_stream(scope);
                     let rhs = (0..NUM_INTS).map(|x| (x, R::new(x))).to_stream(scope);
 
-                    lhs.binary(&rhs, Pipeline, Pipeline, "HashJoin", |_, _| {
-                        let mut left_tab: HashMap<usize, Vec<L>> = HashMap::new();
-                        let mut right_tab: HashMap<usize, Vec<R>> = HashMap::new();
-                        let mut lvec: Vec<(usize, L)> = Vec::new();
-                        let mut rvec: Vec<(usize, R)> = Vec::new();
-                        move |left, right, output| {
-                            left.for_each(|time, data| {
-                                data.swap(&mut lvec);
-                                let mut session = output.session(&time);
+                    let mut stash = HashMap::new();
 
-                                for (k, v) in lvec.drain(..) {
-                                    if let Some(matches) = right_tab.get(&k) {
-                                        for v2 in matches {
-                                            session.give((k, v.clone(), v2.clone()))
+                    lhs.binary_notify(
+                        &rhs,
+                        Pipeline,
+                        Pipeline,
+                        "Join",
+                        vec![],
+                        move |input1, input2, _output, _notificator| {
+                            input1.for_each(|_time, data| {
+                                for (key, val1) in data.iter().cloned() {
+                                    if let Some(vals2) = stash.get(&key) {
+                                        for val2 in vals2 {
+                                            black_box((key, val1.clone(), val2));
                                         }
                                     }
-
-                                    left_tab.entry(k).or_insert_with(Vec::new).push(v);
+                                    stash.entry(key).or_insert_with(Vec::new).push(val1);
                                 }
                             });
 
-                            right.for_each(|time, data| {
-                                data.swap(&mut rvec);
-                                let mut session = output.session(&time);
-
-                                for (k, v) in rvec.drain(..) {
-                                    if let Some(matches) = left_tab.get(&k) {
-                                        for v2 in matches {
-                                            session.give((k, v2.clone(), v.clone()))
+                            input2.for_each(|_time, data| {
+                                for (key, val2) in data.iter().cloned() {
+                                    if let Some(vals1) = stash.get(&key) {
+                                        for val1 in vals1 {
+                                            black_box((key, val1, val2.clone()));
                                         }
                                     }
-
-                                    right_tab.entry(k).or_insert_with(Vec::new).push(v);
+                                    stash.entry(key).or_insert_with(Vec::new).push(val2);
                                 }
                             });
-                        }
-                    });
+                        },
+                    );
                 });
             })
-        },
-    );
-}
-
-fn benchmark_spinachflow<L, R>(c: &mut Criterion)
-where
-    L: 'static + JoinValue,
-    R: 'static + JoinValue,
-{
-    c.bench_function(
-        format!("join/{}/{}/spinachflow", L::name(), R::name()).as_str(),
-        |b| {
-            b.to_async(
-                tokio::runtime::Builder::new_current_thread()
-                    .build()
-                    .unwrap(),
-            )
-            .iter(|| async {
-                use spinachflow::futures::future::ready;
-                use spinachflow::futures::stream::StreamExt;
-
-                let stream_a =
-                    spinachflow::futures::stream::iter((0..NUM_INTS).map(|x| (x, L::new(x))));
-                let stream_b =
-                    spinachflow::futures::stream::iter((0..NUM_INTS).map(|x| (x, R::new(x))));
-                let stream = Join::new(stream_a, stream_b);
-
-                let stream = stream.map(|x| ready(black_box(x)));
-                let mut stream = stream;
-                while stream.next().await.is_some() {}
-            });
         },
     );
 }
@@ -189,13 +121,9 @@ where
 
 criterion_group!(
     fan_in_dataflow,
-    benchmark_babyflow<usize, usize>,
     benchmark_timely<usize, usize>,
-    benchmark_spinachflow<usize, usize>,
     benchmark_sol<usize, usize>,
-    benchmark_babyflow<String, String>,
     benchmark_timely<String, String>,
-    benchmark_spinachflow<String,String>,
     benchmark_sol<String, String>,
 );
 criterion_main!(fan_in_dataflow);

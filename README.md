@@ -35,8 +35,8 @@ This repository includes the following external dependencies:
 
 - **timely-dataflow** (`timely`): A low-latency data-parallel dataflow system
 - **differential-dataflow**: Incremental computation based on timely-dataflow
-- **criterion**: Benchmarking framework
-- Other supporting dependencies (lazy_static, rand, seq-macro, tokio)
+- **criterion**: Benchmarking framework with async support
+- **lazy_static**: Used for loading test data in benchmarks
 
 ## Running Benchmarks
 
