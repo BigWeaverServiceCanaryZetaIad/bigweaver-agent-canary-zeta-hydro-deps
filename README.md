@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains benchmarks and dependencies for timely-dataflow and differential-dataflow that have been separated from the main `bigweaver-agent-canary-hydro-zeta` repository. This separation allows for performance comparisons without adding these dependencies to the main codebase.
+This repository contains isolated timely-dataflow benchmarks that have been separated from the main `bigweaver-agent-canary-hydro-zeta` repository. This separation allows for performance comparisons without adding these dependencies to the main codebase.
 
 ## Repository Structure
 
@@ -10,6 +10,7 @@ This repository contains benchmarks and dependencies for timely-dataflow and dif
 .
 ├── Cargo.toml                           # Workspace configuration
 ├── README.md                            # This file
+├── MIGRATION.md                         # Migration documentation
 ├── scripts/
 │   └── compare_benchmarks.sh           # Cross-repository benchmark comparison script
 └── timely-differential-benches/
@@ -25,8 +26,7 @@ This repository contains benchmarks and dependencies for timely-dataflow and dif
         ├── reachability.rs
         ├── reachability_edges.txt       # Test data
         ├── reachability_reachable.txt   # Test data
-        ├── upcase.rs
-        └── zip.rs
+        └── upcase.rs
 ```
 
 ## Dependencies
@@ -61,7 +61,6 @@ Available benchmarks:
 - `join`
 - `reachability`
 - `upcase`
-- `zip`
 
 ### Cross-Repository Comparison
 
@@ -73,17 +72,19 @@ To compare performance between this repository and the main repository:
 
 This script will:
 1. Run all timely/differential-dataflow benchmarks in this repository
-2. Run any benchmarks in the main repository (if available)
+2. Run benchmarks in the main repository (babyflow, hydroflow, spinachflow)
 3. Generate comparison reports
 
 ## Migration Notes
 
 These benchmarks were migrated from the main `bigweaver-agent-canary-hydro-zeta` repository to:
 
-1. **Separate dependencies**: Remove timely and differential-dataflow dependencies from the main codebase
+1. **Isolate dependencies**: Only timely-specific benchmark code is included here
 2. **Maintain comparisons**: Allow performance comparisons between different dataflow implementations
 3. **Reduce build time**: Avoid compiling these dependencies in the main repository
 4. **Focused development**: Keep the main repository focused on its core functionality
+
+**Important**: These benchmarks are **isolated** - they only test timely-dataflow implementations. The main repository retains benchmarks for babyflow, hydroflow, spinachflow, and baseline implementations.
 
 ## Development
 
@@ -106,6 +107,19 @@ cargo bench
 ```
 
 Results are saved in `target/criterion/` and can be viewed by opening `target/criterion/report/index.html` in a web browser.
+
+## Benchmark Details
+
+Each benchmark in this repository tests timely-dataflow's performance on specific patterns:
+
+- **arithmetic**: Chain of arithmetic operations
+- **fan_in**: Multiple inputs merging into one stream
+- **fan_out**: One input fanning out to multiple outputs
+- **fork_join**: Forking and joining streams with filtering
+- **identity**: Identity operations (simple pass-through)
+- **join**: Hash join operations on streams
+- **reachability**: Graph reachability computation with feedback loops
+- **upcase**: String manipulation operations
 
 ## License
 
