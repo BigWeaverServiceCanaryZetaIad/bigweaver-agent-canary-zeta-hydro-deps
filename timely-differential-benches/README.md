@@ -1,10 +1,10 @@
 # Timely and Differential Dataflow Benchmarks
 
-This directory contains benchmarks that use timely-dataflow and differential-dataflow dependencies for performance comparison with the main bigweaver-agent-canary-hydro-zeta repository.
+This directory contains benchmarks that use timely-dataflow and differential-dataflow dependencies for performance testing.
 
 ## Overview
 
-These benchmarks were migrated from the main repository to separate the timely and differential-dataflow dependencies from the core codebase while maintaining the ability to run performance comparisons.
+These benchmarks were migrated from the main repository to separate the timely and differential-dataflow dependencies from the core codebase. The benchmarks focus exclusively on timely and differential-dataflow performance characteristics.
 
 ## Running Benchmarks
 
@@ -28,15 +28,15 @@ cargo bench -p timely-differential-benches --bench zip
 
 ## Benchmark Descriptions
 
-- **arithmetic** - Arithmetic operations benchmark comparing different dataflow frameworks
-- **fan_in** - Fan-in pattern benchmark for data aggregation
-- **fan_out** - Fan-out pattern benchmark for data distribution
-- **fork_join** - Fork-join pattern benchmark
-- **identity** - Identity operation benchmark (data pass-through)
-- **join** - Join operation benchmark
-- **reachability** - Graph reachability computation benchmark
-- **upcase** - String uppercase transformation benchmark
-- **zip** - Zip operation benchmark
+- **arithmetic** - Arithmetic operations benchmark using timely-dataflow
+- **fan_in** - Fan-in pattern benchmark for data aggregation using timely-dataflow
+- **fan_out** - Fan-out pattern benchmark for data distribution using timely-dataflow
+- **fork_join** - Fork-join pattern benchmark using timely-dataflow
+- **identity** - Identity operation benchmark (data pass-through) using timely-dataflow
+- **join** - Join operation benchmark using timely-dataflow
+- **reachability** - Graph reachability computation benchmark using timely-dataflow
+- **upcase** - String uppercase transformation benchmark using timely-dataflow
+- **zip** - Zip operation benchmark using timely-dataflow
 
 ## Data Files
 

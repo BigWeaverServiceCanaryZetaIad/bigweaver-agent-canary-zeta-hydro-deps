@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains benchmarks and dependencies for timely-dataflow and differential-dataflow that have been separated from the main `bigweaver-agent-canary-hydro-zeta` repository. This separation allows for performance comparisons without adding these dependencies to the main codebase.
+This repository contains benchmarks for timely-dataflow and differential-dataflow that have been separated from the main `bigweaver-agent-canary-hydro-zeta` repository. This separation allows for focused performance testing of timely and differential-dataflow without adding these dependencies to the main codebase.
 
 ## Repository Structure
 
@@ -36,7 +36,7 @@ This repository includes the following external dependencies:
 - **timely-dataflow** (`timely`): A low-latency data-parallel dataflow system
 - **differential-dataflow**: Incremental computation based on timely-dataflow
 - **criterion**: Benchmarking framework
-- Other supporting dependencies (lazy_static, rand, seq-macro, tokio)
+- **lazy_static**: For static data in benchmarks
 
 ## Running Benchmarks
 
@@ -53,15 +53,15 @@ cargo bench -p timely-differential-benches --bench <benchmark_name>
 ```
 
 Available benchmarks:
-- `arithmetic`
-- `fan_in`
-- `fan_out`
-- `fork_join`
-- `identity`
-- `join`
-- `reachability`
-- `upcase`
-- `zip`
+- `arithmetic` - Arithmetic operations using timely-dataflow
+- `fan_in` - Fan-in pattern benchmark
+- `fan_out` - Fan-out pattern benchmark
+- `fork_join` - Fork-join pattern benchmark
+- `identity` - Identity operation benchmark
+- `join` - Join operation benchmark
+- `reachability` - Graph reachability computation
+- `upcase` - String uppercase transformation
+- `zip` - Zip operation benchmark
 
 ### Cross-Repository Comparison
 
@@ -84,6 +84,8 @@ These benchmarks were migrated from the main `bigweaver-agent-canary-hydro-zeta`
 2. **Maintain comparisons**: Allow performance comparisons between different dataflow implementations
 3. **Reduce build time**: Avoid compiling these dependencies in the main repository
 4. **Focused development**: Keep the main repository focused on its core functionality
+
+The benchmarks in this repository contain only the timely and differential-dataflow specific implementations. Framework comparison code (babyflow, hydroflow, spinachflow) remains in the main repository where those frameworks are available.
 
 ## Development
 
