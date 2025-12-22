@@ -1,6 +1,3 @@
-use std::marker::PhantomData;
-
-use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use timely::dataflow::operators::{Inspect, Map, ToStream};
 
@@ -48,9 +45,40 @@ impl Operation for Concatting {
     }
 }
 
-// This benchmark runs babyflow which more-or-less just copies the data directly
-// between the operators, but with some extra overhead.
-fn benchmark_babyflow<O: 'static + Operation>(c: &mut Criterion) {
+fn benchmark_timely<O: 'static + Operation>(c: &mut Criterion) {
+    c.bench_function(format!("{}/timely", O::name()).as_str(), |b| {
+        b.iter(|| {
+            timely::example(|scope| {
+                let mut op = (0..NUM_ROWS)
+                    .map(|_| STARTING_STRING.to_owned())
+                    .to_stream(scope);
+
+                for _ in 0..NUM_OPS {
+                    op = op.map(O::action);
+                }
+
+                op.inspect(|i| {
+                    black_box(i);
+                });
+            });
+        })
+    });
+}
+
+criterion_group!(
+    upcase_dataflow,
+    benchmark_timely::<UpcaseInPlace>,
+    benchmark_timely::<UpcaseAllocating>,
+    benchmark_timely::<Concatting>,
+);
+criterion_main!(upcase_dataflow);
+criterion_group!(
+    upcase_dataflow,
+    benchmark_timely::<UpcaseInPlace>,
+    benchmark_timely::<UpcaseAllocating>,
+    benchmark_timely::<Concatting>,
+);
+criterion_main!(upcase_dataflow);
     c.bench_function(format!("{}/babyflow", O::name()).as_str(), |b| {
         b.iter(|| {
             let mut q = Query::new();

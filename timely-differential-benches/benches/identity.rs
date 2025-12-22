@@ -1,16 +1,28 @@
-use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use std::sync::mpsc::channel;
-use std::thread;
 use timely::dataflow::operators::{Inspect, Map, ToStream};
 
 const NUM_OPS: usize = 20;
 const NUM_INTS: usize = 1_000_000;
 
-// This benchmark runs babyflow which more-or-less just copies the data directly
-// between the operators, but with some extra overhead.
-fn benchmark_babyflow(c: &mut Criterion) {
-    c.bench_function("identity/babyflow", |b| {
+fn benchmark_timely(c: &mut Criterion) {
+    c.bench_function("identity/timely", |b| {
+        b.iter(|| {
+            timely::example(|scope| {
+                let mut op = (0..NUM_INTS).to_stream(scope);
+                for _ in 0..NUM_OPS {
+                    op = op.map(black_box)
+                }
+
+                op.inspect(|i| {
+                    black_box(i);
+                });
+            });
+        })
+    });
+}
+
+criterion_group!(identity_dataflow, benchmark_timely);
+criterion_main!(identity_dataflow);
         b.iter(|| {
             let mut q = Query::new();
 
