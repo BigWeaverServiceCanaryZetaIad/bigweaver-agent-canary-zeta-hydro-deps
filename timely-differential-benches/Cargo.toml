@@ -46,7 +46,3 @@ harness = false
 [[bench]]
 name = "upcase"
 harness = false
-
-[[bench]]
-name = "zip"
-harness = false
