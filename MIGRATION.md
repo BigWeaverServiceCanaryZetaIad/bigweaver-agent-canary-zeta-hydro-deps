@@ -46,17 +46,14 @@ The following dependencies were moved from the main repository to this repositor
 - `timely = "0.12"`
 - `differential-dataflow = "0.12"`
 - Supporting dependencies:
-  - `criterion = { version = "0.3", features = ["async_tokio"] }`
+  - `criterion = "0.3"`
   - `lazy_static = "1.4.0"`
-  - `rand = "0.8.4"`
-  - `seq-macro = "0.2"`
-  - `tokio = { version = "1.0", features = ["rt-multi-thread"] }`
 
 ### Removed from bigweaver-agent-canary-hydro-zeta
 - `timely = "*"` (from benches/Cargo.toml)
 - Any references to differential-dataflow in benchmark files
 
-Note: The main repository's benchmark directory may have been removed entirely or may contain only non-timely/differential benchmarks after migration.
+Note: The benchmarks in this repository contain only timely and differential-dataflow specific code. The framework comparison code (babyflow, hydroflow, spinachflow) was removed to ensure these benchmarks compile with only timely/differential dependencies.
 
 ## New Structure in bigweaver-agent-canary-zeta-hydro-deps
 
