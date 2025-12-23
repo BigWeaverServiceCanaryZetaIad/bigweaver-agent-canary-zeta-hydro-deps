@@ -26,7 +26,10 @@ This repository contains benchmarks and dependencies for timely-dataflow and dif
         ├── reachability_edges.txt       # Test data
         ├── reachability_reachable.txt   # Test data
         ├── upcase.rs
-        └── zip.rs
+        ├── zip.rs
+        ├── differential_count.rs
+        ├── differential_distinct.rs
+        └── differential_join.rs
 ```
 
 ## Dependencies
@@ -62,6 +65,9 @@ Available benchmarks:
 - `reachability`
 - `upcase`
 - `zip`
+- `differential_count`
+- `differential_distinct`
+- `differential_join`
 
 ### Cross-Repository Comparison
 
