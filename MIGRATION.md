@@ -52,11 +52,20 @@ The following dependencies were moved from the main repository to this repositor
   - `seq-macro = "0.2"`
   - `tokio = { version = "1.0", features = ["rt-multi-thread"] }`
 
+### Path Dependencies for Performance Comparison
+
+The benchmarks require path dependencies to the main repository for performance comparison:
+- `babyflow` - from bigweaver-agent-canary-hydro-zeta/babyflow
+- `hydroflow` - from bigweaver-agent-canary-hydro-zeta/hydroflow  
+- `spinachflow` - from bigweaver-agent-canary-hydro-zeta/spinachflow
+
+These are configured as commented path dependencies in the Cargo.toml and need to be uncommented when running benchmarks.
+
 ### Removed from bigweaver-agent-canary-hydro-zeta
 - `timely = "*"` (from benches/Cargo.toml)
-- Any references to differential-dataflow in benchmark files
+- References to timely and differential-dataflow in benchmark-specific code
 
-Note: The main repository's benchmark directory may have been removed entirely or may contain only non-timely/differential benchmarks after migration.
+Note: The main repository retains babyflow, hydroflow, and spinachflow as these are the core implementations being benchmarked.
 
 ## New Structure in bigweaver-agent-canary-zeta-hydro-deps
 
@@ -107,21 +116,37 @@ After migration, performance comparisons can still be conducted using:
 
 To verify the migration was successful:
 
-1. Build the deps repository:
+1. **Clone both repositories** side-by-side:
+   ```bash
+   git clone <url>/bigweaver-agent-canary-hydro-zeta.git
+   git clone <url>/bigweaver-agent-canary-zeta-hydro-deps.git
+   ```
+
+2. **Configure path dependencies** in `bigweaver-agent-canary-zeta-hydro-deps/timely-differential-benches/Cargo.toml`:
+   ```bash
+   cd bigweaver-agent-canary-zeta-hydro-deps/timely-differential-benches
+   # Edit Cargo.toml to uncomment the path dependencies:
+   # babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+   # hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+   # spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+   ```
+
+3. **Build the deps repository**:
    ```bash
    cd bigweaver-agent-canary-zeta-hydro-deps
    cargo build
    ```
 
-2. Run the benchmarks:
+4. **Run the benchmarks**:
    ```bash
    cargo bench
    ```
 
-3. Check that the main repository no longer has timely/differential dependencies:
+5. **Check that the main repository no longer has timely/differential dependencies**:
    ```bash
    cd bigweaver-agent-canary-hydro-zeta
    # Check Cargo.toml files for absence of timely/differential dependencies
+   grep -r "timely\|differential-dataflow" . --include="Cargo.toml"
    ```
 
 ## Post-Migration Changes in Main Repository
