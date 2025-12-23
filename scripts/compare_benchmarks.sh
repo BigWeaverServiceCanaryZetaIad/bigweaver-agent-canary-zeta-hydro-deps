@@ -23,7 +23,15 @@ fi
 # Run benchmarks in the deps repository (timely/differential benchmarks)
 echo "Running timely/differential-dataflow benchmarks in deps repository..."
 cd "$DEPS_REPO_DIR"
-cargo bench -p timely-differential-benches --no-fail-fast
+
+# Check if main repository exists for cross-repo comparison
+if [ -d "$MAIN_REPO_DIR" ]; then
+    echo "Main repository found, enabling cross-repository comparison..."
+    cargo bench -p timely-differential-benches --features cross-repo-compare --no-fail-fast
+else
+    echo "Main repository not found, running timely/differential benchmarks only..."
+    cargo bench -p timely-differential-benches --no-fail-fast
+fi
 
 echo ""
 echo "====================================="

@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
+#[cfg(feature = "cross-repo-compare")]
 use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+#[cfg(feature = "cross-repo-compare")]
 use spinachflow::stream::Join;
 use timely::dataflow::{
     channels::pact::Pipeline,
@@ -35,6 +37,7 @@ impl JoinValue for String {
 
 const NUM_INTS: usize = 100_000;
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_babyflow<L, R>(c: &mut Criterion)
 where
     L: 'static + JoinValue,
@@ -121,6 +124,7 @@ where
     );
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_spinachflow<L, R>(c: &mut Criterion)
 where
     L: 'static + JoinValue,
@@ -189,12 +193,16 @@ where
 
 criterion_group!(
     fan_in_dataflow,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_babyflow<usize, usize>,
     benchmark_timely<usize, usize>,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_spinachflow<usize, usize>,
     benchmark_sol<usize, usize>,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_babyflow<String, String>,
     benchmark_timely<String, String>,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_spinachflow<String,String>,
     benchmark_sol<String, String>,
 );

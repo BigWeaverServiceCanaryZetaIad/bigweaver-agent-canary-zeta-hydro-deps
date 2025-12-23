@@ -1,12 +1,16 @@
+#[cfg(feature = "cross-repo-compare")]
 use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+#[cfg(feature = "cross-repo-compare")]
 use hydroflow::compiled::{ForEach, Pivot, TeeN};
+#[cfg(feature = "cross-repo-compare")]
 use hydroflow::scheduled::{collections::Iter, query::Query as Q};
 use timely::dataflow::operators::{Map, ToStream};
 
 const NUM_OPS: usize = 20;
 const NUM_INTS: usize = 1_000_000;
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_hydroflow_scheduled(c: &mut Criterion) {
     c.bench_function("fan_out/hydroflow/scheduled", |b| {
         b.iter(|| {
@@ -27,6 +31,7 @@ fn benchmark_hydroflow_scheduled(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_hydroflow_compiled(c: &mut Criterion) {
     c.bench_function("fan_out/hydroflow/compiled (push)", |b| {
         b.iter(|| {
@@ -45,6 +50,7 @@ fn benchmark_hydroflow_compiled(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_babyflow(c: &mut Criterion) {
     c.bench_function("fan_out/babyflow", |b| {
         b.iter(|| {
@@ -77,6 +83,7 @@ fn benchmark_timely(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_spinachflow_asym(c: &mut Criterion) {
     c.bench_function("fan_out/spinachflow (asym)", |b| {
         b.to_async(
@@ -137,10 +144,14 @@ fn benchmark_sol(c: &mut Criterion) {
 
 criterion_group!(
     fan_out_dataflow,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_hydroflow_scheduled,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_hydroflow_compiled,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_babyflow,
     benchmark_timely,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_spinachflow_asym,
     benchmark_sol,
 );

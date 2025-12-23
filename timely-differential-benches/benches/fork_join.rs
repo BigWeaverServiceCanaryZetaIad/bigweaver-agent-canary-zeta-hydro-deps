@@ -1,6 +1,9 @@
+#[cfg(feature = "cross-repo-compare")]
 use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+#[cfg(feature = "cross-repo-compare")]
 use hydroflow::scheduled::query::Query as Q;
+#[cfg(feature = "cross-repo-compare")]
 use hydroflow::scheduled::{collections::Iter, handoff::VecHandoff, Hydroflow, SendCtx};
 use timely::dataflow::operators::{Concatenate, Filter, Inspect, ToStream};
 
@@ -8,6 +11,7 @@ const NUM_OPS: usize = 20;
 const NUM_INTS: usize = 100_000;
 const BRANCH_FACTOR: usize = 2;
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_hydroflow(c: &mut Criterion) {
     c.bench_function("fork_join/hydroflow", |b| {
         b.iter(|| {
@@ -68,6 +72,7 @@ fn benchmark_hydroflow(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_hydroflow_builder(c: &mut Criterion) {
     c.bench_function("fork_join/hydroflow_builder", |b| {
         b.iter(|| {
@@ -114,6 +119,7 @@ fn benchmark_raw(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_babyflow(c: &mut Criterion) {
     c.bench_function("fork_join/babyflow", |b| {
         b.iter(|| {
@@ -161,6 +167,7 @@ fn benchmark_timely(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_spinachflow_asym(c: &mut Criterion) {
     c.bench_function("fork_join/spinachflow (asymmetric)", |b| {
         b.to_async(
@@ -347,14 +354,18 @@ fn benchmark_spinachflow_asym(c: &mut Criterion) {
 // criterion_group!(fork_join_dataflow, benchmark_timely,);
 criterion_group!(
     fork_join_dataflow,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_hydroflow,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_hydroflow_builder,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_babyflow,
     benchmark_timely,
     benchmark_raw,
     // benchmark_spinach,
     // benchmark_spinach_switch,
     // benchmark_spinachflow_symm,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_spinachflow_asym,
 );
 criterion_main!(fork_join_dataflow);

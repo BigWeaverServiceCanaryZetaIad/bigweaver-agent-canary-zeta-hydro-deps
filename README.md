@@ -10,6 +10,7 @@ This repository contains benchmarks and dependencies for timely-dataflow and dif
 .
 ├── Cargo.toml                           # Workspace configuration
 ├── README.md                            # This file
+├── MIGRATION.md                         # Detailed migration documentation
 ├── scripts/
 │   └── compare_benchmarks.sh           # Cross-repository benchmark comparison script
 └── timely-differential-benches/
@@ -38,18 +39,54 @@ This repository includes the following external dependencies:
 - **criterion**: Benchmarking framework
 - Other supporting dependencies (lazy_static, rand, seq-macro, tokio)
 
+### Optional Dependencies (Cross-Repository Comparison)
+
+When the `cross-repo-compare` feature is enabled, the following path dependencies are used:
+- **babyflow**: Custom dataflow implementation (from main repository)
+- **hydroflow**: Alternative dataflow implementation (from main repository)
+- **spinachflow**: Another dataflow variant (from main repository)
+
 ## Running Benchmarks
 
-### Run All Benchmarks
+### Basic Usage (Timely/Differential Only)
+
+Run benchmarks using only timely and differential-dataflow:
 
 ```bash
 cargo bench
 ```
 
+This will execute benchmarks for timely-dataflow and differential-dataflow implementations without requiring the main repository to be present.
+
+### Cross-Repository Comparison
+
+To run benchmarks that compare all implementations (including babyflow, hydroflow, and spinachflow):
+
+1. **Clone both repositories side-by-side**:
+   ```bash
+   git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+   git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+   ```
+
+2. **Run benchmarks with the cross-repo-compare feature**:
+   ```bash
+   cd bigweaver-agent-canary-zeta-hydro-deps
+   cargo bench --features cross-repo-compare
+   ```
+
+3. **Or use the comparison script**:
+   ```bash
+   ./scripts/compare_benchmarks.sh
+   ```
+
 ### Run Specific Benchmark
 
 ```bash
+# Without cross-repo-compare
 cargo bench -p timely-differential-benches --bench <benchmark_name>
+
+# With cross-repo-compare
+cargo bench -p timely-differential-benches --bench <benchmark_name> --features cross-repo-compare
 ```
 
 Available benchmarks:
@@ -63,18 +100,10 @@ Available benchmarks:
 - `upcase`
 - `zip`
 
-### Cross-Repository Comparison
+## Features
 
-To compare performance between this repository and the main repository:
-
-```bash
-./scripts/compare_benchmarks.sh
-```
-
-This script will:
-1. Run all timely/differential-dataflow benchmarks in this repository
-2. Run any benchmarks in the main repository (if available)
-3. Generate comparison reports
+- **default**: Runs benchmarks for timely-dataflow and differential-dataflow only
+- **cross-repo-compare**: Enables benchmarks for babyflow, hydroflow, and spinachflow (requires main repository at ../bigweaver-agent-canary-hydro-zeta)
 
 ## Migration Notes
 
@@ -84,6 +113,8 @@ These benchmarks were migrated from the main `bigweaver-agent-canary-hydro-zeta`
 2. **Maintain comparisons**: Allow performance comparisons between different dataflow implementations
 3. **Reduce build time**: Avoid compiling these dependencies in the main repository
 4. **Focused development**: Keep the main repository focused on its core functionality
+
+For detailed migration information, see [MIGRATION.md](MIGRATION.md).
 
 ## Development
 
@@ -102,10 +133,30 @@ cargo test
 ### Benchmarking
 
 ```bash
+# Basic benchmarks
 cargo bench
+
+# With cross-repository comparison
+cargo bench --features cross-repo-compare
 ```
 
 Results are saved in `target/criterion/` and can be viewed by opening `target/criterion/report/index.html` in a web browser.
+
+## Troubleshooting
+
+### Error: "failed to load manifest" for babyflow/hydroflow/spinachflow
+
+This error occurs when running benchmarks with the `cross-repo-compare` feature enabled but the main repository is not available. Solutions:
+
+1. Clone the main repository side-by-side: `../bigweaver-agent-canary-hydro-zeta`
+2. Or run without the feature flag: `cargo bench` (runs timely/differential benchmarks only)
+
+### Benchmarks not running
+
+Make sure you're in the repository root directory and run:
+```bash
+cargo bench -p timely-differential-benches
+```
 
 ## License
 

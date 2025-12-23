@@ -68,7 +68,7 @@ bigweaver-agent-canary-zeta-hydro-deps/
 ├── scripts/
 │   └── compare_benchmarks.sh           # Cross-repository comparison script
 └── timely-differential-benches/
-    ├── Cargo.toml                       # Package configuration
+    ├── Cargo.toml                       # Package configuration with feature flags
     ├── README.md                        # Benchmark documentation
     └── benches/                         # Benchmark implementations and data
         ├── arithmetic.rs
@@ -83,6 +83,15 @@ bigweaver-agent-canary-zeta-hydro-deps/
         ├── upcase.rs
         └── zip.rs
 ```
+
+### Feature Flags
+
+The repository now uses Cargo features to control which benchmarks are compiled:
+
+- **default**: Only timely and differential-dataflow benchmarks (no external dependencies)
+- **cross-repo-compare**: Enables babyflow, hydroflow, and spinachflow benchmarks (requires path dependencies)
+
+This allows the repository to be used standalone for timely/differential benchmarking, or with the main repository for comprehensive comparisons.
 
 ## Performance Comparison
 
@@ -113,12 +122,18 @@ To verify the migration was successful:
    cargo build
    ```
 
-2. Run the benchmarks:
+2. Run the timely/differential benchmarks:
    ```bash
    cargo bench
    ```
 
-3. Check that the main repository no longer has timely/differential dependencies:
+3. (Optional) Run with cross-repository comparison:
+   ```bash
+   # Requires main repository at ../bigweaver-agent-canary-hydro-zeta
+   cargo bench --features cross-repo-compare
+   ```
+
+4. Check that the main repository no longer has timely/differential dependencies:
    ```bash
    cd bigweaver-agent-canary-hydro-zeta
    # Check Cargo.toml files for absence of timely/differential dependencies
