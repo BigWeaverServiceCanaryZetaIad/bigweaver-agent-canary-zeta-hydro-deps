@@ -1,3 +1,4 @@
+#[cfg(feature = "cross-repo-compare")]
 use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use std::sync::mpsc::channel;
@@ -9,6 +10,7 @@ const NUM_INTS: usize = 1_000_000;
 
 // This benchmark runs babyflow which more-or-less just copies the data directly
 // between the operators, but with some extra overhead.
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_babyflow(c: &mut Criterion) {
     c.bench_function("identity/babyflow", |b| {
         b.iter(|| {
@@ -142,6 +144,7 @@ async fn benchmark_spinach(num_ints: usize) {
     spinachflow::comp::CompExt::run(&comp).await.unwrap_err();
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn criterion_spinach(c: &mut Criterion) {
     c.bench_function("identity/spinach", |b| {
         b.to_async(
@@ -153,6 +156,7 @@ fn criterion_spinach(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_spinach_chunks(num_ints: usize) -> impl std::future::Future {
     type MyLatRepr = spinachflow::lattice::set_union::SetUnionRepr<spinachflow::tag::VEC, usize>;
 
@@ -198,6 +202,7 @@ fn benchmark_spinach_chunks(num_ints: usize) -> impl std::future::Future {
     local
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn criterion_spinach_chunks(c: &mut Criterion) {
     c.bench_function("identity/spinach (size 10_000 chunks in 100 tasks)", |b| {
         b.to_async(
@@ -226,6 +231,7 @@ fn benchmark_timely(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_hydroflow_compiled(c: &mut Criterion) {
     use hydroflow::compiled::{ForEach, Map, Pusherator};
 
@@ -265,6 +271,7 @@ fn benchmark_hydroflow_compiled(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_hydroflow(c: &mut Criterion) {
     use hydroflow::scheduled::collections::Iter;
     use hydroflow::scheduled::handoff::VecHandoff;
@@ -305,14 +312,19 @@ fn benchmark_hydroflow(c: &mut Criterion) {
 criterion_group!(
     identity_dataflow,
     benchmark_timely,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_babyflow,
+    #[cfg(feature = "cross-repo-compare")]
     criterion_spinach,
+    #[cfg(feature = "cross-repo-compare")]
     criterion_spinach_chunks,
     benchmark_pipeline,
     benchmark_iter,
     benchmark_iter_collect,
     benchmark_raw_copy,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_hydroflow,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_hydroflow_compiled,
 );
 criterion_main!(identity_dataflow);

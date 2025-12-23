@@ -1,5 +1,7 @@
+#[cfg(feature = "cross-repo-compare")]
 use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+#[cfg(feature = "cross-repo-compare")]
 use hydroflow::scheduled::{collections::Iter, query::Query as Q};
 use timely::dataflow::operators::{Concatenate, Inspect, ToStream};
 
@@ -10,6 +12,7 @@ fn make_ints(i: usize) -> impl Iterator<Item = usize> {
     (i * NUM_INTS)..((i + 1) * NUM_INTS)
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_hydroflow(c: &mut Criterion) {
     c.bench_function("fan_in/hydroflow", |b| {
         b.iter(|| {
@@ -34,6 +37,7 @@ fn benchmark_hydroflow(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_babyflow(c: &mut Criterion) {
     c.bench_function("fan_in/babyflow", |b| {
         b.iter(|| {
@@ -76,6 +80,7 @@ fn benchmark_timely(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_spinachflow(c: &mut Criterion) {
     c.bench_function("fan_in/spinachflow", |b| {
         b.to_async(
@@ -125,9 +130,12 @@ fn benchmark_for_loops(c: &mut Criterion) {
 
 criterion_group!(
     fan_in_dataflow,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_babyflow,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_hydroflow,
     benchmark_timely,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_spinachflow,
     benchmark_iters,
     benchmark_for_loops,

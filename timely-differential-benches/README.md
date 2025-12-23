@@ -8,12 +8,29 @@ These benchmarks were migrated from the main repository to separate the timely a
 
 ## Running Benchmarks
 
-Run all benchmarks:
+### Running Timely/Differential Benchmarks Only
+
+By default, the benchmarks run only the timely-dataflow and differential-dataflow implementations:
+
 ```bash
 cargo bench -p timely-differential-benches
 ```
 
-Run specific benchmarks:
+This will run benchmarks without requiring the babyflow, hydroflow, and spinachflow dependencies.
+
+### Running Cross-Repository Comparison Benchmarks
+
+To enable benchmarks that compare with babyflow, hydroflow, and spinachflow implementations from the main repository, use the `cross-repo-compare` feature:
+
+```bash
+# First ensure the main repository is cloned side-by-side
+git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git ../bigweaver-agent-canary-hydro-zeta
+
+# Then run with the feature flag
+cargo bench -p timely-differential-benches --features cross-repo-compare
+```
+
+### Run specific benchmarks:
 ```bash
 cargo bench -p timely-differential-benches --bench arithmetic
 cargo bench -p timely-differential-benches --bench fan_in
@@ -45,9 +62,26 @@ cargo bench -p timely-differential-benches --bench zip
 
 ## Cross-Repository Comparison
 
-To compare performance between this repository and the main repository, use the comparison script in the parent directory:
+To compare performance between this repository and the main repository, you have two options:
+
+### Option 1: Use the comparison script
 
 ```bash
 cd ..
 ./scripts/compare_benchmarks.sh
 ```
+
+### Option 2: Manual comparison
+
+```bash
+# Run benchmarks with cross-repo-compare feature
+cargo bench --features cross-repo-compare
+
+# The benchmarks will automatically include babyflow, hydroflow, and spinachflow implementations
+# Results are saved in target/criterion/
+```
+
+## Features
+
+- **default**: Runs only timely and differential-dataflow benchmarks
+- **cross-repo-compare**: Enables benchmarks for babyflow, hydroflow, and spinachflow (requires these crates to be available as path dependencies from ../bigweaver-agent-canary-hydro-zeta)

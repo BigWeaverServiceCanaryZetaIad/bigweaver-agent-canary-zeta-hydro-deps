@@ -1,5 +1,6 @@
 use std::marker::PhantomData;
 
+#[cfg(feature = "cross-repo-compare")]
 use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use timely::dataflow::operators::{Inspect, Map, ToStream};
@@ -50,6 +51,7 @@ impl Operation for Concatting {
 
 // This benchmark runs babyflow which more-or-less just copies the data directly
 // between the operators, but with some extra overhead.
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_babyflow<O: 'static + Operation>(c: &mut Criterion) {
     c.bench_function(format!("{}/babyflow", O::name()).as_str(), |b| {
         b.iter(|| {
@@ -141,6 +143,7 @@ async fn benchmark_spinach<O: 'static + Operation>(num_ints: usize) {
     spinachflow::comp::CompExt::run(&comp).await.unwrap_err();
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn criterion_spinach<O: 'static + Operation>(c: &mut Criterion) {
     c.bench_function(format!("{}/spinach", O::name()).as_str(), |b| {
         b.to_async(
@@ -174,8 +177,11 @@ fn benchmark_timely<O: 'static + Operation>(c: &mut Criterion) {
 
 criterion_group!(
     upcase_dataflow,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_babyflow::<UpcaseInPlace>,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_babyflow::<UpcaseAllocating>,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_babyflow::<Concatting>,
     benchmark_timely::<UpcaseInPlace>,
     benchmark_timely::<UpcaseAllocating>,
@@ -186,8 +192,11 @@ criterion_group!(
     benchmark_iter::<UpcaseInPlace>,
     benchmark_iter::<UpcaseAllocating>,
     benchmark_iter::<Concatting>,
+    #[cfg(feature = "cross-repo-compare")]
     criterion_spinach::<UpcaseInPlace>,
+    #[cfg(feature = "cross-repo-compare")]
     criterion_spinach::<UpcaseAllocating>,
+    #[cfg(feature = "cross-repo-compare")]
     criterion_spinach::<Concatting>,
 );
 criterion_main!(upcase_dataflow);

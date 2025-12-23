@@ -1,9 +1,11 @@
+#[cfg(feature = "cross-repo-compare")]
 use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 // use timely::dataflow::operators::Operator;
 
 const NUM_INTS: usize = 1_000_000;
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_babyflow(c: &mut Criterion) {
     // enum State<T, U> {
     //     None,
@@ -83,6 +85,7 @@ fn benchmark_babyflow(c: &mut Criterion) {
 //     });
 // }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_spinachflow(c: &mut Criterion) {
     c.bench_function("spinachflow", |b| {
         b.to_async(
@@ -141,8 +144,10 @@ fn benchmark_spinachflow(c: &mut Criterion) {
 
 criterion_group!(
     zip_dataflow,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_babyflow,
     // benchmark_timely,
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_spinachflow,
     // benchmark_sol,
 );

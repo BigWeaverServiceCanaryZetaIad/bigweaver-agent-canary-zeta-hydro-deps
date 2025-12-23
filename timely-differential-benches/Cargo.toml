@@ -6,13 +6,21 @@ publish = false
 
 [dependencies]
 
+[features]
+default = []
+# Enable cross-repository comparisons with babyflow, hydroflow, and spinachflow
+# To use: cargo bench --features cross-repo-compare
+cross-repo-compare = ["babyflow", "hydroflow", "spinachflow"]
+
 [dev-dependencies]
 # Path dependencies for performance comparison with other dataflow implementations
-# Uncomment these when running cross-repository comparisons:
-# babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
-# hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
-# spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+# These are optional and only used when the 'cross-repo-compare' feature is enabled
+# Requires the bigweaver-agent-canary-hydro-zeta repository to be cloned side-by-side
+babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow", optional = true }
+hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow", optional = true }
+spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow", optional = true }
 
+# Core benchmarking dependencies
 criterion = { version = "0.3", features = ["async_tokio"] }
 timely = "0.12"
 differential-dataflow = "0.12"

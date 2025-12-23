@@ -76,6 +76,7 @@ fn benchmark_timely(c: &mut Criterion) {
     });
 }
 
+#[cfg(feature = "cross-repo-compare")]
 fn benchmark_hydroflow(c: &mut Criterion) {
     use hydroflow::scheduled::collections::Iter;
     use hydroflow::scheduled::handoff::VecHandoff;
@@ -150,7 +151,8 @@ fn benchmark_hydroflow(c: &mut Criterion) {
 criterion_group!(
     reachability,
     benchmark_timely,
-    // benchmark_babyflow,
+    // benchmark_babyflow, // Requires cross-repo-compare feature
+    #[cfg(feature = "cross-repo-compare")]
     benchmark_hydroflow,
 );
 criterion_main!(reachability);
