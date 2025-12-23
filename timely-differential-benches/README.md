@@ -8,6 +8,17 @@ These benchmarks were migrated from the main repository to separate the timely a
 
 ## Running Benchmarks
 
+### Quick Start
+
+Run all benchmarks:
+```bash
+cargo bench -p timely-differential-benches
+```
+
+**Note**: By default, only timely-dataflow and differential-dataflow benchmark variants will run. Some benchmarks include additional comparison variants (babyflow, hydroflow, spinachflow) that require path dependencies to be uncommented in Cargo.toml.
+
+### Run All Benchmarks
+
 Run all benchmarks:
 ```bash
 cargo bench -p timely-differential-benches
@@ -51,3 +62,28 @@ To compare performance between this repository and the main repository, use the 
 cd ..
 ./scripts/compare_benchmarks.sh
 ```
+
+## Enabling Cross-Framework Comparisons
+
+Some benchmarks include variants that compare timely/differential-dataflow against other dataflow implementations (babyflow, hydroflow, spinachflow). These variants are disabled by default because they require path dependencies from the main repository.
+
+To enable cross-framework comparisons:
+
+1. Ensure the main `bigweaver-agent-canary-hydro-zeta` repository is cloned side-by-side:
+   ```bash
+   ls ../../bigweaver-agent-canary-hydro-zeta
+   ```
+
+2. Edit `Cargo.toml` in this directory and uncomment these lines:
+   ```toml
+   # babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+   # hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+   # spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+   ```
+
+3. Run benchmarks normally:
+   ```bash
+   cargo bench -p timely-differential-benches
+   ```
+
+This will enable additional benchmark variants like `arithmetic/babyflow`, `arithmetic/hydroflow/compiled`, etc.
