@@ -5,6 +5,16 @@ edition = "2021"
 publish = false
 
 [dependencies]
+# Path dependencies to the main repository (uncomment when running cross-repository benchmarks)
+# These dependencies are required for benchmarks that compare timely/differential implementations
+# with babyflow, hydroflow, and spinachflow implementations.
+# 
+# To enable these dependencies, uncomment the lines below and ensure the main repository
+# is cloned at ../../bigweaver-agent-canary-hydro-zeta:
+#
+# babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+# hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+# spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
 
 [dev-dependencies]
 criterion = { version = "0.3", features = ["async_tokio"] }
