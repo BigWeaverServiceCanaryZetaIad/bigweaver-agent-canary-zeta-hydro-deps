@@ -6,6 +6,37 @@ This directory contains benchmarks that use timely-dataflow and differential-dat
 
 These benchmarks were migrated from the main repository to separate the timely and differential-dataflow dependencies from the core codebase while maintaining the ability to run performance comparisons.
 
+## Dependencies
+
+This benchmark package depends on:
+
+### External Dependencies (from crates.io)
+- **timely** (0.12) - Low-latency data-parallel dataflow system
+- **differential-dataflow** (0.12) - Incremental computation based on timely-dataflow
+- **criterion** (0.3) - Benchmarking framework
+- Supporting libraries: lazy_static, rand, seq-macro, tokio
+
+### Path Dependencies (from main repository)
+The benchmarks require the following implementations from `bigweaver-agent-canary-hydro-zeta`:
+- **babyflow** - Custom dataflow implementation
+- **hydroflow** - Alternative dataflow implementation  
+- **spinachflow** - Another dataflow implementation variant
+
+These path dependencies allow the benchmarks to compare performance across all implementations.
+
+## Prerequisites
+
+Both repositories must be cloned side-by-side:
+```
+workspace/
+├── bigweaver-agent-canary-hydro-zeta/
+│   ├── babyflow/
+│   ├── hydroflow/
+│   └── spinachflow/
+└── bigweaver-agent-canary-zeta-hydro-deps/
+    └── timely-differential-benches/    (this directory)
+```
+
 ## Running Benchmarks
 
 Run all benchmarks:

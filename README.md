@@ -40,9 +40,22 @@ This repository includes the following external dependencies:
 
 ## Running Benchmarks
 
+### Prerequisites
+
+Before running benchmarks, ensure both repositories are cloned side-by-side:
+
+```bash
+cd /path/to/your/workspace
+git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+```
+
+The benchmarks require path dependencies to babyflow, hydroflow, and spinachflow from the main repository.
+
 ### Run All Benchmarks
 
 ```bash
+cd bigweaver-agent-canary-zeta-hydro-deps
 cargo bench
 ```
 
@@ -53,15 +66,15 @@ cargo bench -p timely-differential-benches --bench <benchmark_name>
 ```
 
 Available benchmarks:
-- `arithmetic`
-- `fan_in`
-- `fan_out`
-- `fork_join`
-- `identity`
-- `join`
-- `reachability`
-- `upcase`
-- `zip`
+- `arithmetic` - Arithmetic operations benchmark
+- `fan_in` - Fan-in pattern benchmark
+- `fan_out` - Fan-out pattern benchmark
+- `fork_join` - Fork-join pattern benchmark
+- `identity` - Identity transformation benchmark
+- `join` - Join operation benchmark
+- `reachability` - Graph reachability benchmark (includes test data)
+- `upcase` - String uppercase transformation benchmark
+- `zip` - Zip operation benchmark
 
 ### Cross-Repository Comparison
 
