@@ -50,3 +50,15 @@ harness = false
 [[bench]]
 name = "zip"
 harness = false
+
+[[bench]]
+name = "differential_count"
+harness = false
+
+[[bench]]
+name = "differential_distinct"
+harness = false
+
+[[bench]]
+name = "differential_join"
+harness = false

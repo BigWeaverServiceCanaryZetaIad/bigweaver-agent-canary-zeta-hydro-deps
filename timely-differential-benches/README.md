@@ -24,6 +24,9 @@ cargo bench -p timely-differential-benches --bench join
 cargo bench -p timely-differential-benches --bench reachability
 cargo bench -p timely-differential-benches --bench upcase
 cargo bench -p timely-differential-benches --bench zip
+cargo bench -p timely-differential-benches --bench differential_count
+cargo bench -p timely-differential-benches --bench differential_distinct
+cargo bench -p timely-differential-benches --bench differential_join
 ```
 
 ## Benchmark Descriptions
@@ -37,6 +40,9 @@ cargo bench -p timely-differential-benches --bench zip
 - **reachability** - Graph reachability computation benchmark
 - **upcase** - String uppercase transformation benchmark
 - **zip** - Zip operation benchmark
+- **differential_count** - Differential dataflow count operation with incremental updates
+- **differential_distinct** - Differential dataflow distinct operation with incremental updates
+- **differential_join** - Differential dataflow join operation with incremental updates
 
 ## Data Files
 
