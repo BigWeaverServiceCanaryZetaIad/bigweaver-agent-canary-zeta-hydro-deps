@@ -40,10 +40,35 @@ This repository includes the following external dependencies:
 
 ## Running Benchmarks
 
+### Prerequisites
+
+The benchmarks compare multiple dataflow implementations:
+- **timely-dataflow** and **differential-dataflow** (dependencies in this repo)
+- **babyflow**, **hydroflow**, and **spinachflow** (optional, from the main repository)
+
+To enable cross-framework benchmarking, you need to:
+
+1. Clone both repositories side-by-side:
+   ```bash
+   git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+   git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+   ```
+
+2. Uncomment the path dependencies in `timely-differential-benches/Cargo.toml`:
+   ```toml
+   babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+   hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+   spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+   ```
+
 ### Run All Benchmarks
 
 ```bash
+# Run only timely/differential benchmarks (without path dependencies)
 cargo bench
+
+# Or run all benchmarks including cross-framework comparison (with path dependencies uncommented)
+cargo bench -p timely-differential-benches
 ```
 
 ### Run Specific Benchmark
@@ -53,15 +78,15 @@ cargo bench -p timely-differential-benches --bench <benchmark_name>
 ```
 
 Available benchmarks:
-- `arithmetic`
-- `fan_in`
-- `fan_out`
-- `fork_join`
-- `identity`
-- `join`
-- `reachability`
-- `upcase`
-- `zip`
+- `arithmetic` - Arithmetic operations benchmark
+- `fan_in` - Fan-in pattern benchmark for data aggregation
+- `fan_out` - Fan-out pattern benchmark for data distribution
+- `fork_join` - Fork-join pattern benchmark
+- `identity` - Identity operation benchmark (data pass-through)
+- `join` - Join operation benchmark
+- `reachability` - Graph reachability computation benchmark
+- `upcase` - String uppercase transformation benchmark
+- `zip` - Zip operation benchmark
 
 ### Cross-Repository Comparison
 

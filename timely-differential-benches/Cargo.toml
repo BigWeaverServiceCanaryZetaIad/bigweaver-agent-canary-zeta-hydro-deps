@@ -15,6 +15,13 @@ rand = "0.8.4"
 seq-macro = "0.2"
 tokio = { version = "1.0", features = ["rt-multi-thread"] }
 
+# Uncomment these path dependencies to enable cross-framework benchmarking
+# These point to the core dataflow implementations in bigweaver-agent-canary-hydro-zeta
+# Ensure both repositories are cloned side-by-side
+# babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+# hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+# spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+
 [[bench]]
 name = "arithmetic"
 harness = false
