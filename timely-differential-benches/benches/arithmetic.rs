@@ -1,3 +1,42 @@
+// Arithmetic Operations Benchmark
+// ================================
+//
+// This benchmark compares the performance of arithmetic operations (repeated map operations)
+// across different dataflow frameworks. It helps identify overhead and optimization
+// characteristics specific to each framework.
+//
+// Performance Comparison Notes:
+// ----------------------------
+// This benchmark is part of a suite that allows comparing timely/differential-dataflow
+// performance with other dataflow implementations (like hydro-native).
+//
+// To run this benchmark:
+//   cargo bench -p timely-differential-benches --bench arithmetic
+//
+// To compare with main repository benchmarks:
+//   ../scripts/compare_benchmarks.sh
+//
+// What this benchmark measures:
+//   - Overhead of dataflow framework for simple operations
+//   - Throughput for chained map operations
+//   - Comparison between different implementation strategies:
+//     * timely: Timely-dataflow framework (data-parallel streaming)
+//     * babyflow: Simplified dataflow for baseline comparison
+//     * spinach: Alternative dataflow model
+//     * hydroflow: Hydroflow compiled push-pull model
+//     * pipeline: Thread-based pipeline
+//     * iter: Pure iterator-based (minimal overhead baseline)
+//     * raw: Direct vector manipulation (theoretical minimum overhead)
+//
+// Key metrics to watch:
+//   - Operations per second (throughput)
+//   - Time per operation (latency)
+//   - Framework overhead (difference from raw/iter baselines)
+//
+// Configuration:
+//   - NUM_OPS: Number of map operations (20) - tests operation chaining
+//   - NUM_INTS: Number of integers processed (1,000,000) - tests data volume handling
+
 use babyflow::babyflow::Query;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use std::sync::mpsc::channel;
@@ -249,6 +288,20 @@ fn criterion_spinach_chunks(c: &mut Criterion) {
     );
 }
 
+// Timely-dataflow benchmark
+// This is the primary benchmark for comparing timely-dataflow performance.
+// It creates a streaming dataflow that:
+//   1. Generates NUM_INTS integers (0..1_000_000)
+//   2. Applies NUM_OPS map operations (each adding 1)
+//   3. Inspects results (prevents optimization)
+//
+// Key characteristics:
+//   - Data-parallel execution model
+//   - Optimized for streaming workloads
+//   - Low per-operation overhead
+//
+// Compare this with equivalent hydro-native benchmarks to understand
+// performance differences between frameworks.
 fn benchmark_timely(c: &mut Criterion) {
     c.bench_function("arithmetic/timely", |b| {
         b.iter(|| {
