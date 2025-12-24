@@ -38,11 +38,30 @@ This repository includes the following external dependencies:
 - **criterion**: Benchmarking framework
 - Other supporting dependencies (lazy_static, rand, seq-macro, tokio)
 
+It also uses path dependencies to the core dataflow implementations in the main repository:
+- **babyflow**: Custom dataflow implementation for comparison
+- **hydroflow**: Alternative dataflow implementation
+- **spinachflow**: Another dataflow implementation variant
+
+These path dependencies require both repositories to be cloned side-by-side.
+
 ## Running Benchmarks
+
+### Prerequisites
+
+Both repositories must be cloned side-by-side for the path dependencies to work:
+
+```bash
+git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+```
+
+The benchmarks are already configured with path dependencies pointing to the main repository's dataflow implementations (babyflow, hydroflow, spinachflow).
 
 ### Run All Benchmarks
 
 ```bash
+cd bigweaver-agent-canary-zeta-hydro-deps
 cargo bench
 ```
 
