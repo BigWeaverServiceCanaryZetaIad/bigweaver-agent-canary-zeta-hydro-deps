@@ -42,11 +42,39 @@ This repository includes the following external dependencies:
 - **Cross-repository dependencies**: babyflow, hydroflow, spinachflow (via path dependencies to main repository)
 - Other supporting dependencies: lazy_static, rand, seq-macro, tokio
 
+## Setup Instructions
+
+The benchmarks in this repository depend on the core dataflow implementations (babyflow, hydroflow, spinachflow) from the `bigweaver-agent-canary-hydro-zeta` repository.
+
+### Prerequisites
+
+1. Clone both repositories side-by-side:
+
+```bash
+git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+```
+
+2. Enable path dependencies in `timely-differential-benches/Cargo.toml`:
+
+```bash
+cd bigweaver-agent-canary-zeta-hydro-deps/timely-differential-benches
+```
+
+Edit `Cargo.toml` and uncomment the following lines under `[dev-dependencies]`:
+
+```toml
+babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+```
+
 ## Running Benchmarks
 
 ### Run All Benchmarks
 
 ```bash
+cd /path/to/bigweaver-agent-canary-zeta-hydro-deps
 cargo bench
 ```
 
@@ -57,15 +85,15 @@ cargo bench -p timely-differential-benches --bench <benchmark_name>
 ```
 
 Available benchmarks:
-- `arithmetic`
-- `fan_in`
-- `fan_out`
-- `fork_join`
-- `identity`
-- `join`
-- `reachability`
-- `upcase`
-- `zip`
+- `arithmetic` - Arithmetic operations benchmark
+- `fan_in` - Fan-in pattern benchmark
+- `fan_out` - Fan-out pattern benchmark
+- `fork_join` - Fork-join pattern benchmark
+- `identity` - Identity operator benchmark
+- `join` - Join operation benchmark
+- `reachability` - Graph reachability benchmark (includes data files)
+- `upcase` - String transformation benchmark
+- `zip` - Zip operation benchmark
 
 ### Cross-Repository Comparison
 
@@ -77,7 +105,7 @@ To compare performance between this repository and the main repository:
 
 This script will:
 1. Run all timely/differential-dataflow benchmarks in this repository
-2. Run any benchmarks in the main repository (if available)
+2. Compare performance across different dataflow implementations (timely, differential, babyflow, hydroflow, spinachflow)
 3. Generate comparison reports
 
 ## Migration Notes

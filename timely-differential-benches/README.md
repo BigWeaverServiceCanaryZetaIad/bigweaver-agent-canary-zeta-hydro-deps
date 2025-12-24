@@ -1,10 +1,29 @@
 # Timely and Differential Dataflow Benchmarks
 
-This directory contains benchmarks that use timely-dataflow and differential-dataflow dependencies for performance comparison with the main bigweaver-agent-canary-hydro-zeta repository.
+This directory contains benchmarks that use timely-dataflow and differential-dataflow dependencies for performance comparison with the core dataflow implementations from the bigweaver-agent-canary-hydro-zeta repository.
 
 ## Overview
 
 These benchmarks were migrated from the main repository to separate the timely and differential-dataflow dependencies from the core codebase while maintaining the ability to run performance comparisons.
+
+## Prerequisites
+
+**Important:** These benchmarks require the core dataflow implementations (babyflow, hydroflow, spinachflow) from the bigweaver-agent-canary-hydro-zeta repository.
+
+1. Clone both repositories side-by-side:
+   ```bash
+   git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+   git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+   ```
+
+2. Enable path dependencies in `Cargo.toml`:
+   
+   Edit this file and uncomment the following lines under `[dev-dependencies]`:
+   ```toml
+   babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+   hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+   spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+   ```
 
 ## Running Benchmarks
 
@@ -27,6 +46,15 @@ cargo bench -p timely-differential-benches --bench zip
 ```
 
 ## Benchmark Descriptions
+
+Each benchmark compares multiple dataflow implementations:
+- **timely-dataflow** - Low-latency data-parallel dataflow system
+- **differential-dataflow** - Incremental computation based on timely-dataflow
+- **babyflow** - Custom dataflow implementation
+- **hydroflow** - Alternative dataflow implementation
+- **spinachflow** - Another dataflow implementation variant
+
+### Available Benchmarks
 
 - **arithmetic** - Arithmetic operations benchmark comparing different dataflow frameworks
   - Tests repeated arithmetic operations (20 map operations)
@@ -71,12 +99,16 @@ cargo bench -p timely-differential-benches --bench zip
 
 ## Data Files
 
-- `reachability_edges.txt` - Edge data for reachability benchmark
-- `reachability_reachable.txt` - Expected reachable nodes for verification
+- `reachability_edges.txt` - Edge data for reachability benchmark (532KB)
+- `reachability_reachable.txt` - Expected reachable nodes for verification (38KB)
+
+## Results
+
+Benchmark results are saved to `target/criterion/` and can be viewed in detail by opening `target/criterion/report/index.html` in a web browser.
 
 ## Cross-Repository Comparison
 
-To compare performance between this repository and the main repository, use the comparison script in the parent directory:
+To compare performance between all implementations, use the comparison script in the parent directory:
 
 ```bash
 cd ..
