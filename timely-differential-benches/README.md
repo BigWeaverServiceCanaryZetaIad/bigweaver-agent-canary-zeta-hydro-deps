@@ -6,6 +6,27 @@ This directory contains benchmarks that use timely-dataflow and differential-dat
 
 These benchmarks were migrated from the main repository to separate the timely and differential-dataflow dependencies from the core codebase while maintaining the ability to run performance comparisons.
 
+## Setup Requirements
+
+**Important**: These benchmarks compare timely/differential-dataflow with other dataflow implementations (babyflow, hydroflow, spinachflow) that are located in the `bigweaver-agent-canary-hydro-zeta` repository.
+
+To run the benchmarks, you need to:
+
+1. Clone both repositories side-by-side:
+   ```bash
+   git clone <url>/bigweaver-agent-canary-hydro-zeta.git
+   git clone <url>/bigweaver-agent-canary-zeta-hydro-deps.git
+   ```
+
+2. Uncomment the path dependencies in `Cargo.toml`:
+   ```toml
+   babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+   hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+   spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+   ```
+
+3. Ensure the paths match your directory structure.
+
 ## Running Benchmarks
 
 Run all benchmarks:
