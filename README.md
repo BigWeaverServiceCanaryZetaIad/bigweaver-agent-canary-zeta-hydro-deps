@@ -38,6 +38,30 @@ This repository includes the following external dependencies:
 - **criterion**: Benchmarking framework
 - Other supporting dependencies (lazy_static, rand, seq-macro, tokio)
 
+The benchmarks also depend on the following implementations from the main repository:
+- **babyflow**: Custom dataflow implementation
+- **hydroflow**: Alternative dataflow implementation
+- **spinachflow**: Another dataflow implementation variant
+
+### Setting Up Path Dependencies
+
+For the benchmarks to compile and run, you need to configure path dependencies to the main repository. Follow these steps:
+
+1. Clone both repositories side-by-side:
+   ```bash
+   git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+   git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+   ```
+
+2. Edit `timely-differential-benches/Cargo.toml` and uncomment the path dependencies:
+   ```toml
+   babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+   hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+   spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+   ```
+
+3. Verify the paths are correct relative to your directory structure.
+
 ## Running Benchmarks
 
 ### Run All Benchmarks

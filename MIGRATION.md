@@ -6,7 +6,7 @@ This document describes the migration of timely-dataflow and differential-datafl
 
 ## Migration Date
 
-December 20, 2025
+December 24, 2025 (Completed)
 
 ## Reason for Migration
 
@@ -113,25 +113,44 @@ To verify the migration was successful:
    cargo build
    ```
 
-2. Run the benchmarks:
+2. **Note**: Before running benchmarks, you need to configure path dependencies:
+   - Ensure both repositories are cloned side-by-side
+   - Edit `timely-differential-benches/Cargo.toml` 
+   - Uncomment the path dependencies:
+     ```toml
+     babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+     hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+     spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+     ```
+
+3. Run the benchmarks:
    ```bash
    cargo bench
    ```
 
-3. Check that the main repository no longer has timely/differential dependencies:
+4. Check that the main repository no longer has timely/differential dependencies:
    ```bash
    cd bigweaver-agent-canary-hydro-zeta
+   # Verify benches directory has been removed
    # Check Cargo.toml files for absence of timely/differential dependencies
+   grep -r "timely\|differential" */Cargo.toml Cargo.toml
+   # Should return no matches
    ```
 
 ## Post-Migration Changes in Main Repository
 
-After this migration, the main repository should have:
+After this migration, the main repository has:
 
-1. Removed benchmark files that depend on timely/differential-dataflow
+1. Removed benchmark files that depend on timely/differential-dataflow (benches/ directory)
 2. Removed timely and differential-dataflow dependencies from Cargo.toml files
-3. Updated documentation to reference this repository for performance comparisons
-4. Optionally retained DFIR-native benchmarks that don't require timely/differential
+3. Retained core dataflow implementations (babyflow, hydroflow, spinachflow) for cross-repository comparisons
+4. Updated documentation to reference this repository for timely/differential benchmarks
+5. No timely or differential-dataflow dependencies in any Cargo.toml files
+
+The core implementations (babyflow, hydroflow, spinachflow) remain in the main repository as they:
+- Do not depend on timely or differential-dataflow
+- Are needed by benchmarks in this deps repository via path dependencies
+- Are part of the core functionality being benchmarked
 
 ## Maintenance
 
