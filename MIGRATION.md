@@ -88,16 +88,25 @@ bigweaver-agent-canary-zeta-hydro-deps/
 
 After migration, performance comparisons can still be conducted using:
 
-1. **Direct benchmarking**: Run benchmarks in each repository separately
+1. **Setup for cross-repository benchmarking**:
+   ```bash
+   # Clone both repositories side-by-side
+   git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+   git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+   ```
+   
+   The path dependencies are already configured in `timely-differential-benches/Cargo.toml`:
+   - `babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }`
+   - `hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }`
+   - `spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }`
+
+2. **Direct benchmarking**: Run benchmarks in the deps repository
    ```bash
    # In bigweaver-agent-canary-zeta-hydro-deps
    cargo bench -p timely-differential-benches
-   
-   # In bigweaver-agent-canary-hydro-zeta
-   cargo bench -p benches  # If remaining benchmarks exist
    ```
 
-2. **Automated comparison**: Use the provided comparison script
+3. **Automated comparison**: Use the provided comparison script
    ```bash
    cd bigweaver-agent-canary-zeta-hydro-deps
    ./scripts/compare_benchmarks.sh
