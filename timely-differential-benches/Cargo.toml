@@ -5,6 +5,12 @@ edition = "2021"
 publish = false
 
 [dependencies]
+# Uncomment the following dependencies to enable cross-repository benchmarking
+# with the main bigweaver-agent-canary-hydro-zeta repository.
+# These should point to the cloned main repository (typically ../bigweaver-agent-canary-hydro-zeta)
+# babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+# hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+# spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
 
 [dev-dependencies]
 criterion = { version = "0.3", features = ["async_tokio"] }

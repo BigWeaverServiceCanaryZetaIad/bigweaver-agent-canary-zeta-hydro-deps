@@ -40,6 +40,38 @@ This repository includes the following external dependencies:
 
 ## Running Benchmarks
 
+### Quick Start (Timely/Differential Only)
+
+To run only the pure timely-dataflow and differential-dataflow benchmarks without cross-repository comparisons:
+
+```bash
+cargo bench
+```
+
+### Cross-Repository Comparison Setup
+
+Some benchmarks compare multiple implementations (timely, differential, babyflow, hydroflow, spinachflow). To enable these comparisons:
+
+1. Clone both repositories side-by-side:
+   ```bash
+   git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+   git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+   ```
+
+2. Edit `timely-differential-benches/Cargo.toml` and uncomment the path dependencies:
+   ```toml
+   babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+   hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+   spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+   ```
+
+3. Run benchmarks:
+   ```bash
+   cargo bench
+   ```
+
+**Note**: Without configuring path dependencies, some benchmark variants will fail to compile, but timely/differential variants will still work.
+
 ### Run All Benchmarks
 
 ```bash
