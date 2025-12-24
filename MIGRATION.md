@@ -121,17 +121,29 @@ To verify the migration was successful:
 3. Check that the main repository no longer has timely/differential dependencies:
    ```bash
    cd bigweaver-agent-canary-hydro-zeta
-   # Check Cargo.toml files for absence of timely/differential dependencies
+   # Verify only README.md exists and no Cargo.toml or benchmark files
    ```
+
+### Cross-Repository Benchmarking
+
+The benchmarks in this repository can optionally compare against implementations in the main repository (babyflow, hydroflow, spinachflow). To enable these comparisons:
+
+1. Clone both repositories side-by-side
+2. Edit `timely-differential-benches/Cargo.toml` and uncomment the path dependencies
+3. Run benchmarks as usual
+
+Without these path dependencies, the pure timely/differential benchmarks will still compile and run successfully.
 
 ## Post-Migration Changes in Main Repository
 
 After this migration, the main repository should have:
 
-1. Removed benchmark files that depend on timely/differential-dataflow
-2. Removed timely and differential-dataflow dependencies from Cargo.toml files
-3. Updated documentation to reference this repository for performance comparisons
-4. Optionally retained DFIR-native benchmarks that don't require timely/differential
+1. ✅ Removed benchmark files that depend on timely/differential-dataflow (completed)
+2. ✅ Removed timely and differential-dataflow dependencies from Cargo.toml files (completed)
+3. ✅ Updated documentation to reference this repository for performance comparisons (completed)
+4. ✅ Documented ability to run performance comparisons against the hydro-deps repository (completed)
+
+The main repository now only contains a README.md that documents the migration and references this repository.
 
 ## Maintenance
 

@@ -6,6 +6,31 @@ This directory contains benchmarks that use timely-dataflow and differential-dat
 
 These benchmarks were migrated from the main repository to separate the timely and differential-dataflow dependencies from the core codebase while maintaining the ability to run performance comparisons.
 
+## Setup
+
+### For Timely/Differential-only Benchmarks
+
+If you only want to run benchmarks that use timely-dataflow and differential-dataflow (without cross-repository comparisons), no additional setup is required.
+
+### For Cross-Repository Comparisons
+
+To enable benchmarks that compare against babyflow, hydroflow, and spinachflow implementations from the main repository:
+
+1. Clone both repositories side-by-side:
+   ```bash
+   git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+   git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+   ```
+
+2. Edit `Cargo.toml` and uncomment the path dependencies:
+   ```toml
+   babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+   hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+   spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+   ```
+
+3. Adjust the paths if your repositories are in a different location.
+
 ## Running Benchmarks
 
 Run all benchmarks:
@@ -25,6 +50,8 @@ cargo bench -p timely-differential-benches --bench reachability
 cargo bench -p timely-differential-benches --bench upcase
 cargo bench -p timely-differential-benches --bench zip
 ```
+
+**Note**: Some benchmarks compare multiple implementations. If you haven't configured the cross-repository path dependencies, those specific benchmark variants will fail to compile, but the timely/differential variants will still work.
 
 ## Benchmark Descriptions
 
