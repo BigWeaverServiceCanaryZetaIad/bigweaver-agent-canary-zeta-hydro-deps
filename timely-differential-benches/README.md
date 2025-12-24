@@ -8,10 +8,20 @@ These benchmarks were migrated from the main repository to separate the timely a
 
 ## Running Benchmarks
 
+### Prerequisites
+
+For full cross-framework benchmarking, ensure:
+1. Both repositories are cloned side-by-side
+2. Path dependencies are uncommented in `Cargo.toml`
+
+### Run All Benchmarks
+
 Run all benchmarks:
 ```bash
 cargo bench -p timely-differential-benches
 ```
+
+### Run Specific Benchmarks
 
 Run specific benchmarks:
 ```bash
