@@ -10,6 +10,8 @@ This repository contains benchmarks and dependencies for timely-dataflow and dif
 .
 ├── Cargo.toml                           # Workspace configuration
 ├── README.md                            # This file
+├── MIGRATION.md                         # Detailed migration documentation
+├── PERFORMANCE_COMPARISON_GUIDE.md      # Comprehensive guide for running performance comparisons
 ├── scripts/
 │   └── compare_benchmarks.sh           # Cross-repository benchmark comparison script
 └── timely-differential-benches/
@@ -74,7 +76,20 @@ To compare performance between this repository and the main repository:
 This script will:
 1. Run all timely/differential-dataflow benchmarks in this repository
 2. Run any benchmarks in the main repository (if available)
-3. Generate comparison reports
+3. Generate comparison reports in each repository's `target/criterion/` directory
+
+**For detailed instructions on running and interpreting performance comparisons, see:**
+- **[PERFORMANCE_COMPARISON_GUIDE.md](PERFORMANCE_COMPARISON_GUIDE.md)** - Comprehensive guide with examples, best practices, and troubleshooting
+- **[timely-differential-benches/README.md](timely-differential-benches/README.md)** - Quick reference for benchmark commands
+
+**Quick start for performance comparison:**
+```bash
+# Automated comparison
+./scripts/compare_benchmarks.sh
+
+# View results
+open target/criterion/report/index.html
+```
 
 ## Migration Notes
 
@@ -84,6 +99,8 @@ These benchmarks were migrated from the main `bigweaver-agent-canary-hydro-zeta`
 2. **Maintain comparisons**: Allow performance comparisons between different dataflow implementations
 3. **Reduce build time**: Avoid compiling these dependencies in the main repository
 4. **Focused development**: Keep the main repository focused on its core functionality
+
+For detailed migration information, see [MIGRATION.md](MIGRATION.md).
 
 ## Development
 
