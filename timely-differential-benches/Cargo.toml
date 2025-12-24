@@ -5,6 +5,11 @@ edition = "2021"
 publish = false
 
 [dependencies]
+# Path dependencies for cross-repository benchmarks
+# These point to the core implementations in the main repository
+babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
 
 [dev-dependencies]
 criterion = { version = "0.3", features = ["async_tokio"] }
