@@ -1,0 +1,25 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Cargo lock file (for libraries, typically not committed)
+# Uncomment if you want to commit it
+# Cargo.lock
+
+# Benchmark results
+/target/criterion/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
