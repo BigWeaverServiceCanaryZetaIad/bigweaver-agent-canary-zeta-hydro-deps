@@ -7,6 +7,12 @@ publish = false
 [dependencies]
 
 [dev-dependencies]
+# Path dependencies for core dataflow implementations
+babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+
+# External dependencies
 criterion = { version = "0.3", features = ["async_tokio"] }
 timely = "0.12"
 differential-dataflow = "0.12"
@@ -14,6 +20,12 @@ lazy_static = "1.4.0"
 rand = "0.8.4"
 seq-macro = "0.2"
 tokio = { version = "1.0", features = ["rt-multi-thread"] }
+
+# Path dependencies to bigweaver-agent-canary-hydro-zeta repository
+# Uncomment these lines if you have both repositories cloned side-by-side:
+# babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+# hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+# spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
 
 [[bench]]
 name = "arithmetic"
