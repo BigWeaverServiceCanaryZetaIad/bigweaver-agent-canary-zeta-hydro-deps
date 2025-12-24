@@ -66,9 +66,9 @@ bigweaver-agent-canary-zeta-hydro-deps/
 ├── README.md                            # Repository documentation
 ├── MIGRATION.md                         # This file
 ├── scripts/
-│   └── compare_benchmarks.sh           # Cross-repository comparison script
+│   └── compare_benchmarks.sh           # Cross-repository comparison script (executable)
 └── timely-differential-benches/
-    ├── Cargo.toml                       # Package configuration
+    ├── Cargo.toml                       # Package configuration with path dependencies
     ├── README.md                        # Benchmark documentation
     └── benches/                         # Benchmark implementations and data
         ├── arithmetic.rs
@@ -83,6 +83,19 @@ bigweaver-agent-canary-zeta-hydro-deps/
         ├── upcase.rs
         └── zip.rs
 ```
+
+### Path Dependencies Configuration
+
+The `timely-differential-benches/Cargo.toml` includes path dependencies to reference the core implementations from the main repository:
+
+```toml
+[dependencies]
+babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+```
+
+This configuration enables the benchmarks to compare timely/differential-dataflow with the core implementations without requiring those dependencies in the main repository.
 
 ## Performance Comparison
 
@@ -126,12 +139,14 @@ To verify the migration was successful:
 
 ## Post-Migration Changes in Main Repository
 
-After this migration, the main repository should have:
+After this migration, the main repository has:
 
-1. Removed benchmark files that depend on timely/differential-dataflow
-2. Removed timely and differential-dataflow dependencies from Cargo.toml files
-3. Updated documentation to reference this repository for performance comparisons
-4. Optionally retained DFIR-native benchmarks that don't require timely/differential
+1. **Core implementations retained**: babyflow, hydroflow, and spinachflow remain in the repository
+2. **Timely/differential dependencies removed**: No timely or differential-dataflow dependencies in the main repository
+3. **Benchmarks migrated**: All benchmarks that depend on timely/differential-dataflow have been moved to this repository
+4. **Documentation updated**: README reflects the migration and provides instructions for running benchmarks
+
+The core implementations are necessary because the benchmarks in this repository use them for performance comparisons alongside timely and differential-dataflow.
 
 ## Maintenance
 

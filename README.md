@@ -40,9 +40,20 @@ This repository includes the following external dependencies:
 
 ## Running Benchmarks
 
+### Prerequisites
+
+Both repositories must be cloned side-by-side:
+```bash
+git clone <repository-url>/bigweaver-agent-canary-hydro-zeta.git
+git clone <repository-url>/bigweaver-agent-canary-zeta-hydro-deps.git
+```
+
+The benchmarks use path dependencies to reference core implementations (babyflow, hydroflow, spinachflow) from the main repository.
+
 ### Run All Benchmarks
 
 ```bash
+cd bigweaver-agent-canary-zeta-hydro-deps
 cargo bench
 ```
 
