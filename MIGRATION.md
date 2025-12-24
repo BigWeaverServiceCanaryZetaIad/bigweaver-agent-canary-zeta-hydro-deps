@@ -43,14 +43,19 @@ The following files were extracted from commit `513b2091` and migrated to this r
 The following dependencies were moved from the main repository to this repository:
 
 ### Added to bigweaver-agent-canary-zeta-hydro-deps
-- `timely = "0.12"`
-- `differential-dataflow = "0.12"`
+- `timely = "0.12"` (actively used in all benchmarks)
+- `differential-dataflow = "0.12"` (available for future benchmarks)
 - Supporting dependencies:
   - `criterion = { version = "0.3", features = ["async_tokio"] }`
   - `lazy_static = "1.4.0"`
   - `rand = "0.8.4"`
   - `seq-macro = "0.2"`
   - `tokio = { version = "1.0", features = ["rt-multi-thread"] }`
+
+**Note**: While the current benchmark implementations primarily use timely-dataflow directly, differential-dataflow is included as a dependency to:
+1. Keep it out of the main repository's dependency tree
+2. Support future benchmarks that may use differential-dataflow features
+3. Enable incremental computation benchmarks when needed
 
 ### Removed from bigweaver-agent-canary-hydro-zeta
 - `timely = "*"` (from benches/Cargo.toml)
@@ -122,7 +127,38 @@ To verify the migration was successful:
    ```bash
    cd bigweaver-agent-canary-hydro-zeta
    # Check Cargo.toml files for absence of timely/differential dependencies
+   grep -r "timely\|differential" */Cargo.toml || echo "No timely/differential dependencies found ✓"
    ```
+
+### Verification Results
+
+**Files Migrated**: ✓ All 9 benchmark files successfully migrated
+- arithmetic.rs
+- fan_in.rs
+- fan_out.rs
+- fork_join.rs
+- identity.rs
+- join.rs
+- reachability.rs
+- upcase.rs
+- zip.rs
+
+**Data Files**: ✓ Both data files present
+- reachability_edges.txt (532KB)
+- reachability_reachable.txt (38KB)
+
+**Dependencies**: ✓ Properly declared in timely-differential-benches/Cargo.toml
+- timely = "0.12" (actively used in all benchmarks)
+- differential-dataflow = "0.12" (available for future use)
+- Path dependencies to babyflow, hydroflow, spinachflow (cross-repository)
+
+**Workspace Structure**: ✓ Correct
+- Root Cargo.toml declares workspace with timely-differential-benches member
+- Resolver 2 enabled for proper dependency resolution
+
+**Benchmark Configuration**: ✓ All benchmarks properly configured
+- All 9 benchmarks declared with `harness = false`
+- Criterion framework configured with async_tokio support
 
 ## Post-Migration Changes in Main Repository
 
