@@ -52,11 +52,19 @@ The following dependencies were moved from the main repository to this repositor
   - `seq-macro = "0.2"`
   - `tokio = { version = "1.0", features = ["rt-multi-thread"] }`
 
-### Removed from bigweaver-agent-canary-hydro-zeta
-- `timely = "*"` (from benches/Cargo.toml)
-- Any references to differential-dataflow in benchmark files
+### Path Dependencies (for performance comparison)
+- `babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }`
+- `hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }`
+- `spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }`
 
-Note: The main repository's benchmark directory may have been removed entirely or may contain only non-timely/differential benchmarks after migration.
+These path dependencies reference the core implementations in the main repository, which do NOT have timely/differential-dataflow dependencies.
+
+### Removed from bigweaver-agent-canary-hydro-zeta
+- `timely = "*"` (from benches/Cargo.toml) - completely removed
+- Any references to differential-dataflow in benchmark files - moved to this repository
+- The entire benches/ directory structure - moved to this repository
+
+Note: The main repository retains babyflow, hydroflow, and spinachflow implementations as these do NOT depend on timely/differential-dataflow and are needed by the benchmarks in this repository.
 
 ## New Structure in bigweaver-agent-canary-zeta-hydro-deps
 
@@ -107,31 +115,78 @@ After migration, performance comparisons can still be conducted using:
 
 To verify the migration was successful:
 
-1. Build the deps repository:
+1. **Check main repository structure**:
+   ```bash
+   cd bigweaver-agent-canary-hydro-zeta
+   # Should only have Cargo.toml, README.md, and core implementations
+   ls -la
+   # Should list: babyflow/, hydroflow/, spinachflow/
+   
+   # Verify no timely/differential dependencies
+   grep -r "timely\|differential" babyflow/Cargo.toml hydroflow/Cargo.toml spinachflow/Cargo.toml
+   # Should return nothing
+   ```
+
+2. **Build the main repository** (should be fast without timely/differential):
+   ```bash
+   cd bigweaver-agent-canary-hydro-zeta
+   cargo build
+   ```
+
+3. **Build the deps repository** (requires main repo side-by-side):
    ```bash
    cd bigweaver-agent-canary-zeta-hydro-deps
    cargo build
    ```
 
-2. Run the benchmarks:
+4. **Run the benchmarks**:
    ```bash
+   cd bigweaver-agent-canary-zeta-hydro-deps
    cargo bench
    ```
 
-3. Check that the main repository no longer has timely/differential dependencies:
+5. **Verify path dependencies work**:
    ```bash
-   cd bigweaver-agent-canary-hydro-zeta
-   # Check Cargo.toml files for absence of timely/differential dependencies
+   cd bigweaver-agent-canary-zeta-hydro-deps
+   # Check that benchmarks can find the core implementations
+   cargo check
    ```
 
 ## Post-Migration Changes in Main Repository
 
-After this migration, the main repository should have:
+After this migration, the main repository has:
 
-1. Removed benchmark files that depend on timely/differential-dataflow
-2. Removed timely and differential-dataflow dependencies from Cargo.toml files
-3. Updated documentation to reference this repository for performance comparisons
-4. Optionally retained DFIR-native benchmarks that don't require timely/differential
+1. ✅ Removed all benchmark files that depend on timely/differential-dataflow
+2. ✅ Removed all timely and differential-dataflow dependencies from Cargo.toml files
+3. ✅ Updated documentation to reference this repository for performance comparisons
+4. ✅ Retained core implementations (babyflow, hydroflow, spinachflow) that do NOT depend on timely/differential-dataflow
+5. ✅ These core implementations are used by benchmarks in this repository via path dependencies
+
+### Current Repository Structure
+
+**bigweaver-agent-canary-hydro-zeta** (main repository):
+```
+.
+├── Cargo.toml              # Workspace with babyflow, hydroflow, spinachflow
+├── README.md               # Updated with migration documentation
+├── babyflow/               # Core implementation (no timely/differential deps)
+├── hydroflow/              # Core implementation (no timely/differential deps)
+└── spinachflow/            # Core implementation (no timely/differential deps)
+```
+
+**bigweaver-agent-canary-zeta-hydro-deps** (this repository):
+```
+.
+├── Cargo.toml              # Workspace configuration
+├── README.md               # Repository documentation
+├── MIGRATION.md            # This file
+├── scripts/
+│   └── compare_benchmarks.sh
+└── timely-differential-benches/
+    ├── Cargo.toml          # With path deps to main repo + timely/differential deps
+    ├── README.md
+    └── benches/            # All benchmark files
+```
 
 ## Maintenance
 

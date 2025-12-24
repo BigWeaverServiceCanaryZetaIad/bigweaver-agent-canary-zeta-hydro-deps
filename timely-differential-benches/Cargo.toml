@@ -15,6 +15,13 @@ rand = "0.8.4"
 seq-macro = "0.2"
 tokio = { version = "1.0", features = ["rt-multi-thread"] }
 
+# Path dependencies for performance comparison benchmarks
+# Uncomment these lines when running benchmarks that compare against these implementations
+# These should point to the bigweaver-agent-canary-hydro-zeta repository
+babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+
 [[bench]]
 name = "arithmetic"
 harness = false
