@@ -1,0 +1,49 @@
+[package]
+name = "timely-differential-benches"
+publish = false
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
+
+# Benchmarks comparing Hydroflow with Timely Dataflow and Differential Dataflow
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+dfir_rs = { git = "https://github.com/hydro-project/hydro", version = "0.10" }
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+static_assertions = "1.0.0"
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+
+[[bench]]
+name = "arithmetic"
+harness = false
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "fan_out"
+harness = false
+
+[[bench]]
+name = "fork_join"
+harness = false
+
+[[bench]]
+name = "identity"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
