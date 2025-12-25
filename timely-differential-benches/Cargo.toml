@@ -1,0 +1,65 @@
+[package]
+name = "timely-differential-benches"
+publish = false
+version = "0.0.0"
+edition = "2021"
+
+[lints]
+rust.missing_docs = "allow"
+rust.missing_debug_implementations = "allow"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+futures = "0.3"
+nameof = "1.0.0"
+rand = "0.8.0"
+rand_distr = "0.4.3"
+seq-macro = "0.2.0"
+static_assertions = "1.0.0"
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+tokio = { version = "1.29.0", features = [ "rt-multi-thread" ] }
+
+# Path dependencies to the core implementations in the main repository
+# Uncomment these lines when running benchmarks with both repositories cloned side-by-side
+# babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+# dfir_rs = { path = "../../bigweaver-agent-canary-hydro-zeta/dfir_rs", features = [ "debugging" ] }
+# hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+# spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+# sinktools = { path = "../../bigweaver-agent-canary-hydro-zeta/sinktools", version = "^0.0.1" }
+
+[[bench]]
+name = "arithmetic"
+harness = false
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "fan_out"
+harness = false
+
+[[bench]]
+name = "fork_join"
+harness = false
+
+[[bench]]
+name = "identity"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
