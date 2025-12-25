@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Checkout main hydro repository
+        uses: actions/checkout@v4
+        with:
+          repository: BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta
+          path: bigweaver-agent-canary-hydro-zeta
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Check benchmarks compile
+        run: cargo check -p benches
+
+      - name: Build benchmarks
+        run: cargo build -p benches --benches
