@@ -1,0 +1,13 @@
+/target
+__pycache__/
+**/.DS_Store
+*.pyc
+
+# Profiling related outputs
+perf.data
+perf.data.old
+flamegraph.svg
+*.data.folded
+*.perf.data
+*.svg
+*.profile
