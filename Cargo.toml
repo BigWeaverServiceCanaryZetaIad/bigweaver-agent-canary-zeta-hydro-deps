@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "timely-benchmarks",
+]
+
+resolver = "2"
