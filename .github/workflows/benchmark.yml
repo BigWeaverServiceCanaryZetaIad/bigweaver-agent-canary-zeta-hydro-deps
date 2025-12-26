@@ -1,0 +1,48 @@
+name: benchmark
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      should_bench:
+        description: "Should Benchmark? (`true`)"
+        required: true
+        default: "false"
+
+jobs:
+  benches:
+    name: Benchmarks
+    timeout-minutes: 60
+    if: |
+      github.event_name == 'workflow_dispatch' && github.event.inputs.should_bench == 'true'
+      || (github.event_name == 'push' && contains(github.event.head_commit.message, '[ci-bench]'))
+      || (
+        github.event_name == 'pull_request'
+        && (
+          contains(github.event.pull_request.title, '[ci-bench]')
+          || contains(github.event.pull_request.body, '[ci-bench]')
+        )
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Run benchmarks
+        run: |
+          echo "Running timely and differential-dataflow comparison benchmarks..."
+          cargo bench -p timely-differential-benches --verbose
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: target/criterion/
