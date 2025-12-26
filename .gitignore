@@ -1,0 +1,20 @@
+/target
+__pycache__/
+**/.DS_Store
+
+# Profiling related outputs
+perf.data
+perf.data.old
+flamegraph.svg
+
+/rustc-ice-*.txt
+/*.data.folded
+/*.perf.data
+/*.svg
+/*.profile
+
+# Generated files
+timely-benchmarks/benches/fork_join_*.hf
+
+# Criterion benchmark outputs
+target/criterion/
