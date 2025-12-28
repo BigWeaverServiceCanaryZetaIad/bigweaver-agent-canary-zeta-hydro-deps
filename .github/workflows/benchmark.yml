@@ -1,0 +1,78 @@
+name: benchmark
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+  pull_request:
+  schedule:
+    - cron: "35 03 * * *" # Daily at 8:35 PM PDT, 7:35 PM PST.
+  workflow_dispatch:
+    inputs:
+      should_bench:
+        description: "Should Benchmark? (`true`)"
+        required: true
+        default: "false"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.pull_request.base.sha }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  pre_job:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5.3.1
+
+  benches:
+    name: Timely/Differential Comparison Benchmarks
+    timeout-minutes: 30
+    needs: pre_job
+    if: |
+      (needs.pre_job.outputs.should_skip != 'true' || github.event_name != 'pull_request') &&
+      (
+        github.event_name == 'schedule'
+        || (github.event_name == 'workflow_dispatch' && github.event.inputs.should_bench == 'true')
+        || (github.event_name == 'push' && contains(github.event.head_commit.message, '[ci-bench]'))
+        || (
+          github.event_name == 'pull_request'
+          && (
+            contains(github.event.pull_request.title, '[ci-bench]')
+            || contains(github.event.pull_request.body, '[ci-bench]')
+          )
+        )
+      )
+    runs-on: ubuntu-latest
+    env:
+      WWW_DIR: target
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          path: hydro-deps
+
+      - name: Checkout main Hydro repository
+        uses: actions/checkout@v4
+        with:
+          repository: BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta
+          path: bigweaver-agent-canary-hydro-zeta
+
+      - name: Run benchmark
+        run: |
+          cd hydro-deps
+          # Run Timely and Differential Dataflow comparison benchmarks
+          time cargo bench -p benches -- --output-format bencher | tee output.txt
+
+      - name: Upload benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-timely-differential
+          path: |
+            hydro-deps/${{ env.WWW_DIR }}/criterion
