@@ -1,0 +1,14 @@
+# Rust
+/target
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+
+# Benchmarking results
+*.html
+*.svg
+*.data.folded
+*.perf.data
+*.profile
