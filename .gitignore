@@ -1,0 +1,20 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Cargo lock file (for libraries, usually not committed)
+# Cargo.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Test and benchmark outputs
+*.profraw
+*.profdata
