@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "timely-differential-benches",
+]
+
+resolver = "2"
