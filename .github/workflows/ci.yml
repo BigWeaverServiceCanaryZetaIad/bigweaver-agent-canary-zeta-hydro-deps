@@ -1,0 +1,116 @@
+name: ci
+
+# CI workflow for Hydro Dependencies Repository
+# This checks that benchmarks build and pass basic tests
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.pull_request.base.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  pre_job:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5.3.1
+
+  check:
+    name: Check
+    needs: pre_job
+    if: needs.pre_job.outputs.should_skip != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout deps repository
+        uses: actions/checkout@v4
+        with:
+          path: bigweaver-agent-canary-zeta-hydro-deps
+
+      - name: Checkout main Hydro repository
+        uses: actions/checkout@v4
+        with:
+          repository: BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta
+          path: bigweaver-agent-canary-hydro-zeta
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Check workspace
+        working-directory: bigweaver-agent-canary-zeta-hydro-deps
+        run: cargo check --all-targets --all-features
+
+  test:
+    name: Test
+    needs: pre_job
+    if: needs.pre_job.outputs.should_skip != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout deps repository
+        uses: actions/checkout@v4
+        with:
+          path: bigweaver-agent-canary-zeta-hydro-deps
+
+      - name: Checkout main Hydro repository
+        uses: actions/checkout@v4
+        with:
+          repository: BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta
+          path: bigweaver-agent-canary-hydro-zeta
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run tests
+        working-directory: bigweaver-agent-canary-zeta-hydro-deps
+        run: cargo test --all-targets --all-features
+
+  fmt:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+  clippy:
+    name: Clippy
+    needs: pre_job
+    if: needs.pre_job.outputs.should_skip != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout deps repository
+        uses: actions/checkout@v4
+        with:
+          path: bigweaver-agent-canary-zeta-hydro-deps
+
+      - name: Checkout main Hydro repository
+        uses: actions/checkout@v4
+        with:
+          repository: BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-hydro-zeta
+          path: bigweaver-agent-canary-hydro-zeta
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Run clippy
+        working-directory: bigweaver-agent-canary-zeta-hydro-deps
+        run: cargo clippy --all-targets --all-features -- -D warnings
