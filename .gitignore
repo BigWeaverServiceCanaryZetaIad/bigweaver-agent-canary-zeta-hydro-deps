@@ -1,0 +1,17 @@
+/target
+**/.DS_Store
+**/target-bisector-*
+
+# Profiling related outputs of the perf binary and cargo-flamegraph
+perf.data
+perf.data.old
+flamegraph.svg
+
+/rustc-ice-*.txt
+/*.data.folded
+/*.perf.data
+/*.svg
+/*.profile
+
+# Cargo.lock is useful for libraries but benchmarks can generate their own
+Cargo.lock
