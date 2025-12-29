@@ -1,0 +1,30 @@
+# Rust
+/target
+*.rs.bk
+*.pdb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Benchmark and profiling results
+*.data.folded
+*.perf.data
+*.svg
+*.profile
+perf.data
+perf.data.old
+flamegraph.svg
+
+# Hydro specific
+/.hydro/
+/rustc-ice-*.txt
+__pycache__/
