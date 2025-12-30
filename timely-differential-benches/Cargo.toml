@@ -1,0 +1,29 @@
+[package]
+name = "timely-differential-benches"
+publish = false
+version = "0.0.0"
+edition = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+
+[lints]
+workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+rand = "0.8.0"
+rand_distr = "0.4.3"
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+
+[[bench]]
+name = "reachability"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
