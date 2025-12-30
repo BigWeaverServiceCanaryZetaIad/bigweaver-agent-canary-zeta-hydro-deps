@@ -1,0 +1,13 @@
+# Rust
+target/
+Cargo.lock
+
+# Benchmark outputs
+*.folded
+*.perf.data
+*.svg
+*.profile
+
+# Build artifacts
+**/*.rs.bk
+*.pdb
