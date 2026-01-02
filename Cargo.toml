@@ -1,0 +1,51 @@
+[workspace]
+
+members = [
+    "benches",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/hydro-project/hydro"
+
+[profile.release]
+strip = true      # Strip symbols from the binary
+# Previously this was "z" to minimize docker binary size while sacrificing performance. But "z"
+# doesn't make things that much smaller, `strip` is far more important for binary size. Use "3" for
+# performance.
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+
+[profile.profile]
+inherits = "release"
+debug = 2
+lto = "off"
+strip = "none"
+
+[profile.dev.package.website_playground]
+debug-assertions = false
+
+[profile.release.package.website_playground]
+opt-level = "s"
+
+[workspace.lints.rust]
+impl_trait_overcaptures = "warn"
+missing_unsafe_on_extern = "deny"
+unsafe_attr_outside_unsafe = "deny"
+unused_qualifications = "warn"
+
+[workspace.lints.clippy]
+allow_attributes = "warn"
+allow_attributes_without_reason = "warn"
+explicit_into_iter_loop = "warn"
+let_and_return = "allow"
+uninlined_format_args = "allow"
+upper_case_acronyms = "warn"
+
+[workspace.dependencies]
+stageleft = "0.10.2"
+stageleft_tool = "0.10.2"
