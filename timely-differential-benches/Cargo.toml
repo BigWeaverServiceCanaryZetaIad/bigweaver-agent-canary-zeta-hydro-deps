@@ -1,0 +1,60 @@
+[package]
+name = "timely-differential-benches"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.3", features = ["async_tokio"] }
+timely = "0.12"
+differential-dataflow = "0.12"
+lazy_static = "1.4.0"
+rand = "0.8.4"
+seq-macro = "0.2"
+tokio = { version = "1.0", features = ["rt-multi-thread"] }
+
+# Uncomment these path dependencies if you have the main repository cloned side-by-side
+# and want to run benchmarks that compare different dataflow implementations.
+# The benchmarks will work with timely/differential-dataflow without these dependencies,
+# but some benchmark variants (babyflow, hydroflow, spinachflow) will be unavailable.
+# babyflow = { path = "../../bigweaver-agent-canary-hydro-zeta/babyflow" }
+# hydroflow = { path = "../../bigweaver-agent-canary-hydro-zeta/hydroflow" }
+# spinachflow = { path = "../../bigweaver-agent-canary-hydro-zeta/spinachflow" }
+
+[[bench]]
+name = "arithmetic"
+harness = false
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "fan_out"
+harness = false
+
+[[bench]]
+name = "fork_join"
+harness = false
+
+[[bench]]
+name = "identity"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
+
+[[bench]]
+name = "zip"
+harness = false
