@@ -1,0 +1,32 @@
+[workspace]
+
+members = [
+    "benches",
+]
+
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/hydro-project/hydro"
+
+[profile.release]
+strip = true
+
+[workspace.lints.rust]
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+rustdoc::private_intra_doc_links = "warn"
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(nightly)'] }
+
+[workspace.lints.clippy]
+# Deny
+undocumented_unsafe_blocks = "deny"
+future_not_send = "deny"
+missing_panics_doc = "deny"
+
+# Warn
+ptr_as_ptr = "warn"
+ptr_cast_constness = "warn"
