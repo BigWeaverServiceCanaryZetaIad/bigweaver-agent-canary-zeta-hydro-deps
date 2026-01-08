@@ -1,0 +1,41 @@
+[package]
+name = "benches"
+publish = false
+version = "0.0.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
+# Note: dfir_rs is referenced from the main repository
+# Current benchmarks use Hydro-native (dfir_rs) implementations
+# Future work: Add timely/differential-dataflow implementations alongside Hydro-native ones
+dfir_rs = { path = "../../bigweaver-agent-canary-hydro-zeta/dfir_rs", features = [ "debugging" ] }
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+futures = "0.3"
+nameof = "1.0.0"
+rand = "0.8.0"
+rand_distr = "0.4.3"
+seq-macro = "0.2.0"
+static_assertions = "1.0.0"
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+tokio = { version = "1.29.0", features = [ "rt-multi-thread" ] }
+
+[[bench]]
+name = "micro_ops"
+harness = false
+
+[[bench]]
+name = "symmetric_hash_join"
+harness = false
+
+[[bench]]
+name = "words_diamond"
+harness = false
+
+[[bench]]
+name = "futures"
+harness = false
