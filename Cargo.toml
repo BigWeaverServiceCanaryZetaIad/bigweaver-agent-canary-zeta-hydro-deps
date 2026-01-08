@@ -1,0 +1,65 @@
+[workspace]
+members = ["benches"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+repository = "https://github.com/BigWeaverServiceCanaryZetaIad/bigweaver-agent-canary-zeta-hydro-deps"
+license = "Apache-2.0"
+
+[workspace.lints.clippy]
+# Clippy lint configuration
+all = "deny"
+cargo = "deny"
+pedantic = "deny"
+restriction = "deny"
+
+# Allowed by default
+blanket_clippy_restriction_lints = "allow"
+implicit_return = "allow"
+missing_trait_methods = "allow"
+question_mark_used = "allow"
+self_named_module_files = "allow"
+separated_literal_suffix = "allow"
+single_char_lifetime_names = "allow"
+mod_module_files = "allow"
+std_instead_of_core = "allow"
+std_instead_of_alloc = "allow"
+shadow_reuse = "allow"
+pub_use = "allow"
+absolute_paths = "allow"
+ref_patterns = "allow"
+
+# Not really applicable
+missing_docs_in_private_items = "allow"
+missing_inline_in_public_items = "allow"
+exhaustive_enums = "allow"
+exhaustive_structs = "allow"
+single_call_fn = "allow"
+
+# Sometimes necessary
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+unwrap_used = "allow"
+expect_used = "allow"
+indexing_slicing = "allow"
+panic = "allow"
+unreachable = "allow"
+let_underscore_must_use = "allow"
+
+# Don't worry too much about these
+pattern_type_mismatch = "allow"
+shadow_unrelated = "allow"
+shadow_same = "allow"
+use_debug = "allow"
+
+# We have no control over this
+cargo_common_metadata = "allow"
+
+# Sometimes makes code less clear
+if_not_else = "allow"
+
+# TODO: consider enabling these
+option_if_let_else = "allow"
+module_name_repetitions = "allow"
+
