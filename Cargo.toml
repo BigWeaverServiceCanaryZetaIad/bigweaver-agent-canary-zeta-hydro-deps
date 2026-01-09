@@ -1,0 +1,28 @@
+[package]
+name = "bigweaver-agent-canary-zeta-hydro-deps"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+
+[dev-dependencies]
+criterion = { version = "0.5.0", features = ["async_tokio", "html_reports"] }
+differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" }
+timely = { package = "timely-master", version = "0.13.0-dev.1" }
+
+[[bench]]
+name = "fan_in"
+harness = false
+
+[[bench]]
+name = "join"
+harness = false
+
+[[bench]]
+name = "reachability"
+harness = false
+
+[[bench]]
+name = "upcase"
+harness = false
