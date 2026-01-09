@@ -2,7 +2,10 @@
 
 Of Hydro and other crates.
 
-Run all benchmarks:
+**Note**: These benchmarks are designed to be run from the main Hydro repository workspace. 
+To use these benchmarks, clone or reference this repository from the Hydro workspace.
+
+Run all benchmarks from the Hydro repository:
 ```
 cargo bench -p benches
 ```
