@@ -1,0 +1,27 @@
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Criterion benchmark outputs
+criterion/
+*.profdata
+*.profraw
+
+# Profiling
+flamegraph.svg
+perf.data
+perf.data.old
+massif.out.*
