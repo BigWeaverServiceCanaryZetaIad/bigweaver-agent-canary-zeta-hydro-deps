@@ -1,5 +1,6 @@
 use criterion::{BatchSize, Criterion, black_box, criterion_group, criterion_main};
 use dfir_rs::dfir_syntax;
+use dfir_rs::scheduled::graph::Dfir;
 use rand::SeedableRng;
 use rand::distributions::{Distribution, Uniform};
 use rand::rngs::StdRng;
@@ -209,7 +210,7 @@ fn ops(c: &mut Criterion) {
                     source_iter(black_box(input0)) -> sort() -> for_each(|x| { black_box(x); });
                 }
             },
-            |df| {
+            |df: &mut Dfir<'_>| {
                 df.run_available_sync();
             },
             BatchSize::LargeInput,
@@ -236,7 +237,7 @@ fn ops(c: &mut Criterion) {
                     my_crossjoin -> for_each(|x| { black_box(x); });
                 }
             },
-            |df| {
+            |df: &mut Dfir<'_>| {
                 df.run_available_sync();
             },
             BatchSize::LargeInput,
@@ -261,7 +262,7 @@ fn ops(c: &mut Criterion) {
                     my_antijoin -> for_each(|x| { black_box(x); });
                 }
             },
-            |df| {
+            |df: &mut Dfir<'_>| {
                 df.run_available_sync();
             },
             BatchSize::LargeInput,
@@ -353,7 +354,7 @@ fn ops(c: &mut Criterion) {
                         -> for_each(|x| { black_box(x); });
                 }
             },
-            |df| {
+            |df: &mut Dfir<'_>| {
                 df.run_available_sync();
             },
             BatchSize::LargeInput,
