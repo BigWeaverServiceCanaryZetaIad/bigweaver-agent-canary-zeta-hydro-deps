@@ -1,0 +1,13 @@
+/target
+Cargo.lock
+**/.DS_Store
+
+# Criterion benchmark outputs
+criterion/
+*.svg
+*.data.folded
+*.perf.data
+*.profile
+
+# Rust related
+rustc-ice-*.txt
