@@ -15,7 +15,7 @@ workspace = true
 
 [dev-dependencies]
 criterion = { version = "0.5.0", features = [ "async_tokio", "html_reports" ] }
-dfir_rs = { path = "../../bigweaver-agent-canary-hydro-zeta/dfir_rs", features = [ "debugging" ] }
+dfir_rs = { path = "../dfir_rs", features = [ "debugging" ] }
 differential-dataflow = { package = "differential-dataflow-master", version = "0.13.0-dev.1" } # git = "https://github.com/TimelyDataflow/differential-dataflow.git", rev = "7bc5338a977fe1d95b96a9ba84ba8cd460e0cdd7" } # "0.12"
 futures = "0.3"
 itertools = "0.13.0"
