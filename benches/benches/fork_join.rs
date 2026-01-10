@@ -1,14 +1,15 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use dfir_rs::dfir_syntax;
-use dfir_rs::scheduled::graph::Dfir;
-use dfir_rs::scheduled::graph_ext::GraphExt;
-use dfir_rs::scheduled::handoff::{Iter, VecHandoff};
+// use dfir_rs::dfir_syntax;
+// use dfir_rs::scheduled::graph::Dfir;
+// use dfir_rs::scheduled::graph_ext::GraphExt;
+// use dfir_rs::scheduled::handoff::{Iter, VecHandoff};
 use timely::dataflow::operators::{Concatenate, Filter, Inspect, ToStream};
 
 const NUM_OPS: usize = 20;
 const NUM_INTS: usize = 100_000;
 const BRANCH_FACTOR: usize = 2;
 
+/*
 fn benchmark_hydroflow(c: &mut Criterion) {
     c.bench_function("fork_join/dfir_rs", |b| {
         b.iter(|| {
@@ -90,6 +91,7 @@ fn benchmark_hydroflow_surface(c: &mut Criterion) {
         })
     });
 }
+*/
 
 fn benchmark_raw(c: &mut Criterion) {
     c.bench_function("fork_join/raw", |b| {
@@ -135,8 +137,8 @@ fn benchmark_timely(c: &mut Criterion) {
 
 criterion_group!(
     fork_join_dataflow,
-    benchmark_hydroflow,
-    benchmark_hydroflow_surface,
+    // benchmark_hydroflow,
+    // benchmark_hydroflow_surface,
     benchmark_timely,
     benchmark_raw,
 );

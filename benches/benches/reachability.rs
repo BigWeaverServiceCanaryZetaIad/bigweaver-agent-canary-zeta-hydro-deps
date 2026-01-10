@@ -5,8 +5,8 @@ use std::rc::Rc;
 use std::sync::LazyLock;
 
 use criterion::{Criterion, criterion_group, criterion_main};
-use dfir_rs::dfir_syntax;
-use dfir_rs::scheduled::graph_ext::GraphExt;
+// use dfir_rs::dfir_syntax;
+// use dfir_rs::scheduled::graph_ext::GraphExt;
 use differential_dataflow::input::Input;
 use differential_dataflow::operators::{Iterate, Join, Threshold};
 
@@ -118,6 +118,7 @@ fn benchmark_differential(c: &mut Criterion) {
     });
 }
 
+/*
 fn benchmark_hydroflow_scheduled(c: &mut Criterion) {
     use dfir_rs::scheduled::graph::Dfir;
     use dfir_rs::scheduled::handoff::{Iter, VecHandoff};
@@ -372,14 +373,15 @@ fn benchmark_hydroflow_surface(c: &mut Criterion) {
         );
     });
 }
+*/
 
 criterion_group!(
     reachability,
     benchmark_timely,
     benchmark_differential,
-    benchmark_hydroflow_scheduled,
-    benchmark_hydroflow,
-    benchmark_hydroflow_surface,
-    benchmark_hydroflow_surface_cheating,
+    // benchmark_hydroflow_scheduled,
+    // benchmark_hydroflow,
+    // benchmark_hydroflow_surface,
+    // benchmark_hydroflow_surface_cheating,
 );
 criterion_main!(reachability);
