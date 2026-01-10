@@ -4,7 +4,7 @@ use std::sync::LazyLock;
 
 use criterion::{Criterion, criterion_group, criterion_main};
 use dfir_rs::dfir_syntax;
-use dfir_rs::itertools::Itertools;
+use itertools::Itertools;
 use nameof::name_of;
 
 const OUTPUT: usize = 5_123_595;
